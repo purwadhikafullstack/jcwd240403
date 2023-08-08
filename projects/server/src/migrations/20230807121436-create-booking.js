@@ -1,58 +1,71 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Bookings', {
+    await queryInterface.createTable("Bookings", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       user_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: "Users",
+          key: "id",
+        },
       },
       room_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: "Rooms",
+          key: "id",
+        },
       },
       check_in_date: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       check_out_date: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       booking_code: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       price: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       total_invoice: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       payment_proof: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       payment_status: {
-        type: Sequelize.INTEGER
+        type: Sequelize.ENUM("ACCEPTED", "DECLINED"),
       },
       payment_date: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       booking_status: {
-        type: Sequelize.ENUM('waiting', 'waiting_confirmation', 'cancelled')
+        type: Sequelize.ENUM(
+          "WAITING_FOR_PAYMENT",
+          "PROCESSING_PAYMENT",
+          "DONE",
+          "CANCELED"
+        ),
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Bookings');
-  }
+    await queryInterface.dropTable("Bookings");
+  },
 };
