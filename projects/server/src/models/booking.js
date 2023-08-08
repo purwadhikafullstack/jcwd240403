@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Booking extends Model {
     /**
@@ -13,21 +11,29 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  Booking.init({
-    user_id: DataTypes.INTEGER,
-    room_id: DataTypes.INTEGER,
-    check_in_date: DataTypes.DATE,
-    check_out_date: DataTypes.DATE,
-    booking_code: DataTypes.STRING,
-    price: DataTypes.INTEGER,
-    total_invoice: DataTypes.INTEGER,
-    payment_proof: DataTypes.STRING,
-    payment_status: DataTypes.INTEGER,
-    payment_date: DataTypes.DATE,
-    booking_status: DataTypes.ENUM('waiting', 'waiting_confirmation', 'cancelled')
-  }, {
-    sequelize,
-    modelName: 'Booking',
-  });
+  Booking.init(
+    {
+      user_id: DataTypes.INTEGER,
+      room_id: DataTypes.INTEGER,
+      check_in_date: DataTypes.DATE,
+      check_out_date: DataTypes.DATE,
+      booking_code: DataTypes.STRING,
+      price: DataTypes.INTEGER,
+      total_invoice: DataTypes.INTEGER,
+      payment_proof: DataTypes.STRING,
+      payment_status: DataTypes.ENUM("ACCEPTED", "DECLINED"),
+      payment_date: DataTypes.DATE,
+      booking_status: DataTypes.ENUM(
+        "WAITING_FOR_PAYMENT",
+        "PROCESSING_PAYMENT",
+        "DONE",
+        "CANCELED"
+      ),
+    },
+    {
+      sequelize,
+      modelName: "Booking",
+    }
+  );
   return Booking;
 };

@@ -14,8 +14,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Room_status.init({
-    room_type_id: DataTypes.INTEGER,
-    custom_status: DataTypes.BOOLEAN,
+    room_id: DataTypes.INTEGER,
+    custom_status: DataTypes.STRING,
     start_date: DataTypes.DATE,
     end_date: DataTypes.DATE
   }, {

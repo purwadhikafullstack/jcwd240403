@@ -13,11 +13,11 @@ module.exports = (sequelize, DataTypes) => {
   }
   User.init(
     {
-      role: DataTypes.ENUM("tenant", "user"),
+      role: DataTypes.ENUM("TENANT", "USER"),
       verify_token: DataTypes.STRING,
       is_verified: DataTypes.BOOLEAN,
       otp: DataTypes.STRING,
-      otp_expired_time: DataTypes.INTEGER,
+      otp_expired_time: DataTypes.DATE,
       otp_counter: DataTypes.INTEGER,
       forgot_token: DataTypes.STRING,
       email: DataTypes.STRING,
