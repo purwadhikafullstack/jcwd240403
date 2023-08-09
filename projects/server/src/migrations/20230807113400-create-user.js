@@ -10,7 +10,7 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       role: {
-        type: Sequelize.ENUM("tenant", "user"),
+        type: Sequelize.ENUM("TENANT", "USER"),
       },
       verify_token: {
         type: Sequelize.STRING,
@@ -22,7 +22,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       otp_expired_time: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DATE,
       },
       otp_counter: {
         type: Sequelize.INTEGER,
