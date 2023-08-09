@@ -4,11 +4,13 @@ import { PrivateRoute } from "./shared/router/PrivateRoute";
 import Home from "./pages/Home";
 import Book from "./pages/user/Book";
 import Dashboard from "./pages/tenant/Dashboard";
+import Profiling from "./pages/user/Profiling";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/profile" element={<Profiling />} />
       <Route path="*" element={<NotFound />} />
       <Route
         path="dashboard"
