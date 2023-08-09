@@ -17,6 +17,7 @@ module.exports = {
       },
       is_verified: {
         type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
       otp: {
         type: Sequelize.STRING,
@@ -32,6 +33,8 @@ module.exports = {
       },
       email: {
         type: Sequelize.STRING,
+        unique: true,
+        allowNull: true,
       },
       password: {
         type: Sequelize.STRING,
