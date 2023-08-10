@@ -100,28 +100,32 @@ function Login() {
                 >
                   <div className="w-full border-t border-gray-200" />
                 </div>
-                <div className="relative flex justify-center text-sm font-medium leading-6">
-                  <span className="bg-white px-6 text-gray-900">
-                    Or continue with
-                  </span>
-                </div>
+                {isUser ? (
+                  <div className="relative flex justify-center text-sm font-medium leading-6">
+                    <span className="bg-white px-6 text-gray-900">
+                      Or continue with
+                    </span>
+                  </div>
+                ) : null}
               </div>
 
-              <div className="mt-5 grid grid-cols-3 gap-5">
-                {socialLogin.map((item) => (
-                  <button
-                    key={item.name}
-                    href="#"
-                    className="flex w-full items-center justify-center gap-3 border rounded-md bg-[#FFF] px-3 py-1.5 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFF]"
-                  >
-                    <img
-                      src={item.icon}
-                      alt={item.name}
-                      className={item.className + "object-contain"}
-                    />
-                  </button>
-                ))}
-              </div>
+              {isUser ? (
+                <div className="mt-5 grid grid-cols-3 gap-5">
+                  {socialLogin.map((item) => (
+                    <button
+                      key={item.name}
+                      href="#"
+                      className="flex w-full items-center justify-center gap-3 border rounded-md bg-[#FFF] px-3 py-1.5 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFF]"
+                    >
+                      <img
+                        src={item.icon}
+                        alt={item.name}
+                        className={item.className + "object-contain"}
+                      />
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </div>
             <p className="mt-5 text-center text-sm text-gray-500">
               Not a member?{" "}

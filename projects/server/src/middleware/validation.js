@@ -1,9 +1,10 @@
-const { body, validationResult } = require("express-validator");
+const { check, body, validationResult } = require("express-validator");
 
 const validate = (validations) => {
   return async (req, res, next) => {
     for (let validation of validations) {
       const result = await validation.run(req);
+      console.log("val", result);
       if (result.errors.length) break;
     }
 
@@ -18,9 +19,9 @@ const validate = (validations) => {
 
 module.exports = {
   validateRegister: validate([
-    body("username")
+    body("name")
       .notEmpty()
-      .withMessage("username is required")
+      .withMessage("Name is required")
       .isLength({ max: 50 })
       .withMessage("Maximum character is 50"),
     body("email").isEmail(),
@@ -41,5 +42,10 @@ module.exports = {
         return true;
       })
       .withMessage("confirm password is not match with password"),
+  ]),
+
+  validateLogin: validate([
+    body("email").notEmpty().withMessage("Please fill in email").isEmail(),
+    body("password").notEmpty(),
   ]),
 };
