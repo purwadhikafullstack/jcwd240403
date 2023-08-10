@@ -20,7 +20,7 @@ app.use("/api/static", express.static(join(__dirname, "public")));
 // NOTE : Add your routes here
 
 app.use("/api/auth", routes.auth);
-// app.use("/api/property-type", routes.propertyType);
+app.use("/api/property-type", routes.propertyType);
 
 // app.get("/api", (req, res) => {
 //   res.send(`Hello, this is my API`);
