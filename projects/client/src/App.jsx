@@ -6,6 +6,7 @@ import Book from "./pages/user/Book";
 import Dashboard from "./pages/tenant/Dashboard";
 import Login from "./pages/Login";
 import MainContainer from "./components/layouts/MainContainer";
+import Register from "./pages/Register";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="*" element={<NotFound />} />
         <Route
           path="dashboard"
