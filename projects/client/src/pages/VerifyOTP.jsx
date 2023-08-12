@@ -31,7 +31,7 @@ function VerifyOTP() {
       </div>
       <div className="mt-5 md:mt-10">
         <p className="mb-3 text-sm">
-          If you do not receive OTP within 30 seconds, please click{" "}
+          If you do not receive OTP code, please click{" "}
           <span className="text-primary font-bold cursor-pointer hover:text-primary/80">here</span> to
           resend OTP again.
         </p>
