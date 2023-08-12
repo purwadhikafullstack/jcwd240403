@@ -1,4 +1,5 @@
 import React from "react";
+import Button from "../../buttons/Button";
 
 function LoginForm() {
   return (
@@ -40,12 +41,7 @@ function LoginForm() {
       </div>
 
       <div>
-        <button
-          type="submit"
-          className="flex w-full justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-        >
-          Sign in
-        </button>
+        <Button label={'Sign In'} />
       </div>
     </form>
   );
