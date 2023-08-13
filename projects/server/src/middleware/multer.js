@@ -1,8 +1,10 @@
 const multer = require("multer");
+const path = require("path");
 
+const public = path.join(__dirname, "..", "public");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, `../public`);
+    cb(null, public);
   },
   filename: (req, file, cb) => {
     const fileName = `PIMG-${Date.now()}${Math.round(
@@ -30,5 +32,6 @@ const fileFilter = (req, file, cb) => {
       cb(new Error("File format is not matched"));
   }
 };
+
 
 module.exports = multer({ storage, fileFilter });

@@ -4,6 +4,7 @@ const cors = require("cors");
 const { join } = require("path");
 
 const routes = require("./routes");
+const resetOtpCounterJob = require("./cronJobs/resetOtpCounter");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -12,13 +13,16 @@ app.use(cors({}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/api/static", express.static(join(__dirname, "public")));
 
+resetOtpCounterJob();
 //#region API ROUTES
 
 // ===========================
 // NOTE : Add your routes here
 
 app.use("/api/auth", routes.auth);
+// app.use("/api/property-type", routes.propertyType);
 
 // app.get("/api", (req, res) => {
 //   res.send(`Hello, this is my API`);
