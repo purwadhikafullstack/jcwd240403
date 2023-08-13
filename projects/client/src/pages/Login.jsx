@@ -6,7 +6,7 @@ function Login() {
   const [isUser, setIsUser] = useState(true);
   return (
     <AuthLayout
-      isLoginPage={true}
+      page="login"
       isUser={isUser}
       setIsUser={setIsUser}
       title={isUser ? "Start your journey!" : "Let's manage your properties!"}

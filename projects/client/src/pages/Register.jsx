@@ -6,6 +6,7 @@ import TenantAuthSteps from "../components/steps/TenantAuthSteps";
 import { classNames } from "../shared/utils";
 import RegisterForm from "../components/forms/register/RegisterForm";
 import IdentityForm from "../components/forms/register/IdentityForm";
+import Button from "../components/buttons/Button";
 
 function Register() {
   const { search } = useLocation();
@@ -50,7 +51,7 @@ function Register() {
 
   return (
     <AuthLayout
-      isLoginPage={false}
+      page="register"
       isUser={isUser}
       setIsUser={setIsUser}
       title={`New ${isUser ? "User" : "Tenant"} Registration`}
@@ -69,13 +70,7 @@ function Register() {
       <div className={classNames(isUser ? "" : "mt-10")}>
         <RegisterForm status={steps[0].status} />
         <IdentityForm isHidden={isUser || steps[0].status === "current"} />
-        <button
-          type="submit"
-          onClick={handleRegister}
-          className="flex w-full mt-4 justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-        >
-          {buttonText}
-        </button>
+        <Button onClick={handleRegister} label={buttonText} className={'mt-5'} />
       </div>
     </AuthLayout>
   );
