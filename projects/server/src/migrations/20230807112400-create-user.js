@@ -22,8 +22,8 @@ module.exports = {
       otp: {
         type: Sequelize.STRING,
       },
-      otp_expired_time: {
-        type: Sequelize.DATE,
+      otp_created_time: {
+        type: Sequelize.STRING,
       },
       otp_counter: {
         type: Sequelize.INTEGER,

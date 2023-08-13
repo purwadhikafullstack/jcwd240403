@@ -1,14 +1,17 @@
 import React from "react";
+import { classNames } from "../../shared/utils";
 
-function ButtonWithLogo() {
+function ButtonWithLogo({ imageSize = "w-14 h-14", textSize = "text-2xl" }) {
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className={classNames("flex items-center flex-col justify-center")}>
       <img
         alt="logo"
         src={"/assets/logo_white.png"}
-        className="w-14 h-14 object-contain"
+        className={classNames("object-contain", imageSize)}
       />
-      <span className="text-white text-2xl font-brand">innsight</span>
+      <span className={classNames("text-white font-brand", textSize)}>
+        innsight
+      </span>
     </div>
   );
 }

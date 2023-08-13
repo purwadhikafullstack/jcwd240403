@@ -17,4 +17,11 @@ router.post(
 
 router.post("/login", validation.validateLogin, authController.login);
 
+router.patch(
+  "/verification/:token",
+  validation.validateVerify,
+  authController.verify
+);
+
+router.post("/resend-otp/:email", authController.resendOTP);
 module.exports = router;
