@@ -10,9 +10,53 @@ const {
   getFilenameFromDbValue,
   getAbsolutePathPublicFile,
 } = require("../utils/file");
-const { Console } = require("console");
 
 const secretKey = process.env.JWT_SECRET_KEY;
+
+async function updateAndResendOTP(user) {
+  user.otp_counter = (user.otp_counter || 0) + 1;
+  user.otp = generateOTP();
+  user.otp_created_time = moment().format("YYYY-MM-DD HH:mm:ss"); // Updating to current time
+  await user.save();
+  // Email sending
+  let transporter = nodemailer.createTransport({
+    service: "hotmail",
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
+  let mailOptions = {
+    from: process.env.SMTP_USER,
+    to: user.email,
+    subject: "Resend OTP",
+    text: `Resend OTP Request
+
+    Your verification OTP is: ${user.otp}
+    This OTP will be expired in 24 hour. Do not share this OTP to anyone and keep it for yourself :).
+    You can request to resend OTP maximum 5 times per day.
+    Please click the following link to complete your registration:
+
+    http://localhost:3000/verify/${user.verify_token}
+
+
+    Thanks,
+    Innsight Team`,
+  };
+
+  transporter.sendMail(mailOptions, function (err, info) {
+    if (err) {
+      console.log("TRANSPORTER_ERR", err, mailOptions);
+    } else {
+      console.log("Email sent", info);
+    }
+  });
+}
+
+function generateOTP() {
+  return Math.floor(1000 + Math.random() * 9000).toString();
+}
 
 module.exports = {
   async register(req, res) {
@@ -52,18 +96,15 @@ module.exports = {
       // generate verify token
       const verifyToken = crypto.randomBytes(16).toString("hex");
 
-      // generate otp
-      const otp = Math.random(new Date().getTime() * 666666)
-        .toString()
-        .substring(2, 6);
-      const time = moment().format("YYYY-MM-DD HH:mm:ss");
-      console.log("time", time);
+      // generate otp time
+      // const time = moment().format("YYYY-MM-DD HH:mm:ss");
+      // console.log("time", time);
 
       const newUser = await db.User.create({
         role: role,
         verify_token: verifyToken,
-        otp: otp,
-        otp_created_time: time,
+        otp: generateOTP(),
+        otp_created_time: moment().format("YYYY-MM-DD HH:mm:ss"),
         otp_counter: Number(0),
         email: email,
         password: hashPassword,
@@ -109,12 +150,12 @@ module.exports = {
         if (err) {
           console.log("TRANSPORTER_ERR", err, mailOptions);
         } else {
-          console.log("TRANSPORTER_SUCCESS", info);
+          console.log("Email sent", info);
         }
       });
 
       res.status(201).send({
-        message: "Registration success",
+        message: "Registration success and email verification already send",
         data: {
           role: newUser.role,
           email: newUser.email,
@@ -179,10 +220,9 @@ module.exports = {
         });
       }
 
-      const time = new Date(user.otp_created_time);
-      const now = new Date();
+      const time = moment(user.otp_created_time).add(24, "hours");
+      const now = moment();
 
-      time.setHours(time.getHours() + 24);
       if (now > time) {
         return res.status(400).send({
           message: "OTP expired, please request to resend OTP",
@@ -208,58 +248,36 @@ module.exports = {
   async resendOTP(req, res) {
     try {
       const email = req.params.email;
-      // const today = new Date().toISOString().slice(0, 10);
-      // console.log("today", today);
 
-      // alternative
-      const currentDate = moment(new Date()).utcOffset(7).toDate();
-      const startOfDay = moment(currentDate).startOf("date").toDate();
-      const endOfDay = moment(currentDate).endOf("date").toDate();
-
-      const otpRequest = await db.User.findOne({
-        where: {
-          email: email,
-          otp_created_time: {
-            [db.Sequelize.Op.between]: [startOfDay, endOfDay],
-          },
-          // otp_created_time: today,
-        },
+      const user = await db.User.findOne({
+        where: { email: email },
       });
-      console.log("otp req", otpRequest, currentDate);
-      console.log("jam db", otpRequest.otp_created_time);
 
-      if (!otpRequest.email) {
+      if (!user || !user.otp_created_time) {
         return res.status(400).send({
-          message: "Account not found",
+          message: "Account not found or OTP not previously generated",
         });
       }
 
-      if (otpRequest.is_verified) {
+      if (user.is_verified) {
         return res.status(400).send({
           message: "Account already verified",
         });
       }
 
-      if (otpRequest) {
-        if (otpRequest.otp_counter >= 5) {
-          return res
-            .status(400)
-            .send(
-              "You have reached the maximum OTP resend requests for today."
-            );
-        } else {
-          otpRequest.otp_counter += 1;
-          const newOtp = Math.random(new Date().getTime() * 666666)
-            .toString()
-            .substring(2, 6);
-          otpRequest.otp = newOtp;
-          await otpRequest.save();
-          res.status(200).send("OTP sent.");
-        }
-      } else {
-        await otpRequest.update({ otp_counter: 0 });
-        res.status(200).send("You have maximun OTP resend request 5 per day.");
+      const otpTime = moment(user.otp_created_time, "YYYY-MM-DD HH:mm:ss");
+      const currentDay = moment().format("YYYY-MM-DD");
+      if (
+        otpTime.format("YYYY-MM-DD") === currentDay &&
+        user.otp_counter >= 5
+      ) {
+        return res
+          .status(400)
+          .send("You have reached the maximum OTP resend requests for today.");
       }
+
+      await updateAndResendOTP(user);
+      res.status(200).send("Resend OTP success");
     } catch (error) {
       console.log("resendotp", error);
       res.status(500).send({ message: "Something wrong on server" }), error;
