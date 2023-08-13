@@ -12,23 +12,56 @@ import VerifyOTP from "./pages/VerifyOTP";
 
 function App() {
   return (
-    <MainContainer>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/otp" element={<VerifyOTP />} />
-        <Route path="*" element={<NotFound />} />
-        <Route
-          path="dashboard"
-          element={<PrivateRoute roles={["TENANT"]} component={Dashboard} />}
-        />
-        <Route
-          path="book"
-          element={<PrivateRoute roles={["USER"]} component={Book} />}
-        />
-      </Routes>
-    </MainContainer>
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <MainContainer>
+            <Home />
+          </MainContainer>
+        }
+      />
+      <Route
+        path="/login"
+        element={
+          <MainContainer>
+            <Login />
+          </MainContainer>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <MainContainer>
+            <Register />
+          </MainContainer>
+        }
+      />
+      <Route
+        path="/otp"
+        element={
+          <MainContainer>
+            <VerifyOTP />
+          </MainContainer>
+        }
+      />
+      <Route
+        path="*"
+        element={
+          <MainContainer>
+            <NotFound />
+          </MainContainer>
+        }
+      />
+      <Route
+        path="dashboard"
+        element={<PrivateRoute roles={["TENANT"]} component={Dashboard} />}
+      />
+      <Route
+        path="book"
+        element={<PrivateRoute roles={["USER"]} component={Book} />}
+      />
+    </Routes>
   );
 }
 
