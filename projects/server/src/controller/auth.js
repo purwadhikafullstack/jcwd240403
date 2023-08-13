@@ -131,15 +131,15 @@ module.exports = {
         from: process.env.SMTP_USER,
         to: email,
         subject: "Welcome!",
-        text: `Hello ${name},
+        text: `Hello ${newProfile.full_name},
   
         Welcome to Innsight!
   
-        Your verification OTP is: ${otp}
+        Your verification OTP is: ${newUser.otp}
         This OTP will be expired in 24 hour. Do not share this OTP to anyone and keep it for yourself :).
         Please click the following link to complete your registration:
   
-        http://localhost:3000/verify/${verifyToken}
+        http://localhost:3000/verify/${newUser.verify_token}
   
   
         Thanks,

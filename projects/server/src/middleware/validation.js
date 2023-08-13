@@ -51,10 +51,10 @@ module.exports = {
     body("confirmPassword")
       .notEmpty()
       .withMessage("Confirm password is required"),
-    body("file")
-      .if(body("role").equals("TENANT"))
-      .notEmpty()
-      .withMessage("ID card is required for TENANT role"),
+    // body("file")
+    //   .if(body("role").equals("TENANT"))
+    //   .notEmpty()
+    //   .withMessage("ID card is required for TENANT role"),
   ]),
 
   validateLogin: validate([

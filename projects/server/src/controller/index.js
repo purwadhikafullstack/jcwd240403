@@ -1,7 +1,7 @@
 const auth = require("./auth");
-const propertyType = require("./propertyType");
+const categoryArea = require("./categoryArea");
 
 module.exports = {
   auth,
-  propertyType,
+  categoryArea,
 };

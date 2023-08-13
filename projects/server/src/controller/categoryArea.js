@@ -3,17 +3,18 @@ const db = require("../models");
 const { where } = require("sequelize");
 
 module.exports = {
-  async getAllPropType(req, res) {
+  async getAllCatArea(req, res) {
     try {
-      const result = await db.Property_type.findAll({
+      const result = await db.Category_area.findAll({
+        where: { is_deleted: false },
         attributes: { exclude: ["createdAt", "updatedAt"] },
       });
       res.status(200).send({
-        message: "Success get all property type",
+        message: "Success get all category area",
         data: result,
       });
     } catch (error) {
-      console.log("getallproptype", error);
+      console.log("getallcatarea", error);
       res.status(500).send({
         message: "Something wrong on server",
         error,
@@ -21,32 +22,59 @@ module.exports = {
     }
   },
 
-  async addPropertyType(req, res) {
+  async addCatArea(req, res) {
     try {
       const userId = req.user.id;
-      const { propertyType } = req.body;
+      const { categoryArea } = req.body;
 
-      const newPropertyType = await db.Property_type.create({
+      const newCategoryArea = await db.Category_area.create({
         user_id: userId,
-        name: propertyType,
+        name: categoryArea,
       });
       res.status(201).send({
-        message: "Success add new property type",
-        data: newPropertyType,
+        message: "Success add new category area",
+        data: newCategoryArea,
       });
     } catch (error) {
-      console.log("errAddPropType", error);
+      console.log("errAddCatArea", error);
       res.status(500).send({ message: "Something wrong on server", error });
     }
   },
 
-  async getOneMyPropType(req, res) {
+  async getOneMyCatArea(req, res) {
     try {
       const id = Number(req.params.id);
       const userId = req.user.id;
-      const result = await db.Property_type.findOne({
-        where: { id: id, user_id: userId },
+      const result = await db.Category_area.findOne({
+        where: { id: id, user_id: userId, is_deleted: false },
         attributes: { exclude: ["createdAt", "updatedAt"] },
+      });
+
+      if (!result) {
+        return res.status(400).send({
+          message: "Category area not found",
+        });
+      }
+      res.status(200).send({
+        message: "Success get category area",
+        data: result,
+      });
+    } catch (error) {
+      console.log("myOneCatArea", error);
+      res.status(500).send({
+        message: "Something wrong on server",
+        error,
+      });
+    }
+  },
+
+  async editMyCatArea(req, res) {
+    try {
+      const { id } = req.params;
+      const userId = req.user.id;
+      const { newName } = req.body;
+      const result = await db.Category_area.findOne({
+        where: { id: id, user_id: userId, is_deleted: false },
       });
 
       if (!result) {
@@ -54,47 +82,20 @@ module.exports = {
           message: "Property type not found",
         });
       }
-      res.status(200).send({
-        message: "Success get property type",
-        data: result,
-      });
-    } catch (error) {
-      console.log("myOnePropType", error);
-      res.status(500).send({
-        message: "Something wrong on server",
-        error,
-      });
-    }
-  },
 
-  async editMyPropType(req, res) {
-    try {
-      const { id } = req.params;
-      const userId = req.user.id;
-      const { newName } = req.body;
-      const propType = await db.Property_type.findOne({
-        where: { id: id, user_id: userId },
-      });
+      await db.Category_area.update({ name: newName }, { where: { id: id } });
 
-      if (!propType) {
-        return res.status(400).send({
-          message: "Property type not found",
-        });
-      }
-
-      await db.Property_type.update({ name: newName }, { where: { id: id } });
-
-      const updatedPropType = await db.Property_type.findOne({
+      const updatedCatArea = await db.Category_area.findOne({
         where: { id: id, user_id: userId },
         attributes: { exclude: ["createdAt", "updatedAt"] },
       });
 
       res.status(201).send({
         message: "Success update property type name",
-        data: updatedPropType,
+        data: updatedCatArea,
       });
     } catch (error) {
-      console.log("editproptype", error);
+      console.log("editcatarea", error);
       res.status(500).send({
         message: "Something wrong on server",
         error,
@@ -107,23 +108,24 @@ module.exports = {
       const id = Number(req.params.id);
       const userId = req.user.id;
 
-      const propType = await db.Property_type.findOne({
+      const catArea = await db.Category_area.findOne({
         where: { id: id, user_id: userId },
       });
 
-      if (!propType) {
+      if (!catArea) {
         return res.status(400).send({
-          message: "Property type not found",
+          message: "Category area not found",
         });
       }
 
-      await propType.destroy();
+      catArea.is_deleted = true;
+      await catArea.save();
 
       return res.status(200).send({
-        message: "Property type successfuly deleted",
+        message: "Category area successfuly deleted",
       });
     } catch (error) {
-      console.log("deleteproptype", error);
+      console.log("deletecatarea", error);
       res.status(500).send({
         message: "Something wrong on server",
         error,
