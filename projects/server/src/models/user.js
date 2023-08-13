@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       verify_token: DataTypes.STRING,
       is_verified: DataTypes.BOOLEAN,
       otp: DataTypes.STRING,
-      otp_expired_time: DataTypes.DATE,
+      otp_created_time: DataTypes.STRING,
       otp_counter: DataTypes.INTEGER,
       forgot_token: DataTypes.STRING,
       email: DataTypes.STRING,
