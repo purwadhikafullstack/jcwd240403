@@ -68,9 +68,17 @@ function Register() {
         <TenantAuthSteps steps={steps} />
       </div>
       <div className={classNames(isUser ? "" : "mt-10")}>
-        <RegisterForm status={steps[0].status} />
+        <RegisterForm status={steps[0].status} 
+        isUser={isUser}
+        steps={steps}
+        handleRegister={handleRegister}
+        />
         <IdentityForm isHidden={isUser || steps[0].status === "current"} />
-        <Button onClick={handleRegister} label={buttonText} className={'mt-5'} />
+        <Button
+          onClick={handleRegister}
+          label={buttonText}
+          className={classNames("mt-5", isUser || steps[0].status === 'current' ? 'hidden' : 'block')}
+        />
       </div>
     </AuthLayout>
   );
