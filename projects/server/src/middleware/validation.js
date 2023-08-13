@@ -19,16 +19,23 @@ const validate = (validations) => {
 
 module.exports = {
   validateRegister: validate([
+    body("role").isIn(["USER", "TENANT"]).withMessage("Invalid user role"),
     body("name")
       .notEmpty()
       .withMessage("Name is required")
       .isLength({ max: 50 })
       .withMessage("Maximum character is 50"),
-    body("email").isEmail(),
-    body("phoneNumber").notEmpty(),
+    body("email")
+      .isEmail()
+      .withMessage("Please enter with email format")
+      .notEmpty()
+      .withMessage("Email is required"),
+    body("phoneNumber").notEmpty().withMessage("Phone number is required"),
     body("password")
+      .notEmpty()
+      .withMessage("Password is required")
       .isLength({ min: 8 })
-      .withMessage("minimum password length is 8 characters")
+      .withMessage("Minimum password length is 8 characters")
       .isStrongPassword({
         minSymbols: 0,
       })
@@ -37,15 +44,26 @@ module.exports = {
       )
       .custom((value, { req }) => {
         if (value !== req.body.confirmPassword) {
-          return false;
+          throw new Error("Confirm password does not match with password");
         }
         return true;
-      })
-      .withMessage("confirm password is not match with password"),
+      }),
+    body("confirmPassword")
+      .notEmpty()
+      .withMessage("Confirm password is required"),
+    body("file")
+      .if(body("role").equals("TENANT"))
+      .notEmpty()
+      .withMessage("ID card is required for TENANT role"),
   ]),
 
   validateLogin: validate([
+    body("role").isIn(["USER", "TENANT"]).withMessage("Invalid user role"),
     body("email").notEmpty().withMessage("Please fill in email").isEmail(),
-    body("password").notEmpty(),
+    body("password").notEmpty().withMessage("Pleade fill in password"),
+  ]),
+
+  validateVerify: validate([
+    body("otp").notEmpty().withMessage("Please input OTP"),
   ]),
 };
