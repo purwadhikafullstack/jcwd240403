@@ -27,17 +27,45 @@ module.exports = {
       const userId = req.user.id;
       const { categoryArea } = req.body;
 
-      const newCategoryArea = await db.Category_area.create({
-        user_id: userId,
-        name: categoryArea,
+      const [result, created] = await db.Category_area.findOrCreate({
+        where: { name: categoryArea.toLowerCase() },
+        defaults: { user_id: userId, is_deleted: false },
       });
-      res.status(201).send({
+
+      // If it's not newly created, check if it was previously deleted.
+      if (!created && result.is_deleted) {
+        await result.update({
+          user_id: userId,
+          is_deleted: false,
+        });
+
+        return res.status(200).send({
+          message: "Successfully created category.",
+          data: result,
+          condition: created,
+        });
+      }
+
+      // If it's not newly created and not deleted, then it's a regular existing entry.
+      if (!created) {
+        return res.status(200).send({
+          message: "The category area already exists",
+          data: result,
+          condition: created,
+        });
+      }
+
+      // If it was newly created.
+      return res.status(201).send({
         message: "Success add new category area",
-        data: newCategoryArea,
+        data: result,
+        condition: created,
       });
     } catch (error) {
       console.log("errAddCatArea", error);
-      res.status(500).send({ message: "Something wrong on server", error });
+      res
+        .status(500)
+        .send({ message: "Something went wrong on the server", error });
     }
   },
 
@@ -83,7 +111,10 @@ module.exports = {
         });
       }
 
-      await db.Category_area.update({ name: newName }, { where: { id: id } });
+      await db.Category_area.update(
+        { name: newName.toLowerCase() },
+        { where: { id: id } }
+      );
 
       const updatedCatArea = await db.Category_area.findOne({
         where: { id: id, user_id: userId },

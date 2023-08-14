@@ -178,9 +178,13 @@ module.exports = {
       const isValid = await bcrypt.compare(password, user.password);
 
       if (user && isValid) {
-        const token = jwt.sign({ id: user.id, role: user.role }, secretKey, {
-          expiresIn: "24hr",
-        });
+        const token = jwt.sign(
+          { id: user.id, role: user.role, email: user.email },
+          secretKey,
+          {
+            expiresIn: "24hr",
+          }
+        );
         res.status(200).send({
           message: "login success",
           role: user.role,

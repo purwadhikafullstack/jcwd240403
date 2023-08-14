@@ -26,7 +26,7 @@ function Login() {
         if (isRoleUser === isUser) {
           dispatch(addUser(data));
           saveToken(data.accessToken);
-          navigate(data.role === "USER" ? "/" : "/dashboard");
+          navigate("/");
         } else {
           setErrorMessage("You are not allowed, please make sure your role");
         }

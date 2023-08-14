@@ -11,6 +11,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { classNames } from "../../shared/utils";
 import ButtonWithLogo from "../buttons/ButtonWithLogo";
+import useToken from "../../shared/hooks/useToken";
 
 const navigation = [
   { name: "Property", href: "#", icon: BuildingLibraryIcon, current: true },
@@ -21,6 +22,8 @@ const navigation = [
 ];
 
 export default function DashboardSideBar({ children }) {
+  const { removeToken } = useToken();
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -178,8 +181,14 @@ export default function DashboardSideBar({ children }) {
                     alt=""
                   />
                   <span className="sr-only">Your profile</span>
-                  <span aria-hidden="true">Tom Cook</span>
+                  <span aria-hidden="true">User</span>
                 </a>
+                <button
+                  onClick={removeToken}
+                  className="text-white underline m-5"
+                >
+                  Logout
+                </button>
               </li>
             </ul>
           </nav>
@@ -206,6 +215,9 @@ export default function DashboardSideBar({ children }) {
             alt=""
           />
         </a>
+        <button onClick={removeToken} className="text-white underline mx-5">
+          Logout
+        </button>
       </div>
 
       <main className="py-10 lg:pl-72">

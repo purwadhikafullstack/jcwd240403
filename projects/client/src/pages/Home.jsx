@@ -22,40 +22,31 @@ function Home() {
   });
 
   const handleDayClick = (day, modifiers = {}) => {
-    // If the day is disabled, do nothing.
     if (modifiers.disabled) {
       return;
     }
 
-    // If the selected day is already part of the current range, reset the range.
     if (modifiers.selected) {
       setSelectedDays({ from: null, to: null });
       return;
     }
 
-    // If no "from" date is selected, set the clicked day as the "from" date.
     if (!selectedDays.from) {
       setSelectedDays({ from: day, to: null });
       return;
     }
 
-    // If the clicked day is before the "from" date, set the clicked day as the new "from" date,
-    // and reset the "to" date.
     if (isBefore(day, selectedDays.from)) {
       setSelectedDays({ from: day, to: null });
       return;
     }
 
-    // Otherwise, set the clicked day as the "to" date.
     setSelectedDays({ from: selectedDays.from, to: day });
   };
 
   const countNights = () => {
-    // The difference in days function from date-fns directly gives the difference
     const daysDifference = differenceInDays(selectedDays.to, selectedDays.from);
 
-    // Since the difference in days includes both the start and end day,
-    // subtract 1 to get the number of nights.
     return daysDifference;
   };
 
@@ -119,9 +110,12 @@ function Home() {
             />
           </div>
         </div>
-        {/* <div className="bg-yellow-500 h-[200px] absolute bottom-0 left-0 right-0">
-        Footer
-      </div> */}
+        {/* <div className="bg-primary h-[100px] absolute bottom-0 left-0 right-0 text-center">
+          <p className="pt-8">
+            Lorem ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet
+            ipsum dolor sit amet.
+          </p>
+        </div> */}
       </div>
     </MainContainer>
   );

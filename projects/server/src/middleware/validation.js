@@ -19,7 +19,7 @@ const validate = (validations) => {
 
 module.exports = {
   validateRegister: validate([
-    body("role").isIn(["USER", "TENANT"]).withMessage("Invalid user role"),
+    body("role").isIn(["USER", "TENANT"]).withMessage("Invalid role"),
     body("name")
       .notEmpty()
       .withMessage("Name is required")
@@ -60,10 +60,14 @@ module.exports = {
   validateLogin: validate([
     body("role").isIn(["USER", "TENANT"]).withMessage("Invalid user role"),
     body("email").notEmpty().withMessage("Please fill in email").isEmail(),
-    body("password").notEmpty().withMessage("Pleade fill in password"),
+    body("password").notEmpty().withMessage("Please fill in password"),
   ]),
 
   validateVerify: validate([
-    body("otp").notEmpty().withMessage("Please input OTP"),
+    body("otp")
+      .notEmpty()
+      .withMessage("Please input OTP")
+      .isLength(4)
+      .withMessage("OTP not complete"),
   ]),
 };
