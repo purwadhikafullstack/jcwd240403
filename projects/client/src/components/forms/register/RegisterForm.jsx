@@ -35,7 +35,7 @@ function RegisterForm({ status, isUser, steps, handleRegister, setFormData }) {
     validationSchema: validationSchema,
     onSubmit: (values) => {
       setFormData(values);
-      handleRegister();
+      handleRegister(values);
     },
   });
 

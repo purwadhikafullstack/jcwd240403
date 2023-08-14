@@ -190,7 +190,7 @@ module.exports = {
         return;
       } else {
         res.status(400).send({
-          message: "login failed, incorect username or password",
+          message: "Login failed, incorect email or password",
         });
       }
     } catch (error) {
@@ -233,8 +233,13 @@ module.exports = {
       user.otp_counter = null;
       await user.save();
 
+      const token = jwt.sign({ id: user.id, role: user.role }, secretKey, {
+        expiresIn: "24hr",
+      });
       res.status(200).send({
         message: "Verification process is success",
+        accessToken: token,
+        role: user.role,
       });
     } catch (error) {
       console.log("verify", error);
@@ -278,6 +283,35 @@ module.exports = {
     } catch (error) {
       console.log("resendotp", error);
       res.status(500).send({ message: "Something wrong on server" }), error;
+    }
+  },
+
+  async loginWithToken(req, res) {
+    try {
+      // Fetch the user data from the database
+      const user = await db.User.findOne({ where: { id: req.user.id } });
+      if (user) {
+        const token = jwt.sign({ id: user.id }, secretKey, {
+          expiresIn: "1hr",
+        });
+        res.status(200).json({
+          message: "Login success!",
+          data: {
+            email: user.email,
+            token: token,
+            role: user.role,
+          },
+        });
+      } else {
+        res.status(404).send({
+          message: "No user found with this ID.",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        message: "Internal server error",
+      });
     }
   },
 };

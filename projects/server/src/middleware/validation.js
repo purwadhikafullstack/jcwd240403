@@ -40,7 +40,7 @@ module.exports = {
         minSymbols: 0,
       })
       .withMessage(
-        "password must contain 1 uppercase, 1 lowercase and 1 numbers"
+        "Password must contain minimum 1 uppercase, 1 lowercase and 1 numbers"
       )
       .custom((value, { req }) => {
         if (value !== req.body.confirmPassword) {

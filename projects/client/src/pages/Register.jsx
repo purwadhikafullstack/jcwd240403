@@ -46,13 +46,14 @@ function Register() {
     setSteps(newSteps);
   };
 
-  const handleRegister = () => {
+  const handleRegister = (values) => {
     setErrorMessage("");
     if (isUser) {
       // Register User
+      console.log("form", formData);
       api
         .post("/auth/register", {
-          ...formData,
+          ...values,
           role: "USER",
         })
         .then(({ data }) => {

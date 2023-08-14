@@ -1,7 +1,8 @@
 import React from "react";
 import { classNames } from "../../shared/utils";
 
-function Button({ label, className, ...props }) {
+function Button({ label, ...props }) {
+  const { className } = props;
   return (
     <button
       type="submit"

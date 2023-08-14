@@ -29,4 +29,9 @@ router.post(
   verifying.verifyAccessToken,
   authController.resendOTP
 );
+router.get(
+  "/loginWithToken",
+  verifying.verifyAccessToken,
+  authController.loginWithToken
+);
 module.exports = router;

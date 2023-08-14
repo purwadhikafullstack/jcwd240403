@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import { PrivateRoute } from "./shared/router/PrivateRoute";
@@ -9,18 +9,32 @@ import Login from "./pages/Login";
 import MainContainer from "./components/layouts/MainContainer";
 import Register from "./pages/Register";
 import VerifyOTP from "./pages/VerifyOTP";
+import api from "./shared/api";
+import useToken from "./shared/hooks/useToken";
+import { useDispatch } from "react-redux";
+import { addUser } from "./store/auth/authSlice";
 
 function App() {
+  const { token } = useToken();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (token) {
+      api
+        .get("/auth/loginWithToken")
+        .then(({ data }) => {
+          dispatch(addUser(data.data));
+        })
+        .catch((err) => console.log("err", err));
+    }
+  }, [token, dispatch]);
+
   return (
     <Routes>
       <Route
         path="/"
-        element={
-          <MainContainer>
-            <Home />
-          </MainContainer>
-        }
+        element={<PrivateRoute path="/" roles={["USER"]} component={Home} />}
       />
+
       <Route
         path="/login"
         element={
@@ -38,7 +52,7 @@ function App() {
         }
       />
       <Route
-        path="/otp"
+        path="/verify/:token"
         element={
           <MainContainer>
             <VerifyOTP />
@@ -55,11 +69,17 @@ function App() {
       />
       <Route
         path="dashboard"
-        element={<PrivateRoute roles={["TENANT"]} component={Dashboard} />}
+        element={
+          <PrivateRoute
+            path="dashboard"
+            roles={["TENANT"]}
+            component={Dashboard}
+          />
+        }
       />
       <Route
         path="book"
-        element={<PrivateRoute roles={["USER"]} component={Book} />}
+        element={<PrivateRoute path="book" roles={["USER"]} component={Book} />}
       />
     </Routes>
   );

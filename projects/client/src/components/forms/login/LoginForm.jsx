@@ -8,11 +8,11 @@ const validationSchema = Yup.object({
     .email("Invalid email format")
     .required("Email is required"),
   password: Yup.string()
-    .min(6, "Password must be at least 6 characters long")
+    .min(8, "Password must be at least 8 characters long")
     .required("Password is required"),
 });
 
-function LoginForm() {
+function LoginForm({ handleLogin }) {
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -20,8 +20,7 @@ function LoginForm() {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log(values);
-      // Here you can handle form submission, like sending the data to the server.
+      handleLogin(values);
     },
   });
   return (
@@ -41,7 +40,9 @@ function LoginForm() {
             onBlur={formik.handleBlur}
           />
           {formik.touched.email && formik.errors.email ? (
-            <div className="text-red-500 text-sm mt-1">{formik.errors.email}</div>
+            <div className="text-red-500 text-sm mt-1">
+              {formik.errors.email}
+            </div>
           ) : null}
         </div>
       </div>
@@ -61,7 +62,9 @@ function LoginForm() {
             onBlur={formik.handleBlur}
           />
           {formik.touched.password && formik.errors.password ? (
-            <div className="text-red-500 text-sm mt-1">{formik.errors.password}</div>
+            <div className="text-red-500 text-sm mt-1">
+              {formik.errors.password}
+            </div>
           ) : null}
         </div>
       </div>
