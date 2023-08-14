@@ -2,7 +2,13 @@ import { Dialog, Transition } from "@headlessui/react";
 import React from "react";
 import { Fragment } from "react";
 
-export default function AuthModal({ isOpen, closeModal }) {
+export default function AuthModal({
+  isOpen,
+  closeModal,
+  title = "Registration Successful! 🎉",
+  message = "Thank you for signing up. Your account has been created successfully. Check your email to verify your account, and welcome aboard!",
+  buttonLabel = "Login",
+}) {
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
@@ -35,14 +41,10 @@ export default function AuthModal({ isOpen, closeModal }) {
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900"
                   >
-                    Registration Successful! 🎉
+                    {title}
                   </Dialog.Title>
                   <div className="mt-2">
-                    <p className="text-sm text-gray-500">
-                      Thank you for signing up. Your account has been created
-                      successfully. Check your email to verify your account, and
-                      welcome aboard!
-                    </p>
+                    <p className="text-sm text-gray-500">{message}</p>
                   </div>
 
                   <div className="mt-4">
@@ -51,7 +53,7 @@ export default function AuthModal({ isOpen, closeModal }) {
                       className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                       onClick={closeModal}
                     >
-                      Login
+                      {buttonLabel}
                     </button>
                   </div>
                 </Dialog.Panel>

@@ -253,7 +253,7 @@ module.exports = {
 
   async resendOTP(req, res) {
     try {
-      const email = req.user.email;
+      const { email } = req.body;
 
       const user = await db.User.findOne({
         where: { email: email },
@@ -277,13 +277,17 @@ module.exports = {
         otpTime.format("YYYY-MM-DD") === currentDay &&
         user.otp_counter >= 5
       ) {
-        return res
-          .status(400)
-          .send("You have reached the maximum OTP resend requests for today.");
+        return res.status(400).send({
+          message:
+            "You have reached the maximum OTP resend requests for today.",
+        });
       }
 
       await updateAndResendOTP(user);
-      res.status(200).send("Resend OTP success");
+
+      res
+        .status(200)
+        .send({ message: "Resend OTP success", otp_counter: user.otp_counter });
     } catch (error) {
       console.log("resendotp", error);
       res.status(500).send({ message: "Something wrong on server" }), error;

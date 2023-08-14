@@ -21,11 +21,8 @@ router.patch(
   authController.verify
 );
 
-router.post(
-  "/resend-otp",
-  verifying.verifyAccessToken,
-  authController.resendOTP
-);
+router.post("/resend-otp", authController.resendOTP);
+
 router.get(
   "/loginWithToken",
   verifying.verifyAccessToken,

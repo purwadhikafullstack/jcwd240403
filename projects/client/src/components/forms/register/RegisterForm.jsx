@@ -10,10 +10,10 @@ const validationSchema = Yup.object({
     .email("Invalid email format")
     .required("Email is required"),
   phoneNumber: Yup.string()
-    .matches(
-      /^(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/,
-      "Phone number is not valid"
-    )
+    // .matches(
+    //   /^(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/,
+    //   "Phone number is not valid"
+    // )
     .required("Phone number is required"),
   password: Yup.string()
     .min(8, "Password must be at least 8 characters long")
