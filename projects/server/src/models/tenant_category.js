@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Property_type extends Model {
+  class Tenant_Category extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,12 +13,13 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  Property_type.init({
+  Tenant_Category.init({
     user_id: DataTypes.INTEGER,
-    name: DataTypes.STRING
+    category_area_id: DataTypes.INTEGER,
+    is_active: DataTypes.BOOLEAN
   }, {
     sequelize,
-    modelName: 'Property_type',
+    modelName: 'Tenant_Category',
   });
-  return Property_type;
+  return Tenant_Category;
 };
