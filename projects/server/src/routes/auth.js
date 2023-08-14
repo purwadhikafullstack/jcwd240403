@@ -5,6 +5,7 @@ const upload = require("../middleware/multer");
 const { auth: authController } = require("../controller");
 const validation = require("../middleware/validation");
 const router = require("express").Router();
+const verifying = require("../middleware/auth");
 
 // getFields.any()
 
@@ -23,5 +24,9 @@ router.patch(
   authController.verify
 );
 
-router.post("/resend-otp/:email", authController.resendOTP);
+router.post(
+  "/resend-otp",
+  verifying.verifyAccessToken,
+  authController.resendOTP
+);
 module.exports = router;

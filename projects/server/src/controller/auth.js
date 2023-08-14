@@ -1,7 +1,7 @@
 const db = require("../models");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
+// const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const moment = require("moment-timezone");
 
@@ -94,11 +94,7 @@ module.exports = {
       const hashPassword = await bcrypt.hash(password, salt);
 
       // generate verify token
-      const verifyToken = crypto.randomBytes(16).toString("hex");
-
-      // generate otp time
-      // const time = moment().format("YYYY-MM-DD HH:mm:ss");
-      // console.log("time", time);
+      const verifyToken = jwt.sign({ email: email }, secretKey);
 
       const newUser = await db.User.create({
         role: role,
@@ -131,15 +127,15 @@ module.exports = {
         from: process.env.SMTP_USER,
         to: email,
         subject: "Welcome!",
-        text: `Hello ${name},
+        text: `Hello ${newProfile.full_name},
   
         Welcome to Innsight!
   
-        Your verification OTP is: ${otp}
+        Your verification OTP is: ${newUser.otp}
         This OTP will be expired in 24 hour. Do not share this OTP to anyone and keep it for yourself :).
         Please click the following link to complete your registration:
   
-        http://localhost:3000/verify/${verifyToken}
+        http://localhost:3000/verify/${newUser.verify_token}
   
   
         Thanks,
@@ -160,6 +156,7 @@ module.exports = {
           role: newUser.role,
           email: newUser.email,
           name: newProfile.full_name,
+          verify_token: newUser.verify_token,
           document_identity: newProfile.document_identity,
         },
       });
@@ -247,7 +244,7 @@ module.exports = {
 
   async resendOTP(req, res) {
     try {
-      const email = req.params.email;
+      const email = req.user.email;
 
       const user = await db.User.findOne({
         where: { email: email },

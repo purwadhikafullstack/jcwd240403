@@ -18,7 +18,7 @@ module.exports = {
         const payload = jwt.verify(token, secretKey);
         if (!payload) {
           res.status(401).send({
-            message: "Access token verification failed",
+            message: "Token verification failed",
           });
           return;
         }
@@ -26,7 +26,7 @@ module.exports = {
         next();
       } catch (error) {
         res.status(401).send({
-          message: "invalid access token",
+          message: "invalid token",
           error,
         });
       }
