@@ -9,33 +9,32 @@ const validationSchema = Yup.object({
   email: Yup.string()
     .email("Invalid email format")
     .required("Email is required"),
-  phone: Yup.string()
+  phoneNumber: Yup.string()
     .matches(
       /^(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/,
       "Phone number is not valid"
     )
     .required("Phone number is required"),
   password: Yup.string()
-    .min(6, "Password must be at least 6 characters long")
+    .min(8, "Password must be at least 8 characters long")
     .required("Password is required"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password"), null], "Passwords must match")
     .required("Confirm password is required"),
 });
 
-function RegisterForm({ status, isUser, steps, handleRegister }) {
+function RegisterForm({ status, isUser, steps, handleRegister, setFormData }) {
   const formik = useFormik({
     initialValues: {
       name: "",
       email: "",
-      phone: "",
+      phoneNumber: "",
       password: "",
       confirmPassword: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log(values);
-      // Handle form submission logic here
+      setFormData(values);
       handleRegister();
     },
   });
@@ -92,19 +91,21 @@ function RegisterForm({ status, isUser, steps, handleRegister }) {
 
         <div className="space-y-2">
           <input
-            id="phone"
-            name="phone"
+            id="phoneNumber"
+            name="phoneNumber"
             type="tel"
-            autoComplete="phone"
+            autoComplete="phoneNumber"
             placeholder="0812345678"
             required
-            value={formik.values.phone}
+            value={formik.values.phoneNumber}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
           />
-          {formik.touched.phone && formik.errors.phone ? (
-            <span className="text-red-500 text-sm">{formik.errors.phone}</span>
+          {formik.touched.phoneNumber && formik.errors.phoneNumber ? (
+            <span className="text-red-500 text-sm">
+              {formik.errors.phoneNumber}
+            </span>
           ) : null}
         </div>
 
