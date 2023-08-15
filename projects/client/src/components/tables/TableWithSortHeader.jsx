@@ -2,74 +2,16 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import Pagination from "../pagination/Pagination";
 import Button from "../buttons/Button";
 
-const mockData = [
-  {
-    id: "1",
-    name: "Hotel Mulia",
-    type: "hotel",
-    location: "Jakarta Selatan",
-  },
-  {
-    id: "2",
-    name: "Bandung Hotel",
-    type: "hotel",
-    location: "Bandung",
-  },
-  {
-    id: "3",
-    name: "Cozy Guest House",
-    type: "guest house",
-    location: "Jakarta Selatan",
-  },
-  {
-    id: "4",
-    name: "Jakarta Apartment",
-    type: "apartment",
-    location: "Jakarta Barat",
-  },
-  {
-    id: "5",
-    name: "Bandung Guest House",
-    type: "guest house",
-    location: "Bandung",
-  },
-  {
-    id: "6",
-    name: "Luxury Hotel",
-    type: "hotel",
-    location: "Jakarta Pusat",
-  },
-  {
-    id: "7",
-    name: "Apartment City View",
-    type: "apartment",
-    location: "Jakarta Utara",
-  },
-  {
-    id: "8",
-    name: "Bandung Apartment",
-    type: "apartment",
-    location: "Bandung",
-  },
-  {
-    id: "9",
-    name: "Jakarta Guest House",
-    type: "guest house",
-    location: "Jakarta Timur",
-  },
-  {
-    id: "10",
-    name: "Comfort Hotel",
-    type: "hotel",
-    location: "Jakarta Selatan",
-  },
-];
-
-export default function TableWithSortHeader({ title, description }) {
-  const handleClickRow = (id) => {
-    // navigate href #
-    console.log(id);
-  };
+export default function TableWithSortHeader({
+  title,
+  description,
+  addHandler,
+  data,
+  onEdit,
+  onDelete,
+}) {
+  const dataTable = data ? data?.map(({ id, ...rest }) => rest) : [];
+  const headers = dataTable.length > 0 ? Object.keys(dataTable[0]) : null;
 
   return (
     <div className="flex flex-col bg-white p-4 rounded">
@@ -80,112 +22,91 @@ export default function TableWithSortHeader({ title, description }) {
           </h1>
           <p className="mt-2 text-sm text-gray-700">{description}</p>
         </div>
-        <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-          <Button label="Add Properties" className={'h-11'}/>
+        <div className="mt-4 sm:ml-16 sm:flex-none sm:w-auto w-full flex justify-end">
+          <Button
+            onClick={addHandler}
+            label={`Add ${title}`}
+            className={"w-[150px]"}
+          />
         </div>
       </div>
-      <div className="mt-8 mb-4 flow-root">
-        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <table className="min-w-full divide-y divide-gray-300">
-              <thead>
-                <tr>
-                  <th
-                    scope="col"
-                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
-                  >
-                    <a href="#" className="group inline-flex">
-                      ID
-                      <span className="invisible ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
-                        <ChevronDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                  >
-                    <a href="#" className="group inline-flex">
-                      Name
-                      <span className="invisible ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
-                        <ChevronDownIcon
-                          className="invisible ml-2 h-5 w-5 flex-none rounded text-gray-400 group-hover:visible group-focus:visible"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                  >
-                    <a href="#" className="group inline-flex">
-                      Property Type
-                      <span className="invisible ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
-                        <ChevronDownIcon
-                          className="invisible ml-2 h-5 w-5 flex-none rounded text-gray-400 group-hover:visible group-focus:visible"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                  >
-                    <a href="#" className="group inline-flex">
-                      Location
-                      <span className="invisible ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
-                        <ChevronDownIcon
-                          className="invisible ml-2 h-5 w-5 flex-none rounded text-gray-400 group-hover:visible group-focus:visible"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th scope="col" className="relative py-3.5 pl-3 pr-0">
-                    <span className="sr-only">Edit</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {mockData.map(({ id, location, name, type }) => (
-                  <tr
-                    onClick={() => handleClickRow(id)}
-                    key={id}
-                    className="cursor-pointer"
-                  >
-                    <td className="whitespace-nowrap capitalize py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                      {id}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize">
-                      {name}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize">
-                      {type}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize">
-                      {location}
-                    </td>
-                    <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm sm:pr-0">
-                      <a
-                        href="#"
-                        className="text-sky-600 hover:text-sky-900"
-                      >
-                        Edit<span className="sr-only">, {id}</span>
-                      </a>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {dataTable.length !== 0 ? (
+        <>
+          <div className="mt-8 mb-4 flow-root">
+            <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+              <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                <table className="min-w-full divide-y divide-gray-300">
+                  <thead>
+                    <tr>
+                      {headers.map((header) => (
+                        <th
+                          scope="col"
+                          className={
+                            header === "id"
+                              ? "py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                              : "px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                          }
+                          key={header}
+                        >
+                          <button className="group inline-flex capitalize">
+                            {header}
+                            <span className="invisible ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
+                              <ChevronDownIcon
+                                className="h-5 w-5"
+                                aria-hidden="true"
+                              />
+                            </span>
+                          </button>
+                        </th>
+                      ))}
+                      <th scope="col" className="relative py-3.5 pl-3 pr-0">
+                        <span className="sr-only">Edit</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                    {dataTable.map((res, idx) => (
+                      <tr key={idx} className="cursor-pointer">
+                        {headers.map((header) => (
+                          <td
+                            className={`${
+                              header === "id"
+                                ? "whitespace-nowrap capitalize py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
+                                : "whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize"
+                            }`}
+                            key={header}
+                          >
+                            {res[header]}
+                          </td>
+                        ))}
+                        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm sm:pr-0 space-x-4">
+                          <button
+                            onClick={() => onEdit(data[idx])}
+                            className="text-sky-600 hover:text-sky-900"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => onDelete(data[idx])}
+                            className="text-white bg-rose-400 px-2 py-1 rounded hover:bg-rose-500"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <Pagination />
+          {/* <Pagination /> */}
+        </>
+      ) : (
+        <p className="mt-40 text-2xl text-center w-full">
+          Your data input seems to be empty. Let's fill it in!
+        </p>
+      )}
     </div>
   );
 }

@@ -118,7 +118,6 @@ const changePassword = async (req, res) => {
       if (password == password_confirmation) {
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(password, salt);
-        // Change everyone without a last name to "Doe"
         // memasukan data update
         const updatePassword = await db.User.update(
           { password: hashPassword },
