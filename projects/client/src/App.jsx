@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Outlet, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import Book from "./pages/user/Book";
 // import Dashboard from "./pages/tenant/Dashboard";
@@ -9,7 +9,7 @@ import Register from "./pages/Register";
 import VerifyOTP from "./pages/VerifyOTP";
 import useToken from "./shared/hooks/useToken";
 import { useDispatch } from "react-redux";
-import { addUser, selectCurrentUser } from "./store/auth/authSlice";
+import { addUser } from "./store/auth/authSlice";
 import jwt from "jwt-decode";
 import {
   AuthenticatedRoute,
@@ -17,7 +17,6 @@ import {
   OpenRoute,
 } from "./shared/router/RouteGuards";
 import HomeOrDashboard from "./shared/router/HomeOrDashboard";
-import { useSelector } from "react-redux";
 import DashboardSideBar from "./components/sidebar/DashboardSideBar";
 import CategoryArea from "./pages/tenant/CategoryArea";
 import ChangePassword from "./pages/user/ChangePassword";
@@ -25,7 +24,6 @@ import ChangePassword from "./pages/user/ChangePassword";
 function App() {
   const { token } = useToken();
   const dispatch = useDispatch();
-  const user = useSelector(selectCurrentUser);
 
   useEffect(() => {
     if (token) {
@@ -37,10 +35,7 @@ function App() {
   return (
     <Routes>
       {/* Route for the base path to decide between Home and Dashboard */}
-      <Route
-        path="/"
-        element={user?.role === "TENANT" ? <DashboardSideBar /> : <Outlet />}
-      >
+      <Route path="/" element={<DashboardSideBar />}>
         <Route index element={<HomeOrDashboard />} />
       </Route>
 
