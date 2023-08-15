@@ -5,6 +5,7 @@ const {
   getAbsolutePathPublicFile,
 } = require("../utils/file");
 const fs = require("fs");
+const bcrypt = require("bcryptjs");
 
 const getUser = async (req, res) => {
   try {
@@ -98,8 +99,70 @@ const updateProfilePicture = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  try {
+    const { old_password, password, password_confirmation } = req.body;
+    const token = req.user;
+    const user_id = token.id;
+    const result = await db.User.findOne({
+      where: {
+        id: user_id,
+      },
+    });
+    // cek password lama
+    const isValid = await bcrypt.compare(old_password, result.password);
+    // result : mencari data user ada apa tidak
+    //isValid : mencocokan old_password yang dimasukan sama dengan password lama di DB
+    if (result && isValid) {
+      // cek password confirmation
+      if (password == password_confirmation) {
+        const salt = await bcrypt.genSalt(10);
+        const hashPassword = await bcrypt.hash(password, salt);
+        // Change everyone without a last name to "Doe"
+        // memasukan data update
+        const updatePassword = await db.User.update(
+          { password: hashPassword },
+          {
+            where: {
+              id: user_id,
+            },
+          }
+        );
+        if (updatePassword) {
+          res.send({
+            status: true,
+            message: "Update Password Success",
+          });
+        } else {
+          return res.send({
+            message: "Update Password Fail Please Try Again",
+            status: false,
+          });
+        }
+      } else {
+        return res.send({
+          message: "Password Confirmation Does Not Match",
+          status: false,
+        });
+      }
+    } else {
+      return res.send({
+        message: "wrong Password",
+        status: false,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "fatal error on server",
+      error,
+    });
+  }
+};
+
 module.exports = {
   getUser,
   updateProfile,
   updateProfilePicture: updateProfilePicture,
+  changePassword,
 };
