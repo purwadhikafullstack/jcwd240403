@@ -3,11 +3,16 @@ import MobileSidebar from "./MobileSideBar";
 import DesktopSideBar from "./DesktopSideBar";
 import TopBar from "./TopBar";
 import { Outlet } from "react-router-dom";
+import { selectCurrentUser } from "../../../store/auth/authSlice";
+import { useSelector } from "react-redux";
 
 export default function DashboardSideBar() {
+  const user = useSelector(selectCurrentUser);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  return (
+  console.log(user?.role === "TENANT", user?.role);
+
+  return user?.role === "TENANT" ? (
     <div>
       <MobileSidebar
         isOpen={sidebarOpen}
@@ -22,5 +27,7 @@ export default function DashboardSideBar() {
         </div>
       </main>
     </div>
+  ) : (
+    <Outlet />
   );
 }

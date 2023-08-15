@@ -1,13 +1,16 @@
-import React, { Fragment } from "react";
+import React from "react";
 import useToken from "../../../shared/hooks/useToken";
-import { Popover, Transition } from "@headlessui/react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logout } from "../../../store/auth/authSlice";
 
 function ProfileSection() {
   const navigate = useNavigate("/");
   const { removeToken } = useToken();
+  const dispatch = useDispatch();
 
   const onLogout = () => {
+    dispatch(logout());
     removeToken();
     navigate("/login");
   };
