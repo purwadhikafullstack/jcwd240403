@@ -69,6 +69,33 @@ module.exports = {
     }
   },
 
+  async getAllMyCatArea(req, res) {
+    try {
+      const userId = req.user.id;
+
+      const result = await db.Category_area.findAll({
+        where: { user_id: userId, is_deleted: false },
+      });
+
+      if (!result) {
+        return res.status(200).send({
+          data: [],
+        });
+      }
+
+      res.status(200).send({
+        message: "Success get all my category area",
+        data: result,
+      });
+    } catch (error) {
+      console.log("getallmine", error);
+      res.status(500).send({
+        message: "Something wrong on server",
+        error,
+      });
+    }
+  },
+
   async getOneMyCatArea(req, res) {
     try {
       const id = Number(req.params.id);

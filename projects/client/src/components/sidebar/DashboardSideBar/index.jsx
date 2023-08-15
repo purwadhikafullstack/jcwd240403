@@ -2,8 +2,9 @@ import { useState } from "react";
 import MobileSidebar from "./MobileSideBar";
 import DesktopSideBar from "./DesktopSideBar";
 import TopBar from "./TopBar";
+import { Outlet } from "react-router-dom";
 
-export default function DashboardSideBar({ children }) {
+export default function DashboardSideBar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -16,7 +17,9 @@ export default function DashboardSideBar({ children }) {
       <DesktopSideBar />
       <TopBar openSideBar={() => setSidebarOpen(true)} />
       <main className="py-10 lg:pl-72">
-        <div className="px-4 sm:px-6 lg:px-8">{children}</div>
+        <div className="px-4 sm:px-6 lg:px-8">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

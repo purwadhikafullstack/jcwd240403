@@ -5,7 +5,6 @@ const slice = createSlice({
   initialState: { user: null, isAuthenticated: false },
   reducers: {
     addUser: (state, { payload }) => {
-      console.log("payload", payload);
       state.user = {
         email: payload.email,
         role: payload.role,

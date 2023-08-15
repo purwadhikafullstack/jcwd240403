@@ -5,6 +5,13 @@ const authMiddleware = require("../middleware/auth");
 
 router.get("/all", catAreaController.getAllCatArea);
 
+router.get(
+  "/mine",
+  authMiddleware.verifyAccessToken,
+  authMiddleware.verifyTenant,
+  catAreaController.getAllMyCatArea
+);
+
 router.post(
   "/create",
   authMiddleware.verifyAccessToken,

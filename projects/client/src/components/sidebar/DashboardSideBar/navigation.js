@@ -9,18 +9,22 @@ import {
 const navigation = [
   {
     name: "Property",
-    href: "#",
+    href: "/",
     icon: BuildingLibraryIcon,
     current: true,
     children: [
-      { name: "Engineering", href: "#" },
-      { name: "Human Resources", href: "#" },
-      { name: "Customer Success", href: "#" },
+      { name: "Property List", href: "/" },
+      { name: "Category Area", href: "/category-area" },
     ],
   },
-  { name: "Room", href: "#", icon: KeyIcon, current: false },
+  { name: "Room", href: "/room", icon: KeyIcon, current: false },
   { name: "Price", href: "#", icon: CurrencyDollarIcon, current: false },
-  { name: "Order", href: "#", icon: DocumentDuplicateIcon, current: false },
+  {
+    name: "Order",
+    href: "#",
+    icon: DocumentDuplicateIcon,
+    current: false,
+  },
   { name: "Reports", href: "#", icon: ChartPieIcon, current: false },
 ];
 

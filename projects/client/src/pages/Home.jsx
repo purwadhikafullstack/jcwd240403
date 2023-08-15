@@ -71,9 +71,14 @@ function Home() {
               </button>
             </div>
           ) : (
-            <Link to="/login" className="text-primary underline">
-              Login
-            </Link>
+            <div className="flex flex-row space-x-4">
+              <Link to="/login" className="text-primary underline">
+                Login
+              </Link>
+              <Link to="/register" className="text-primary underline">
+                Register
+              </Link>
+            </div>
           )}
         </div>
         {/* banner */}

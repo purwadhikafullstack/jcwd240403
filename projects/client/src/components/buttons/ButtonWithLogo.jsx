@@ -6,13 +6,15 @@ function ButtonWithLogo({
   textSize = "text-2xl",
   type = "white",
   align = "column",
+  ...props
 }) {
   const logo =
     type !== "dark" ? "/assets/logo_white.png" : "/assets/logo_black.png";
   return (
-    <div
+    <button
+      {...props}
       className={classNames(
-        "flex items-center justify-center",
+        "flex items-center justify-center cursor-pointer",
         align === "column" ? "flex-col" : "flex-row"
       )}
     >
@@ -31,7 +33,7 @@ function ButtonWithLogo({
       >
         innsight
       </span>
-    </div>
+    </button>
   );
 }
 

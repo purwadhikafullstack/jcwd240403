@@ -1,6 +1,6 @@
 import jwt from "jwt-decode";
 import Home from "../../pages/Home";
-import Dashboard from "../../pages/tenant/Dashboard";
+import PropertyList from "../../pages/tenant/PropertyList";
 import useToken from "../hooks/useToken";
 
 const HomeOrDashboard = () => {
@@ -12,7 +12,7 @@ const HomeOrDashboard = () => {
   const decodedToken = jwt(token);
 
   if (decodedToken.role === "USER") return <Home />;
-  if (decodedToken.role === "TENANT") return <Dashboard />;
+  if (decodedToken.role === "TENANT") return <PropertyList />;
 
   // Default fallback to Home if role doesn't match any conditions
   return <Home />;
