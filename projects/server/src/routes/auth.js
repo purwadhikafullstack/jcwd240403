@@ -1,16 +1,14 @@
-var multer = require("multer");
-var getFields = multer();
-
-const upload = require("../middleware/multer");
+const multerMiddleware = require("../middleware/multer");
 const { auth: authController } = require("../controller");
 const validation = require("../middleware/validation");
 const router = require("express").Router();
+const verifying = require("../middleware/auth");
 
 // getFields.any()
 
 router.post(
   "/register",
-  upload.single("file"),
+  multerMiddleware,
   validation.validateRegister,
   authController.register
 );
@@ -23,5 +21,11 @@ router.patch(
   authController.verify
 );
 
-router.post("/resend-otp/:email", authController.resendOTP);
+router.post("/resend-otp", authController.resendOTP);
+
+router.get(
+  "/loginWithToken",
+  verifying.verifyAccessToken,
+  authController.loginWithToken
+);
 module.exports = router;

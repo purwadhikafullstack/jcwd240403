@@ -44,6 +44,7 @@ function AuthLayout({ title, isUser, setIsUser, children, page }) {
           )}
         >
           <ButtonWithLogo
+            onClick={() => navigate("/")}
             imageSize={
               page === "login" ? "w-14 h-14" : "h-8 w-8 md:w-10 md:h-10"
             }
@@ -75,7 +76,7 @@ function AuthLayout({ title, isUser, setIsUser, children, page }) {
         >
           <div
             className={classNames(
-              "bg-white p-4 shadow-2xl rounded-lg w-full overflow-hidden overflow-y-auto max-h-[550px]",
+              "bg-white p-4 shadow-2xl rounded-lg w-full overflow-hidden overflow-y-auto max-h-[700px]",
               page === "login" ? "max-w-[350px]" : "mt-16 max-w-[450px]"
             )}
           >

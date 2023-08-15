@@ -19,7 +19,7 @@ const validate = (validations) => {
 
 module.exports = {
   validateRegister: validate([
-    body("role").isIn(["USER", "TENANT"]).withMessage("Invalid user role"),
+    body("role").isIn(["USER", "TENANT"]).withMessage("Invalid role"),
     body("name")
       .notEmpty()
       .withMessage("Name is required")
@@ -40,7 +40,7 @@ module.exports = {
         minSymbols: 0,
       })
       .withMessage(
-        "password must contain 1 uppercase, 1 lowercase and 1 numbers"
+        "Password must contain minimum 1 uppercase, 1 lowercase and 1 numbers"
       )
       .custom((value, { req }) => {
         if (value !== req.body.confirmPassword) {
@@ -51,19 +51,23 @@ module.exports = {
     body("confirmPassword")
       .notEmpty()
       .withMessage("Confirm password is required"),
-    body("file")
-      .if(body("role").equals("TENANT"))
-      .notEmpty()
-      .withMessage("ID card is required for TENANT role"),
+    // body("file")
+    //   .if(body("role").equals("TENANT"))
+    //   .notEmpty()
+    //   .withMessage("ID card is required for TENANT role"),
   ]),
 
   validateLogin: validate([
     body("role").isIn(["USER", "TENANT"]).withMessage("Invalid user role"),
     body("email").notEmpty().withMessage("Please fill in email").isEmail(),
-    body("password").notEmpty().withMessage("Pleade fill in password"),
+    body("password").notEmpty().withMessage("Please fill in password"),
   ]),
 
   validateVerify: validate([
-    body("otp").notEmpty().withMessage("Please input OTP"),
+    body("otp")
+      .notEmpty()
+      .withMessage("Please input OTP")
+      .isLength(4)
+      .withMessage("OTP not complete"),
   ]),
 };

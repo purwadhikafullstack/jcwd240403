@@ -10,7 +10,6 @@ const storage = multer.diskStorage({
     const fileName = `PIMG-${Date.now()}${Math.round(
       Math.random() * 10000000
     )}.${file.mimetype.split("/")[1]}`;
-    // const fileName = `PIMG-` + Date.now() + Math.round( Math.random() * 10000000 ) + `.` + file.mimetype.split("/")[1]
     cb(null, fileName);
   },
 });
@@ -22,16 +21,32 @@ const fileFilter = (req, file, cb) => {
     case "image/jpeg":
     case "image/gif":
     case "image/png":
-      if (file.size > 1 * 1000 * 1000) {
-        cb(new Error("File size is too big"));
-        return;
-      }
       cb(null, true);
       break;
     default:
-      cb(new Error("File format is not matched"));
+      cb(new Error("File format is not matched"), false);
   }
 };
 
+const uploadMiddleware = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 1 * 1000 * 1000 }, // Limit set to 1MB
+}).single("file");
 
-module.exports = multer({ storage, fileFilter });
+module.exports = (req, res, next) => {
+  uploadMiddleware(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      // A Multer error occurred when uploading.
+      if (err.code === "LIMIT_FILE_SIZE") {
+        err.message = "File size is too big";
+      }
+      return res.status(400).send({ error: err.message });
+    } else if (err) {
+      // An unknown error occurred when uploading.
+      return res.status(400).send({ error: err.message });
+    }
+    // Everything went fine.
+    next();
+  });
+};

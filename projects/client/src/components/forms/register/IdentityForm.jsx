@@ -1,8 +1,7 @@
 import { PhotoIcon } from "@heroicons/react/24/solid";
 import React from "react";
 
-function IdentityForm({ isHidden }) {
-  const [file, setFile] = React.useState(null);
+function IdentityForm({ isHidden, file, setFile }) {
   const [preview, setPreview] = React.useState(null);
 
   // create a preview as a side effect, whenever selected file is changed

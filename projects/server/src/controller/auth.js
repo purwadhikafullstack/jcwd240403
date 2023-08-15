@@ -1,7 +1,7 @@
 const db = require("../models");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
+// const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const moment = require("moment-timezone");
 
@@ -94,11 +94,7 @@ module.exports = {
       const hashPassword = await bcrypt.hash(password, salt);
 
       // generate verify token
-      const verifyToken = crypto.randomBytes(16).toString("hex");
-
-      // generate otp time
-      // const time = moment().format("YYYY-MM-DD HH:mm:ss");
-      // console.log("time", time);
+      const verifyToken = jwt.sign({ email: email }, secretKey);
 
       const newUser = await db.User.create({
         role: role,
@@ -131,15 +127,15 @@ module.exports = {
         from: process.env.SMTP_USER,
         to: email,
         subject: "Welcome!",
-        text: `Hello ${name},
+        text: `Hello ${newProfile.full_name},
   
         Welcome to Innsight!
   
-        Your verification OTP is: ${otp}
+        Your verification OTP is: ${newUser.otp}
         This OTP will be expired in 24 hour. Do not share this OTP to anyone and keep it for yourself :).
         Please click the following link to complete your registration:
   
-        http://localhost:3000/verify/${verifyToken}
+        http://localhost:3000/verify/${newUser.verify_token}
   
   
         Thanks,
@@ -160,6 +156,7 @@ module.exports = {
           role: newUser.role,
           email: newUser.email,
           name: newProfile.full_name,
+          verify_token: newUser.verify_token,
           document_identity: newProfile.document_identity,
         },
       });
@@ -181,9 +178,13 @@ module.exports = {
       const isValid = await bcrypt.compare(password, user.password);
 
       if (user && isValid) {
-        const token = jwt.sign({ id: user.id, role: user.role }, secretKey, {
-          expiresIn: "24hr",
-        });
+        const token = jwt.sign(
+          { id: user.id, role: user.role, email: user.email },
+          secretKey,
+          {
+            expiresIn: "24hr",
+          }
+        );
         res.status(200).send({
           message: "login success",
           role: user.role,
@@ -193,7 +194,7 @@ module.exports = {
         return;
       } else {
         res.status(400).send({
-          message: "login failed, incorect username or password",
+          message: "Login failed, incorect email or password",
         });
       }
     } catch (error) {
@@ -236,8 +237,13 @@ module.exports = {
       user.otp_counter = null;
       await user.save();
 
+      const token = jwt.sign({ id: user.id, role: user.role }, secretKey, {
+        expiresIn: "24hr",
+      });
       res.status(200).send({
         message: "Verification process is success",
+        accessToken: token,
+        role: user.role,
       });
     } catch (error) {
       console.log("verify", error);
@@ -247,7 +253,7 @@ module.exports = {
 
   async resendOTP(req, res) {
     try {
-      const email = req.params.email;
+      const { email } = req.body;
 
       const user = await db.User.findOne({
         where: { email: email },
@@ -271,16 +277,49 @@ module.exports = {
         otpTime.format("YYYY-MM-DD") === currentDay &&
         user.otp_counter >= 5
       ) {
-        return res
-          .status(400)
-          .send("You have reached the maximum OTP resend requests for today.");
+        return res.status(400).send({
+          message:
+            "You have reached the maximum OTP resend requests for today.",
+        });
       }
 
       await updateAndResendOTP(user);
-      res.status(200).send("Resend OTP success");
+
+      res
+        .status(200)
+        .send({ message: "Resend OTP success", otp_counter: user.otp_counter });
     } catch (error) {
       console.log("resendotp", error);
       res.status(500).send({ message: "Something wrong on server" }), error;
+    }
+  },
+
+  async loginWithToken(req, res) {
+    try {
+      // Fetch the user data from the database
+      const user = await db.User.findOne({ where: { id: req.user.id } });
+      if (user) {
+        const token = jwt.sign({ id: user.id }, secretKey, {
+          expiresIn: "1hr",
+        });
+        res.status(200).json({
+          message: "Login success!",
+          data: {
+            email: user.email,
+            token: token,
+            role: user.role,
+          },
+        });
+      } else {
+        res.status(404).send({
+          message: "No user found with this ID.",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        message: "Internal server error",
+      });
     }
   },
 };

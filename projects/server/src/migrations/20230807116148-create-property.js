@@ -16,10 +16,10 @@ module.exports = {
           key: "id",
         },
       },
-      property_type_id: {
+      category_area_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: "Property_types",
+          model: "Category_areas",
           key: "id",
         },
       },
