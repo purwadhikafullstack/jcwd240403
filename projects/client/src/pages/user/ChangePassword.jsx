@@ -1,4 +1,6 @@
 import React from "react";
+import TextInput from "../../components/textInputs/TextInput";
+import Button from "../../components/buttons/Button";
 
 function ChangePassword() {
     return (

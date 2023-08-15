@@ -1,6 +1,6 @@
 import React from "react";
 import Button from "../../components/buttons/Button"
-import TextInput from "../../components/forms/TextInput";
+import TextInput from "../../components/textInputs/TextInput";
 
 function Profiling() {
     return (

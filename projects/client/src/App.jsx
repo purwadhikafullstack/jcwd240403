@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Outlet, Route, Routes } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import Book from "./pages/user/Book";
-import Dashboard from "./pages/tenant/Dashboard";
+// import Dashboard from "./pages/tenant/Dashboard";
 import Profiling from "./pages/user/Profiling";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -20,6 +20,7 @@ import HomeOrDashboard from "./shared/router/HomeOrDashboard";
 import { useSelector } from "react-redux";
 import DashboardSideBar from "./components/sidebar/DashboardSideBar";
 import CategoryArea from "./pages/tenant/CategoryArea";
+import ChangePassword from "./pages/user/ChangePassword";
 
 function App() {
   const { token } = useToken();
@@ -46,6 +47,12 @@ function App() {
       {/* USER Authenticated Routes */}
       <Route path="book" element={<AuthenticatedRoute roles={["USER"]} />}>
         <Route index element={<Book />} />
+      </Route>
+      <Route path="profile" element={<AuthenticatedRoute roles={["USER"]} />}>
+        <Route index element={<Profiling />} />
+      </Route>
+      <Route path="password" element={<AuthenticatedRoute roles={["USER"]} />}>
+        <Route index element={<ChangePassword />} />
       </Route>
 
       {/* TENANT Authenticated Routes */}
