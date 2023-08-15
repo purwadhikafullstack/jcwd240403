@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import { Outlet, Route, Routes } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import Book from "./pages/user/Book";
+import Dashboard from "./pages/tenant/Dashboard";
+import Profiling from "./pages/user/Profiling";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import VerifyOTP from "./pages/VerifyOTP";
@@ -55,6 +57,7 @@ function App() {
           <Route index element={<CategoryArea />} />
         </Route>
       </Route>
+
 
       {/* Non-authenticated Routes */}
       <Route path="/login" element={<NonAuthenticatedRoute />}>
