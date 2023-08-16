@@ -11,10 +11,16 @@ const getUser = async (req, res) => {
   try {
     const token = req.user;
     const user_id = token.id;
+    db.Profile.belongsTo(db.User, { foreignKey: "user_id" });
     const profile = await db.Profile.findOne({
       where: {
         user_id: Number(user_id),
       },
+      include: [
+        {
+          model: db.User,
+        },
+      ],
     });
     res.send({
       message: "success get profile",
@@ -34,7 +40,15 @@ const updateProfile = async (req, res) => {
     // const user = req.user;
     const { user } = req;
     const user_id = user.id;
-    const { full_name, birth_date, gender, phone_number } = req.body;
+    const { full_name, birth_date, gender, phone_number, email } = req.body;
+    const updateEmail = await db.User.update(
+      {
+        email: email,
+      },
+      {
+        where: { id: user_id },
+      }
+    );
     const results = await db.Profile.update(
       {
         full_name: full_name,
