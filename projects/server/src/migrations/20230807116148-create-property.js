@@ -16,10 +16,10 @@ module.exports = {
           key: "id",
         },
       },
-      category_area_id: {
+      property_type_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: "Category_areas",
+          model: "Property_types",
           key: "id",
         },
       },
@@ -30,11 +30,21 @@ module.exports = {
           key: "id",
         },
       },
+      category_area_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: "Category_areas",
+          key: "id",
+        },
+      },
       name: {
         type: Sequelize.STRING,
       },
       description: {
         type: Sequelize.STRING,
+      },
+      is_active: {
+        type: Sequelize.BOOLEAN,
       },
       createdAt: {
         allowNull: false,
