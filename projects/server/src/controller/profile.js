@@ -69,6 +69,7 @@ const updateProfile = async (req, res) => {
     }
 
     return res.send({
+      status: true,
       message: "update profile success",
       data: req.body,
     });
@@ -101,6 +102,7 @@ const updateProfilePicture = async (req, res) => {
     }
 
     return res.send({
+      status: true,
       message: "update profile picture success",
       data: req.body,
     });
