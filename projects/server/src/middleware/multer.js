@@ -33,6 +33,9 @@ const uploadMiddleware = multer({
   fileFilter,
   limits: { fileSize: 1 * 1000 * 1000 }, // Limit set to 1MB
 }).single("file");
+// console.log();
+// .single("file");
+// array("file", 10);
 
 module.exports = (req, res, next) => {
   uploadMiddleware(req, res, function (err) {

@@ -24,6 +24,8 @@ resetOtpCounterJob();
 app.use("/api/auth", routes.auth);
 app.use("/api/category-area", routes.categoryArea);
 
+app.use("/api/property", routes.property);
+
 // app.get("/api", (req, res) => {
 //   res.send(`Hello, this is my API`);
 // });

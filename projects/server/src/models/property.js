@@ -9,6 +9,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Property.belongsTo(models.User, { foreignKey: "user_id" });
+      Property.belongsTo(models.Property_type, {
+        foreignKey: "property_type_id",
+      });
+      Property.belongsTo(models.Location, { foreignKey: "location_id" });
+      Property.belongsTo(models.Category_area, {
+        foreignKey: "category_area_id",
+      });
+      Property.hasMany(models.Room, { foreignKey: "property_id" });
     }
   }
   Property.init(

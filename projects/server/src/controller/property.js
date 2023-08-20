@@ -5,18 +5,12 @@ module.exports = {
     try {
       const userId = req.user.id;
       const { name, locationId, propTypeId, catAreaId, description } = req.body;
-      let imageURL = "";
-
-      if (req.file) {
-        imageURL = setFromFileNameToDBValue(req.file.filename);
-        console.log(imageURL);
-      }
 
       const newProperty = await db.Property.create({
         user_id: userId,
-        property_type_id: propTypeId,
-        location_id: locationId,
-        category_area_id: catAreaId,
+        property_type_id: Number(propTypeId),
+        location_id: Number(locationId),
+        category_area_id: Number(catAreaId),
         name: name,
         description: description,
       });
@@ -32,5 +26,47 @@ module.exports = {
         error,
       });
     }
+  },
+
+  async addPropPhotos(req, res) {
+    try {
+      // const userId = req.user.id;
+      const { propId } = req.body;
+      let imageURL = "";
+
+      if (req.files) {
+        imageURL = setFromFileNameToDBValue(req.files.filename);
+        console.log(imageURL);
+      }
+      const result = await db.Picture.create({
+        property_id: propId,
+        img: imageURL,
+      });
+      res.send(200).status({
+        message: "Adding photos to property success",
+        data: result,
+      });
+    } catch (error) {
+      console.log("addphotos", error);
+      res.status(500).send({
+        message: "Something wrong on server",
+        error,
+      });
+    }
+  },
+
+  async editProperty(req, res) {
+    try {
+    } catch (error) {}
+  },
+
+  async editPropPhotos(req, res) {
+    try {
+    } catch (error) {}
+  },
+
+  async deleteProperty(req, res) {
+    try {
+    } catch (error) {}
   },
 };

@@ -71,6 +71,7 @@ module.exports = {
         imageURL = setFromFileNameToDBValue(req.file.filename);
         console.log(imageURL);
       }
+      console.log("onauth", imageURL, req.file);
 
       if (password !== confirmPassword)
         return res.status(400).send({
