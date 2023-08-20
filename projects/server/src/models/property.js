@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "category_area_id",
       });
       Property.hasMany(models.Room, { foreignKey: "property_id" });
+      Property.hasMany(models.Picture, { foreignKey: "property_id" });
     }
   }
   Property.init(

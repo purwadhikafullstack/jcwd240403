@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Category_area",
+      timestamps: false,
     }
   );
   return Category_area;
