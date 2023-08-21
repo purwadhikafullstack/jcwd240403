@@ -10,6 +10,13 @@ router.get(
   propertyController.getAllMyProp
 );
 
+router.get(
+  "/one/:id",
+  authMiddleware.verifyAccessToken,
+  authMiddleware.verifyTenant,
+  propertyController.getOneMyProp
+);
+
 router.post(
   "/create",
   authMiddleware.verifyAccessToken,
@@ -23,6 +30,14 @@ router.post(
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyTenant,
   propertyController.addPropPhotos
+);
+
+router.put(
+  "/edit-photos",
+  multerMiddleware,
+  authMiddleware.verifyAccessToken,
+  authMiddleware.verifyTenant,
+  propertyController.editPropPhotos
 );
 
 module.exports = router;
