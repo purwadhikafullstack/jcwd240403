@@ -1,9 +1,15 @@
 const db = require("../models");
+const {
+  setFromFileNameToDBValue,
+  getFilenameFromDbValue,
+  getAbsolutePathPublicFile,
+} = require("../utils/file");
+const fs = require("fs");
 
 module.exports = {
   async createRoom(req, res) {
     try {
-      const { propId, name, description, basePrice } = req.body;
+      const { propId, name, description, price } = req.body;
       let imageURL = setFromFileNameToDBValue(req.file.filename);
 
       const result = await db.Room.create({
@@ -11,7 +17,7 @@ module.exports = {
         name: name,
         room_img: imageURL,
         description: description,
-        base_price: Number(basePrice),
+        base_price: Number(price),
         status: "AVAILABLE",
       });
       res.status(200).send({
@@ -31,7 +37,7 @@ module.exports = {
     try {
       const { propId } = req.body;
       const result = await db.Room.findAll({
-        where: { property_id: propId },
+        where: { property_id: propId, deletedAt: null },
         include: [{ model: db.Property, attributes: ["id", "name"] }],
       });
       res.status(200).send({
@@ -48,10 +54,10 @@ module.exports = {
 
   async getOneRoom(req, res) {
     try {
-      const { id } = req.params.id;
+      const id = req.params.id;
       const { propId } = req.body;
 
-      const result = await db.Room.finOne({
+      const result = await db.Room.findOne({
         where: { id: id, property_id: propId },
       });
       res.status(200).send({

@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       property_id: DataTypes.INTEGER,
       name: DataTypes.STRING,
       room_img: DataTypes.STRING,
+      description: DataTypes.STRING,
       base_price: DataTypes.INTEGER,
       status: DataTypes.ENUM("AVAILABLE", "UNAVAILABLE"),
     },
