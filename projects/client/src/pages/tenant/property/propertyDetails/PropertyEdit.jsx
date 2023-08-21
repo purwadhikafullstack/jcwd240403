@@ -48,14 +48,15 @@ function PropertyEdit() {
   return (
     <div className="mt-8 mb-4 flow-root space-y-4">
       {/* Form input */}
-      <PropertyDetailForm
+      {/* <PropertyDetailForm
         ref={propertyDetailRef}
         initialValues={initialValues}
         onSubmit={handleFormSubmit}
         propertyTypes={propertyTypes}
         locations={locations}
         categoryAreas={categoryAreas}
-      />
+      /> */}
+      <p>Property Edit</p>
     </div>
   );
 }

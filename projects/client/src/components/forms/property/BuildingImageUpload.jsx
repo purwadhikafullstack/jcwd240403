@@ -67,7 +67,7 @@ function BuildingImageUpload({ images, onImagesChange }) {
           >
             <button
               onClick={() => handleDeleteImage(index)}
-              className="absolute -top-2.5 -right-2.5 z-10 w-7 h-7 rounded-full border bg-white"
+              className="absolute -top-2.5 -right-2.5 z-10 md:w-7 md:h-7 h-5 w-5 rounded-full border bg-white"
             >
               <XMarkIcon className="text-red-400" />
             </button>
