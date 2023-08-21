@@ -1,12 +1,21 @@
 import React, { useState } from "react";
 import Button from "../../components/buttons/Button"
 import TextInput from "../../components/textInputs/TextInput";
-import axios, { Axios } from "axios";
+import axios from "axios";
 import { useEffect } from "react";
 import MainContainer from "../../components/layouts/MainContainer";
 import { toast } from "react-hot-toast"
 
 function Profiling() {
+    const [full_name, setFull_name] = useState("")
+    const [birth_date, setBirth_date] = useState("")
+    const [gender, setGender] = useState("")
+    const [phone_number, setPhone_number] = useState("")
+    const [email, setEmail] = useState("")
+    const [foto, setFoto] = useState("")
+    const [fototemp, setFototemp] = useState("https://tse1.mm.bing.net/th?id=OIP.yYUwl3GDU07Q5J5ttyW9fQHaHa&pid=Api&rs=1&c=1&qlt=95&h=180")
+    const [editable, setEditable] = useState(true)
+
     const updateProfile = async (e) => {
         e.preventDefault()
         const data = {
@@ -24,6 +33,7 @@ function Profiling() {
         }).then(res => {
             const data = res.data
             if (data.status) {
+                setEditable(true)
                 toast.success(data.message)
             } else {
                 toast.error(data.message)
@@ -46,18 +56,18 @@ function Profiling() {
         setPhone_number(data.phone_number)
         setEmail(data.User.email)
         setFoto(`${process.env.REACT_APP_API_BASE_URL}${data.profile_picture}`)
+        setFototemp(`${process.env.REACT_APP_API_BASE_URL}${data.profile_picture}`)
     }
-    const [full_name, setFull_name] = useState("")
-    const [birth_date, setBirth_date] = useState("")
-    const [gender, setGender] = useState("")
-    const [phone_number, setPhone_number] = useState("")
-    const [email, setEmail] = useState("")
-    const [foto, setFoto] = useState("")
-    const [fototemp, setFototemp] = useState(null)
+
+
+    const switchEdit = async (e) => {
+        e.preventDefault()
+        setEditable(false)
+    }
 
     const changeImage = async (e) => {
         if (e.target.files) {
-            console.log(e.target.files)
+
             setFoto(e.target.files[0])
             setFototemp(URL.createObjectURL(e.target.files[0]))
         }
@@ -76,9 +86,17 @@ function Profiling() {
                     authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             }).then(res => {
-                const data = res.data
-                toast.success(data.message)
 
+                const data = res.data
+                if (data.message) {
+                    toast.success(data.message)
+                }
+
+            }).catch((error) => {
+                setFoto(null)
+                if (error.response.data.error) {
+                    toast.error(error.response.data.error)
+                }
             })
 
         }
@@ -121,7 +139,7 @@ function Profiling() {
                         <div className="md:w-1/3">
                             <TextInput placeholder={'Full Name'} value={full_name} onChange={(e) => {
                                 setFull_name(e.target.value)
-                            }} required={true} />
+                            }} required={true} disabled={editable} />
                         </div>
                     </div>
                     <div className="md:flex md:items-center mb-6">
@@ -131,7 +149,7 @@ function Profiling() {
                             </label>
                         </div>
                         <div className="md:w-1/3">
-                            <select defaultValue={gender} name="gender" id="gender" required={true} onChange={(e) => {
+                            <select defaultValue={gender} disabled={editable} name="gender" id="gender" required={true} onChange={(e) => {
                                 setGender(e.target.value)
                             }}>
                                 <option value="MALE">Male</option>
@@ -148,7 +166,7 @@ function Profiling() {
                         <div className="md:w-1/3">
                             <TextInput placeholder={'Birth Date '} value={birth_date} type={"date"} onChange={(e) => {
                                 setBirth_date(e.target.value)
-                            }} required={true} />
+                            }} required={true} disabled={editable} />
                         </div>
                     </div>
                     <div className="md:flex md:items-center mb-6">
@@ -160,7 +178,7 @@ function Profiling() {
                         <div className="md:w-1/3">
                             <TextInput placeholder={'Phone Number'} value={phone_number} onChange={(e) => {
                                 setPhone_number(e.target.value)
-                            }} required={true} />
+                            }} required={true} disabled={editable} />
                         </div>
                     </div>
                     <div className="md:flex md:items-center mb-6">
@@ -172,12 +190,22 @@ function Profiling() {
                         <div className="md:w-1/3">
                             <TextInput placeholder={'Email'} value={email} onChange={(e) => {
                                 setEmail(e.target.value)
-                            }} required={true} />
+                            }} required={true} disabled={editable} />
                         </div>
                     </div>
                     <div className="flex justify-center">
                         <div className="p-4">
-                            <Button label={'Save Changes'}></Button>
+                            {
+                                editable
+                                    ?
+                                    <>
+                                        <Button type="button" label={'Edit'} onClick={switchEdit}> </Button>
+                                    </>
+                                    :
+                                    <>
+                                        <Button label={'Save Changes'}></Button>
+                                    </>
+                            }
                         </div>
                     </div>
                 </form>

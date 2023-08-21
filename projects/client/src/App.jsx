@@ -20,6 +20,7 @@ import HomeOrDashboard from "./shared/router/HomeOrDashboard";
 import DashboardSideBar from "./components/sidebar/DashboardSideBar";
 import CategoryArea from "./pages/tenant/CategoryArea";
 import ChangePassword from "./pages/user/ChangePassword";
+import VerifyEmail from "./pages/user/VerifyEmail";
 
 function App() {
   const { token } = useToken();
@@ -49,6 +50,9 @@ function App() {
       <Route path="password" element={<AuthenticatedRoute roles={["USER"]} />}>
         <Route index element={<ChangePassword />} />
       </Route>
+      <Route path="/verify-email/:otp/:email" element={<AuthenticatedRoute roles={["USER"]} />}>
+        <Route index element={<VerifyEmail />} />
+      </Route>
 
       {/* TENANT Authenticated Routes */}
       <Route
@@ -71,6 +75,7 @@ function App() {
       <Route path="/verify/:token" element={<NonAuthenticatedRoute />}>
         <Route index element={<VerifyOTP />} />
       </Route>
+
 
       {/* Open Routes */}
       <Route path="*" element={<OpenRoute />}>
