@@ -32,12 +32,26 @@ router.post(
   propertyController.addPropPhotos
 );
 
-router.put(
-  "/edit-photos",
+router.patch(
+  "/edit-property/:id",
+  authMiddleware.verifyAccessToken,
+  authMiddleware.verifyTenant,
+  propertyController.editProperty
+);
+
+router.patch(
+  "/edit-photos/:id",
   multerMiddleware,
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyTenant,
   propertyController.editPropPhotos
+);
+
+router.delete(
+  "/property/:id",
+  authMiddleware.verifyAccessToken,
+  authMiddleware.verifyTenant,
+  propertyController.deleteProperty
 );
 
 module.exports = router;

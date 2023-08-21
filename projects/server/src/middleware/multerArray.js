@@ -31,7 +31,7 @@ const fileFilter = (req, file, cb) => {
 const uploadMiddleware = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 1 * 1000 * 1000 }, // Limit set to 1MB
+  limits: { fileSize: 1 * 1000 * 1000 },
 }).array("files", 6);
 
 module.exports = (req, res, next) => {
@@ -40,10 +40,13 @@ module.exports = (req, res, next) => {
       // A Multer error occurred when uploading.
       if (err.code === "LIMIT_FILE_SIZE") {
         err.message = "File size is too big";
+      } else if (err.code === "LIMIT_UNEXPECTED_FILE") {
+        err.message = "Maximun file to upload is 6";
       }
       return res.status(400).send({ error: err.message });
     } else if (err) {
       // An unknown error occurred when uploading.
+
       return res.status(400).send({ error: err.message });
     }
     // Everything went fine.

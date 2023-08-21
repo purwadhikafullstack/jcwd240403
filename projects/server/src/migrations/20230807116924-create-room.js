@@ -16,15 +16,17 @@ module.exports = {
           key: "id",
         },
       },
-      room_type_id: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: "Room_types",
-          key: "id",
-        },
-      },
       name: {
         type: Sequelize.STRING,
+      },
+      room_img: {
+        type: Sequelize.STRING,
+      },
+      description: {
+        type: Sequelize.STRING,
+      },
+      base_price: {
+        type: Sequelize.INTEGER,
       },
       status: {
         type: Sequelize.ENUM("AVAILABLE", "UNAVAILABLE"),
@@ -35,6 +37,10 @@ module.exports = {
       },
       updatedAt: {
         allowNull: false,
+        type: Sequelize.DATE,
+      },
+      deletedAt: {
+        allowNull: true,
         type: Sequelize.DATE,
       },
     });
