@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import Button from "../../../components/buttons/Button";
-import api from "../../../shared/api";
-import PropertyDetailForm from "../../../components/forms/property/PropertyDetailForm";
+import api from "../../../../shared/api";
+import PropertyDetailForm from "../../../../components/forms/property/PropertyDetailForm";
+import { useNavigate } from "react-router-dom";
+import PropertyLayout from "../../../../components/layouts/PropertyLayout";
 
 function PropertyEdit() {
   const propertyDetailRef = useRef();
@@ -45,36 +46,16 @@ function PropertyEdit() {
   };
 
   return (
-    <div className="flex flex-col bg-white p-4 rounded">
-      <div className="sm:flex sm:items-center">
-        <div className="sm:flex-auto">
-          <h1 className="text-base font-semibold leading-6 text-gray-900">
-            Edit Property
-          </h1>
-          <p className="mt-2 text-sm text-gray-700">
-            Edit your property details
-          </p>
-        </div>
-        <div className="mt-4 sm:ml-16 sm:flex-none sm:w-auto w-full flex justify-end">
-          <Button
-            onClick={() => propertyDetailRef.current.handleSubmit()}
-            label={"Save Changes"}
-            className={"w-[150px]"}
-          />
-        </div>
-      </div>
-
-      <div className="mt-8 mb-4 flow-root space-y-4">
-        {/* Form input */}
-        <PropertyDetailForm
-          ref={propertyDetailRef}
-          initialValues={initialValues}
-          onSubmit={handleFormSubmit}
-          propertyTypes={propertyTypes}
-          locations={locations}
-          categoryAreas={categoryAreas}
-        />
-      </div>
+    <div className="mt-8 mb-4 flow-root space-y-4">
+      {/* Form input */}
+      <PropertyDetailForm
+        ref={propertyDetailRef}
+        initialValues={initialValues}
+        onSubmit={handleFormSubmit}
+        propertyTypes={propertyTypes}
+        locations={locations}
+        categoryAreas={categoryAreas}
+      />
     </div>
   );
 }

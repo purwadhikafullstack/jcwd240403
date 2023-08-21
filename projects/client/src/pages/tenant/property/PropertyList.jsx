@@ -28,7 +28,7 @@ function PropertyList() {
 
   const onSelectHandler = (id) => {
     console.log("Select", id);
-    navigate(`/property/${id}`)
+    navigate(`/property/${id}/`)
   };
 
   return (
