@@ -20,6 +20,9 @@ import HomeOrDashboard from "./shared/router/HomeOrDashboard";
 import DashboardSideBar from "./components/sidebar/DashboardSideBar";
 import CategoryArea from "./pages/tenant/CategoryArea";
 import ChangePassword from "./pages/user/ChangePassword";
+import PropertyEdit from "./pages/tenant/property/PropertyEdit";
+import PropertyAdd from "./pages/tenant/property/PropertyAdd";
+import RoomList from "./pages/tenant/room/RoomList";
 
 function App() {
   const { token } = useToken();
@@ -52,6 +55,24 @@ function App() {
 
       {/* TENANT Authenticated Routes */}
       <Route
+        path="property"
+        element={<AuthenticatedRoute roles={["TENANT"]} />}
+      >
+        <Route path=":propertyId" element={<DashboardSideBar />}>
+          <Route index element={<PropertyEdit />} />
+        </Route>
+        <Route path="add" element={<DashboardSideBar />}>
+          <Route index element={<PropertyAdd />} />
+        </Route>
+      </Route>
+
+      <Route path="room" element={<AuthenticatedRoute roles={["TENANT"]} />}>
+        <Route path="*" element={<DashboardSideBar />}>
+          <Route index element={<RoomList />} />
+        </Route>
+      </Route>
+
+      <Route
         path="category-area"
         element={<AuthenticatedRoute roles={["TENANT"]} />}
       >
@@ -59,7 +80,6 @@ function App() {
           <Route index element={<CategoryArea />} />
         </Route>
       </Route>
-
 
       {/* Non-authenticated Routes */}
       <Route path="/login" element={<NonAuthenticatedRoute />}>

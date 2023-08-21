@@ -10,8 +10,6 @@ export default function DashboardSideBar() {
   const user = useSelector(selectCurrentUser);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  console.log(user?.role === "TENANT", user?.role);
-
   return user?.role === "TENANT" ? (
     <div>
       <MobileSidebar

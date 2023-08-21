@@ -6,6 +6,16 @@ import { Link, useLocation } from "react-router-dom";
 
 function NavigationItem({ item }) {
   const { pathname } = useLocation();
+
+  // Helper function to check if the pathname includes the item's href.
+  const isActiveLink = (href) => {
+    // For root path, also highlight if pathname starts with "/property/"
+    // Check if the pathname includes the item's href
+
+    if (href === "/")
+      return pathname === "/" || pathname.startsWith("/property/");
+    return pathname.includes(href);
+  };
   return (
     <li key={item.name}>
       {!item.children ? (
@@ -13,12 +23,15 @@ function NavigationItem({ item }) {
           to={item.href}
           className={classNames(
             item.current ? "bg-gray-50" : "hover:bg-gray-50",
-            item.href === pathname ? "bg-gray-50 text-primary" : "",
-            "group flex gap-x-3 rounded-md p-2 text-sm w-full leading-6 font-semibold text-white hover:text-primary"
+            isActiveLink(item.href) ? "bg-gray-50 text-primary" : "text-white",
+            "group flex gap-x-3 rounded-md p-2 text-sm w-full leading-6 font-semibold hover:text-primary"
           )}
         >
           <item.icon
-            className="h-6 w-6 shrink-0 text-white group-hover:text-primary"
+            className={classNames(
+              "h-6 w-6 shrink-0",
+              isActiveLink(item.href) ? "bg-gray-50 text-primary" : "text-white"
+            )}
             aria-hidden="true"
           />
           {item.name}
@@ -31,11 +44,19 @@ function NavigationItem({ item }) {
                 as="a"
                 className={classNames(
                   item.current ? "bg-gray-50" : "hover:bg-gray-50",
+                  isActiveLink(item.href) || pathname.includes('/category-area')
+                    ? "text-primary"
+                    : "text-white bg-transparent",
                   "flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold text-primary"
                 )}
               >
                 <item.icon
-                  className="h-6 w-6 shrink-0 text-primary"
+                  className={classNames(
+                    "h-6 w-6 shrink-0",
+                    isActiveLink(item.href)|| pathname.includes('/category-area')
+                      ? "bg-gray-50 text-primary"
+                      : "text-white"
+                  )}
                   aria-hidden="true"
                 />
                 {item.name}
@@ -50,12 +71,11 @@ function NavigationItem({ item }) {
               <Disclosure.Panel as="ul" className="mt-3 space-y-2 px-2">
                 {item.children.map((subItem) => (
                   <li key={subItem.name}>
-                    {/* 44px */}
                     <Link
                       to={subItem.href}
                       className={classNames(
                         subItem.current ? "bg-gray-50" : "hover:bg-gray-50",
-                        subItem.href === pathname
+                        isActiveLink(subItem.href)
                           ? "bg-gray-50 text-primary"
                           : "text-white",
                         "block rounded-md py-2 pr-2 pl-9 text-sm leading-6  hover:text-primary"
