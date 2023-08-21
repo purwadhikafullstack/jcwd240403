@@ -10,19 +10,23 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Room.belongsTo(models.Property, { foreignKey: "property_id" });
-      Room.belongsTo(models.Room_type, { foreignKey: "room_type_id" });
+      Room.hasMany(models.Room_status, { foreignKey: "room_id" });
+      Room.hasMany(models.Special_price, { foreignKey: "room_id" });
     }
   }
   Room.init(
     {
       property_id: DataTypes.INTEGER,
-      room_type_id: DataTypes.INTEGER,
       name: DataTypes.STRING,
+      room_img: DataTypes.STRING,
+      base_price: DataTypes.INTEGER,
       status: DataTypes.ENUM("AVAILABLE", "UNAVAILABLE"),
     },
     {
       sequelize,
       modelName: "Room",
+      paranoid: true,
+      timestamps: true,
     }
   );
   return Room;

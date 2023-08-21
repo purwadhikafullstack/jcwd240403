@@ -1,3 +1,4 @@
+const { dirname } = require("path");
 const db = require("../models");
 const {
   setFromFileNameToDBValue,
@@ -11,7 +12,7 @@ module.exports = {
     try {
       const userId = req.user.id;
       const result = await db.Property.findAll({
-        where: { user_id: userId },
+        where: { user_id: userId, deletedAt: null },
         include: [
           {
             model: db.Location,
@@ -99,6 +100,7 @@ module.exports = {
         category_area_id: Number(catAreaId),
         name: name,
         description: description,
+        is_active: true,
       });
 
       res.status(200).send({
@@ -116,21 +118,21 @@ module.exports = {
 
   async addPropPhotos(req, res) {
     try {
-      // const userId = req.user.id;
+      const userId = req.user.id;
       const { propId } = req.body;
-      const property = await db.Property.findByPk(propId);
+      const property = await db.Property.findOne({
+        where: { id: propId, user_id: userId },
+      });
       if (!property) {
-        return res.status(400).send({ message: "Invalid propId provided" });
+        return res.status(400).send({ message: "No property found" });
       }
 
       let images = req.files.map((file) => ({
         img: setFromFileNameToDBValue(file.filename),
-        property_id: Number(propId),
+        property_id: propId,
       }));
 
       const result = await db.Picture.bulkCreate(images);
-
-      console.log("images", images);
 
       res.status(200).send({
         message: "Adding photos to property success",
@@ -158,13 +160,19 @@ module.exports = {
         return res.status(400).send({ message: "Property doesnt exist" });
       }
 
-      const edited = await db.Property.update({
-        where: { user_id: userId, id: id },
-        name: name,
-        location_id: locationId,
-        property_type_id: propTypeId,
-        category_area_id: catAreaId,
-        description: description,
+      const editProp = await db.Property.update(
+        {
+          name: name,
+          location_id: locationId,
+          property_type_id: propTypeId,
+          category_area_id: catAreaId,
+          description: description,
+        },
+        { where: { user_id: userId, id: id } }
+      );
+
+      const edited = await db.Property.findOne({
+        where: { id: id, user_id: userId },
       });
 
       res.status(200).send({
@@ -182,6 +190,7 @@ module.exports = {
 
   async editPropPhotos(req, res) {
     try {
+      const propId = req.params.id;
       const imageIds = req.body.imageIds.split(",").map((id) => Number(id));
       console.log("EDITPHOTO", imageIds);
 
@@ -195,21 +204,32 @@ module.exports = {
 
       for (let i = 0; i < req.files.length; i++) {
         const imageId = imageIds[i];
-        const imageRecord = await db.Picture.findByPk(imageId);
+        const imageRecord = await db.Picture.findOne({
+          where: {
+            id: imageId,
+            property_id: propId,
+          },
+        });
+        console.log("imageRecord", imageRecord);
 
         if (!imageRecord) {
-          continue; // Skip if no matching record is found, but you can also handle this differently.
+          return res.status(400).send({
+            message: "Photo not found",
+          });
         }
 
-        // Optionally: Remove the old image from the filesystem
-        const oldImagePath = imageRecord.getDataValue("img");
-        const oldImage = getFilenameFromDbValue(oldImagePath);
-        if (fs.existsSync(oldImage)) {
-          fs.unlinkSync(getAbsolutePathPublicFile(oldImage));
-        }
-
-       
+        const oldImage = imageRecord.getDataValue("img");
+        // console.log("OLD IMAGE PATH", oldImage);
+        const oldImageFile = getFilenameFromDbValue(oldImage);
+        // console.log("OLD IMAGE", oldImageFile);
+        const coba = getAbsolutePathPublicFile(oldImageFile);
+        console.log("COBA", coba);
         imageRecord.img = setFromFileNameToDBValue(req.files[i].filename);
+
+        if (imageRecord) {
+          fs.unlinkSync(getAbsolutePathPublicFile(oldImageFile));
+        }
+
         await imageRecord.save();
         updatedImages.push(imageRecord);
       }
@@ -229,6 +249,33 @@ module.exports = {
 
   async deleteProperty(req, res) {
     try {
-    } catch (error) {}
+      const id = Number(req.params.id);
+      const userId = req.user.id;
+      const property = await db.Property.findOne({
+        where: { id: id, user_id: userId },
+      });
+
+      if (!property) {
+        return res.status(200).send({
+          message: "Property not found",
+        });
+      }
+
+      const deleteNow = await db.Property.destroy({
+        where: { id: id, user_id: userId },
+      });
+
+      res.status(200).send({
+        message: "Success",
+        data: property,
+        deleted: deleteNow,
+      });
+    } catch (error) {
+      console.log("deleteprop", error);
+      res.status(500).send({
+        message: "Something wrong on server",
+        error,
+      });
+    }
   },
 };
