@@ -9,15 +9,17 @@ const {
   changePassword,
 } = require("../controller/profile");
 
-router.get("/profile", verifying.verifyAccessToken, getUser);
+router.get("/", verifying.verifyAccessToken, getUser);
 
-router.patch("profile", verifying.verifyAccessToken, updateProfile);
+router.patch("/", verifying.verifyAccessToken, updateProfile);
 
 router.patch(
-  "/profile/picture",
+  "/picture",
   verifying.verifyAccessToken,
   multerMiddleware,
   updateProfilePicture
 );
 
-router.patch("/profile/password", verifying.verifyAccessToken, changePassword);
+router.patch("/password", verifying.verifyAccessToken, changePassword);
+
+module.exports = router;

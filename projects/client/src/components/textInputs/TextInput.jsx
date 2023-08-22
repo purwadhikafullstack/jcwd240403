@@ -9,6 +9,9 @@ const TextInput = ({
   placeholder,
   error,
   className,
+  value,
+  pattern,
+  onChange = () => { }
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   return (
@@ -20,8 +23,10 @@ const TextInput = ({
           placeholder={placeholder}
           className={`w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300 ${className}`}
           disabled={disabled}
-          pattern="[0-9]*"
+          pattern={pattern}
           required={required}
+          value={value}
+          onChange={onChange}
         />
         {type === "password" && (
           <button

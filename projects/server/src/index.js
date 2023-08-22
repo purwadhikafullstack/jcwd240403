@@ -23,6 +23,7 @@ resetOtpCounterJob();
 
 app.use("/api/auth", routes.auth);
 app.use("/api/category-area", routes.categoryArea);
+app.use("/api/profile", routes.profile);
 
 app.use("/api/property", routes.property);
 app.use("/api/room", routes.room);

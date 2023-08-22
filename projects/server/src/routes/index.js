@@ -3,6 +3,7 @@ const categoryArea = require("./categoryArea");
 const property = require("./property");
 const shared = require("./shared");
 const room = require("./room");
+const profile = require("./profile");
 
 module.exports = {
   auth,
@@ -10,4 +11,5 @@ module.exports = {
   property,
   shared,
   room,
+  profile,
 };

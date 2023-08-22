@@ -6,15 +6,24 @@ const {
 } = require("../utils/file");
 const fs = require("fs");
 const bcrypt = require("bcryptjs");
+const nodemailer = require("nodemailer");
+const moment = require("moment-timezone");
+require("dotenv").config();
 
 const getUser = async (req, res) => {
   try {
     const token = req.user;
     const user_id = token.id;
+    db.Profile.belongsTo(db.User, { foreignKey: "user_id" });
     const profile = await db.Profile.findOne({
       where: {
         user_id: Number(user_id),
       },
+      include: [
+        {
+          model: db.User,
+        },
+      ],
     });
     res.send({
       message: "success get profile",
@@ -34,7 +43,64 @@ const updateProfile = async (req, res) => {
     // const user = req.user;
     const { user } = req;
     const user_id = user.id;
-    const { full_name, birth_date, gender, phone_number } = req.body;
+    const { full_name, birth_date, gender, phone_number, email } = req.body;
+    const cekEmail = await db.User.findOne({
+      where: {
+        email: email,
+      },
+    });
+    if (cekEmail) {
+      return res.send({
+        status: false,
+        message: "Email Already Used",
+      });
+    }
+
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+
+    let transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    let mailOptions = {
+      from: process.env.SMTP_USER,
+      to: email,
+      subject: "Verify Email",
+      text: `Verify Email Request
+
+      Please Verify Your Email by Clicking Link Below
+    
+
+    http://localhost:3000/verify-email/${otp}/${email}
+
+
+
+    Thanks,
+    Innsight Team`,
+    };
+
+    await transporter.sendMail(mailOptions, function (err, info) {
+      if (err) {
+        console.log("TRANSPORTER_ERR", err, mailOptions);
+      } else {
+        console.log("Email sent", info);
+      }
+    });
+
+    const updateEmail = await db.User.update(
+      {
+        email: email,
+        is_verified: false,
+        otp: otp,
+      },
+      {
+        where: { id: user_id },
+      }
+    );
     const results = await db.Profile.update(
       {
         full_name: full_name,
@@ -55,6 +121,7 @@ const updateProfile = async (req, res) => {
     }
 
     return res.send({
+      status: true,
       message: "update profile success",
       data: req.body,
     });
@@ -87,6 +154,7 @@ const updateProfilePicture = async (req, res) => {
     }
 
     return res.send({
+      status: true,
       message: "update profile picture success",
       data: req.body,
     });

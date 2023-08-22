@@ -26,6 +26,7 @@ import PropertyLayout from "./components/layouts/PropertyLayout";
 import PropertyRooms from "./pages/tenant/property/propertyDetails/PropertyRooms";
 import PropertyAvailability from "./pages/tenant/property/propertyDetails/PropertyAvailability";
 import PropertySpecialPrice from "./pages/tenant/property/propertyDetails/PropertySpecialPrice";
+import VerifyEmail from "./pages/user/VerifyEmail";
 
 function App() {
   const { token } = useToken();
@@ -54,6 +55,9 @@ function App() {
       </Route>
       <Route path="password" element={<AuthenticatedRoute roles={["USER"]} />}>
         <Route index element={<ChangePassword />} />
+      </Route>
+      <Route path="/verify-email/:otp/:email" element={<AuthenticatedRoute roles={["USER"]} />}>
+        <Route index element={<VerifyEmail />} />
       </Route>
 
       {/* TENANT Authenticated Routes */}
@@ -93,6 +97,7 @@ function App() {
       <Route path="/verify/:token" element={<NonAuthenticatedRoute />}>
         <Route index element={<VerifyOTP />} />
       </Route>
+
 
       {/* Open Routes */}
       <Route path="*" element={<OpenRoute />}>

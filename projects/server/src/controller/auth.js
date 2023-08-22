@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 // const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const moment = require("moment-timezone");
+require("dotenv").config();
 
 const {
   setFromFileNameToDBValue,
@@ -200,6 +201,40 @@ module.exports = {
       }
     } catch (error) {
       console.log("err login", error);
+      res.status(500).send({
+        message: "Something wrong on server",
+        error,
+      });
+    }
+  },
+
+  async verify_email(req, res) {
+    try {
+      const { otp, email } = req.params;
+      const verifying_email = await db.User.update(
+        {
+          is_verified: true,
+        },
+        {
+          where: {
+            otp: otp,
+            email: email,
+          },
+        }
+      );
+      if (verifying_email) {
+        return res.send({
+          status: true,
+          message: "email verified",
+        });
+      } else {
+        return res.send({
+          status: false,
+          message: "otp/email not found",
+        });
+      }
+    } catch (error) {
+      console.log(error);
       res.status(500).send({
         message: "Something wrong on server",
         error,
