@@ -25,4 +25,19 @@ router.get(
   roomController.getOneRoom
 );
 
+router.patch(
+  "/edit/:id",
+  multerMiddleware,
+  authMiddleware.verifyAccessToken,
+  authMiddleware.verifyTenant,
+  roomController.updateRoom
+);
+
+router.delete(
+  "/delete/:id",
+  authMiddleware.verifyAccessToken,
+  authMiddleware.verifyTenant,
+  roomController.deleteRoom
+);
+
 module.exports = router;

@@ -48,7 +48,7 @@ router.patch(
 );
 
 router.delete(
-  "/property/:id",
+  "/delete/:id",
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyTenant,
   propertyController.deleteProperty
