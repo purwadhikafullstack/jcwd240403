@@ -67,22 +67,35 @@ function Profiling() {
     }
 
     const maxFilesize = 1024000
-    const validFileExtension = { image: ["jpg", "gif", "jpeg", "png"] }
-    const isValidFileExtension = (fileName, filetype) => {
-        return fileName && validFileExtension[filetype].indexOf(fileName.split(".").pop()) > -1
+    const validFileExtension = { image: ["image/jpg", "image/gif", "image/jpeg", "image/png"] }
+    const isValidFileExtension = async (fileName, filetype) => {
+        return fileName && validFileExtension[filetype].includes(fileName)
     }
     const changeImage = async (e) => {
         if (e.target.files) {
-            Yup.object().shape({
-                file: Yup.mixed().required("Required").test("is-valid-type", "not a valid image type", value => {
-                    return isValidFileExtension(value && value.name.toLowerCase(), "image")
+            const fileSchema = await Yup.object().shape({
+                file: Yup.mixed().required("Required").test("is-valid-type", "not a valid image type", async value => {
+                    const cekImageType = await isValidFileExtension(value?.type, "image")
+                    if (!cekImageType) {
+                        toast.error("not a valid image type")
+                        return false
+                    }
+                    return true
                 }).test("is-valid-size", "max allowed size is 1 MB", value => {
-                    return value && value.size <= maxFilesize
+                    const cekImageSize = (value && value.size <= maxFilesize)
+                    if (!cekImageSize) {
+                        toast.error("max allowed size is 1 MB")
+                        return false
+                    }
+                    return true
                 })
 
             })
-            setFoto(e.target.files[0])
-            setFototemp(URL.createObjectURL(e.target.files[0]))
+            const cekFileSchema = await fileSchema.validate({ file: e.target.files[0] })
+            if (cekFileSchema) {
+                setFoto(e.target.files[0])
+                setFototemp(await URL.createObjectURL(e.target.files[0]))
+            }
         }
     }
 
