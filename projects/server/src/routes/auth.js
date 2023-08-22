@@ -21,6 +21,8 @@ router.patch(
   authController.verify
 );
 
+router.patch("/verify-email/:otp/:email", authController.verify_email);
+
 router.post("/resend-otp", authController.resendOTP);
 
 router.get(

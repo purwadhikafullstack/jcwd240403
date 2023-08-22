@@ -6,6 +6,9 @@ const {
 } = require("../utils/file");
 const fs = require("fs");
 const bcrypt = require("bcryptjs");
+const nodemailer = require("nodemailer");
+const moment = require("moment-timezone");
+require("dotenv").config();
 
 const getUser = async (req, res) => {
   try {
@@ -41,9 +44,58 @@ const updateProfile = async (req, res) => {
     const { user } = req;
     const user_id = user.id;
     const { full_name, birth_date, gender, phone_number, email } = req.body;
+    const cekEmail = await db.User.findOne({
+      where: {
+        email: email,
+      },
+    });
+    if (cekEmail) {
+      return res.send({
+        status: false,
+        message: "Email Already Used",
+      });
+    }
+
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+
+    let transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    let mailOptions = {
+      from: process.env.SMTP_USER,
+      to: email,
+      subject: "Verify Email",
+      text: `Verify Email Request
+
+      Please Verify Your Email by Clicking Link Below
+    
+
+    http://localhost:3000/verify-email/${otp}/${email}
+
+
+
+    Thanks,
+    Innsight Team`,
+    };
+
+    await transporter.sendMail(mailOptions, function (err, info) {
+      if (err) {
+        console.log("TRANSPORTER_ERR", err, mailOptions);
+      } else {
+        console.log("Email sent", info);
+      }
+    });
+
     const updateEmail = await db.User.update(
       {
         email: email,
+        is_verified: false,
+        otp: otp,
       },
       {
         where: { id: user_id },
