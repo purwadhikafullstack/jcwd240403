@@ -35,9 +35,9 @@ module.exports = {
 
   async getAllRoom(req, res) {
     try {
-      const { propId } = req.body;
+      const id = req.params.id;
       const result = await db.Room.findAll({
-        where: { property_id: propId, deletedAt: null },
+        where: { property_id: id, deletedAt: null },
         include: [{ model: db.Property, attributes: ["id", "name"] }],
       });
 
@@ -63,10 +63,9 @@ module.exports = {
   async getOneRoom(req, res) {
     try {
       const id = req.params.id;
-      const { propId } = req.body;
 
       const result = await db.Room.findOne({
-        where: { id: id, property_id: propId, deletedAt: null },
+        where: { id: id, deletedAt: null },
       });
 
       if (!result) {

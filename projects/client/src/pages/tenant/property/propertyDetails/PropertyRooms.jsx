@@ -43,6 +43,8 @@ function PropertyRoom() {
         description: room.description,
         basePrice: room.base_price,
       }));
+
+      console.log("res", res);
       const data = {
         rooms: [...room],
       };

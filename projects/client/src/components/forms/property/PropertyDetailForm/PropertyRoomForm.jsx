@@ -40,6 +40,8 @@ const PropertyRoomForm = forwardRef(
         ),
     });
 
+    console.log("init", initialValues);
+
     return (
       <Formik
         innerRef={ref}

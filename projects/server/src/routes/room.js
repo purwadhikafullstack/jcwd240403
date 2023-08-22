@@ -12,7 +12,7 @@ router.post(
 );
 
 router.get(
-  "/all",
+  "/all/:id",
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyTenant,
   roomController.getAllRoom
