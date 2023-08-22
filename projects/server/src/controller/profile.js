@@ -49,7 +49,7 @@ const updateProfile = async (req, res) => {
         email: email,
       },
     });
-    if (cekEmail) {
+    if (cekEmail && cekEmail.email != user.email) {
       return res.send({
         status: false,
         message: "Email Already Used",

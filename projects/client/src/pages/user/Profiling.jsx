@@ -5,6 +5,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import MainContainer from "../../components/layouts/MainContainer";
 import { toast } from "react-hot-toast"
+import * as Yup from "yup";
 
 function Profiling() {
     const [full_name, setFull_name] = useState("")
@@ -65,9 +66,21 @@ function Profiling() {
         setEditable(false)
     }
 
+    const maxFilesize = 1024000
+    const validFileExtension = { image: ["jpg", "gif", "jpeg", "png"] }
+    const isValidFileExtension = (fileName, filetype) => {
+        return fileName && validFileExtension[filetype].indexOf(fileName.split(".").pop()) > -1
+    }
     const changeImage = async (e) => {
         if (e.target.files) {
+            Yup.object().shape({
+                file: Yup.mixed().required("Required").test("is-valid-type", "not a valid image type", value => {
+                    return isValidFileExtension(value && value.name.toLowerCase(), "image")
+                }).test("is-valid-size", "max allowed size is 1 MB", value => {
+                    return value && value.size <= maxFilesize
+                })
 
+            })
             setFoto(e.target.files[0])
             setFototemp(URL.createObjectURL(e.target.files[0]))
         }
@@ -152,8 +165,9 @@ function Profiling() {
                             <select defaultValue={gender} disabled={editable} name="gender" id="gender" required={true} onChange={(e) => {
                                 setGender(e.target.value)
                             }}>
-                                <option value="MALE">Male</option>
-                                <option value="FEMALE">Female</option>
+                                <option value="">GENDER</option>
+                                <option value="MALE" selected={(gender == "MALE")}>Male</option>
+                                <option value="FEMALE" selected={(gender == "FEMALE")}>Female</option>
                             </select>
                         </div>
                     </div>
