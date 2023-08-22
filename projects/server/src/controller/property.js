@@ -55,7 +55,7 @@ module.exports = {
       const userId = req.user.id;
 
       const result = await db.Property.findOne({
-        where: { id: id, user_id: userId },
+        where: { id: id, user_id: userId, deletedAt: null },
         include: [
           {
             model: db.Location,
@@ -91,6 +91,7 @@ module.exports = {
   async addProperty(req, res) {
     try {
       const userId = req.user.id;
+      console.log(userId);
       const { name, locationId, propTypeId, catAreaId, description } = req.body;
 
       const newProperty = await db.Property.create({
@@ -131,7 +132,7 @@ module.exports = {
         img: setFromFileNameToDBValue(file.filename),
         property_id: propId,
       }));
-
+      console.log(images);
       const result = await db.Picture.bulkCreate(images);
 
       res.status(200).send({
@@ -252,7 +253,7 @@ module.exports = {
       const id = Number(req.params.id);
       const userId = req.user.id;
       const property = await db.Property.findOne({
-        where: { id: id, user_id: userId },
+        where: { id: id, user_id: userId, deletedAt: null },
       });
 
       if (!property) {
@@ -265,10 +266,13 @@ module.exports = {
         where: { id: id, user_id: userId },
       });
 
+      await db.Room.destroy({
+        where: { property_id: id },
+      });
+
       res.status(200).send({
-        message: "Success",
-        data: property,
-        deleted: deleteNow,
+        message: "Success delete property",
+        deleted: property,
       });
     } catch (error) {
       console.log("deleteprop", error);

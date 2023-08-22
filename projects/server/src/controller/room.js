@@ -40,6 +40,14 @@ module.exports = {
         where: { property_id: propId, deletedAt: null },
         include: [{ model: db.Property, attributes: ["id", "name"] }],
       });
+
+      if (!result) {
+        return res.status(200).send({
+          message: "You dont have any room on this property",
+          data: [],
+        });
+      }
+
       res.status(200).send({
         message: "Success get all room from this property",
         data: result,
@@ -58,8 +66,15 @@ module.exports = {
       const { propId } = req.body;
 
       const result = await db.Room.findOne({
-        where: { id: id, property_id: propId },
+        where: { id: id, property_id: propId, deletedAt: null },
       });
+
+      if (!result) {
+        return res.status(400).send({
+          message: "There is no room found",
+        });
+      }
+
       res.status(200).send({
         message: "Success get room detail",
         data: result,
@@ -74,11 +89,67 @@ module.exports = {
 
   async updateRoom(req, res) {
     try {
-    } catch (error) {}
+      const id = req.params.id;
+      const { propId, name, description, price } = req.body;
+      let imageURL;
+      if (req.file) {
+        imageURL = setFromFileNameToDBValue(req.file.filename);
+      }
+
+      const room = await db.Room.findOne({
+        where: { id: id, property_id: propId },
+      });
+
+      if (!room) {
+        return res.status(400).send({
+          message: "There is no room found",
+        });
+      }
+
+      const oldImage = room.getDataValue("room_img");
+      const oldImageFile = getFilenameFromDbValue(oldImage);
+      if (oldImage) {
+        fs.unlinkSync(getAbsolutePathPublicFile(oldImageFile));
+      }
+
+      const editRoom = await db.Room.update(
+        {
+          name: name,
+          description: description,
+          base_price: Number(price),
+          room_img: imageURL,
+        },
+        { where: { id: id, property_id: propId } }
+      );
+
+      const edited = await db.Room.findOne({
+        where: { id: id, property_id: propId },
+      });
+
+      res.status(200).send({
+        message: "Success edit room detail",
+        data: edited,
+      });
+    } catch (error) {
+      console.log("oneditroom", error);
+      res.status(500).send({
+        message: "Something wrong on server",
+        error,
+      });
+    }
   },
 
   async deleteRoom(req, res) {
     try {
+      const id = req.params.id;
+      const result = await db.Room.destroy({
+        where: { id: id },
+      });
+
+      res.status(200).send({
+        message: "Success delete room",
+        data: result,
+      });
     } catch (error) {}
   },
 };
