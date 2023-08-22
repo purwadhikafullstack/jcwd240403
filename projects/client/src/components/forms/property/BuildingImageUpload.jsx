@@ -60,24 +60,29 @@ function BuildingImageUpload({ images, onImagesChange }) {
 
       {/* Preview images */}
       <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-10">
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className="bg-gray-50 border flex items-center justify-center rounded-md relative"
-          >
-            <button
-              onClick={() => handleDeleteImage(index)}
-              className="absolute -top-2.5 -right-2.5 z-10 md:w-7 md:h-7 h-5 w-5 rounded-full border bg-white"
+        {images.map((image, index) => {
+          const url = image.img
+            ? process.env.REACT_APP_API_BASE_URL + image.img
+            : image;
+          return (
+            <div
+              key={index}
+              className="bg-gray-50 border flex items-center justify-center rounded-md relative"
             >
-              <XMarkIcon className="text-red-400" />
-            </button>
-            <img
-              src={image}
-              alt={`Preview ${index}`}
-              className="rounded-md w-auto h-[200px] object-cover"
-            />
-          </div>
-        ))}
+              <button
+                onClick={() => handleDeleteImage(index)}
+                className="absolute -top-2.5 -right-2.5 z-10 md:w-7 md:h-7 h-5 w-5 rounded-full border bg-white"
+              >
+                <XMarkIcon className="text-red-400" />
+              </button>
+              <img
+                src={url}
+                alt={`Preview ${index}`}
+                className="rounded-md w-auto h-[200px] object-cover"
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );

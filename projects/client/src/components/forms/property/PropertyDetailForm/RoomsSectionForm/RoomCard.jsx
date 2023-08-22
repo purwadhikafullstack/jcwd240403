@@ -5,11 +5,13 @@ import InputWithLabel from "../../../../textInputs/InputWithLabel";
 import TextAreaWithLabel from "../../../../textInputs/TextAreaWithLabel";
 
 const RoomCard = ({ room, index, errors, touched, values, setFieldValue }) => {
+  console.log("room", values);
+  const imageURL =
+    room.roomImage && room.roomImage.includes("/static")
+      ? process.env.REACT_APP_API_BASE_URL + room.roomImage
+      : room.roomImage;
   return (
-    <div
-      key={index}
-      className="space-y-2 border rounded-lg border-gray-500 p-5"
-    >
+    <div className="space-y-2 border rounded-lg border-gray-500 p-5">
       <div className="w-full justify-end items-start grow-0 flex">
         <button
           type="button"
@@ -74,7 +76,7 @@ const RoomCard = ({ room, index, errors, touched, values, setFieldValue }) => {
           <div className="h-full flex flex-col items-center justify-center">
             {room.roomImage && (
               <img
-                src={room.roomImage}
+                src={imageURL}
                 alt={`Room ${index} preview`}
                 className="w-[330px] h-[180px] object-cover border rounded-md border-gray-300 mb-3"
               />

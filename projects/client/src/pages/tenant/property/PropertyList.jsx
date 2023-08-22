@@ -1,17 +1,34 @@
-import React from "react";
+import React, { useEffect } from "react";
 import TableWithSortHeader from "../../../components/tables/TableWithSortHeader";
 import { useNavigate } from "react-router-dom";
+import api from "../../../shared/api";
 
 function PropertyList() {
   const navigate = useNavigate();
-  const tableData = [
-    {
-      id: 1,
-      name: "Property 1",
-      location: "Location 1",
-      description: "Description 1",
-    },
-  ];
+  const [tableData, setTableData] = React.useState([]);
+
+  useEffect(() => {
+    getProperties();
+  }, []);
+
+  const getProperties = async () => {
+    return api
+      .get("/property/mine")
+      .then(({ data }) => {
+        const response = data.data.map((property) => {
+          return {
+            id: property.id,
+            name: property.name,
+            location: property.Location.city,
+            description: property.description,
+          };
+        });
+        setTableData(response);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
 
   const onAddHandler = () => {
     console.log("Add");
@@ -22,13 +39,9 @@ function PropertyList() {
     console.log("Edit", id);
   };
 
-  const onDeleteHandler = (id) => {
-    console.log("Delete", id);
-  };
-
   const onSelectHandler = (id) => {
     console.log("Select", id);
-    navigate(`/property/${id}/`)
+    navigate(`/property/${id}/`);
   };
 
   return (
@@ -39,7 +52,6 @@ function PropertyList() {
         addHandler={onAddHandler}
         data={tableData}
         onEdit={onEditHandler}
-        onDelete={onDeleteHandler}
         onSelect={onSelectHandler}
       />
     </div>

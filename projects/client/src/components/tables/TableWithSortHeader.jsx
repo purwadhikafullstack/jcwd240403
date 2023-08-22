@@ -91,12 +91,14 @@ export default function TableWithSortHeader({
                           >
                             Edit
                           </button>
-                          <button
-                            onClick={() => onDelete(data[idx])}
-                            className="text-white bg-rose-400 px-2 py-1 rounded hover:bg-rose-500"
-                          >
-                            Delete
-                          </button>
+                          {onDelete && (
+                            <button
+                              onClick={() => onDelete(data[idx])}
+                              className="text-white bg-rose-400 px-2 py-1 rounded hover:bg-rose-500"
+                            >
+                              Delete
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}
