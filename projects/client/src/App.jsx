@@ -20,6 +20,12 @@ import HomeOrDashboard from "./shared/router/HomeOrDashboard";
 import DashboardSideBar from "./components/sidebar/DashboardSideBar";
 import CategoryArea from "./pages/tenant/CategoryArea";
 import ChangePassword from "./pages/user/ChangePassword";
+import PropertyEdit from "./pages/tenant/property/propertyDetails/PropertyEdit";
+import PropertyAdd from "./pages/tenant/property/PropertyAdd";
+import PropertyLayout from "./components/layouts/PropertyLayout";
+import PropertyRooms from "./pages/tenant/property/propertyDetails/PropertyRooms";
+import PropertyAvailability from "./pages/tenant/property/propertyDetails/PropertyAvailability";
+import PropertySpecialPrice from "./pages/tenant/property/propertyDetails/PropertySpecialPrice";
 import VerifyEmail from "./pages/user/VerifyEmail";
 
 function App() {
@@ -56,6 +62,23 @@ function App() {
 
       {/* TENANT Authenticated Routes */}
       <Route
+        path="property"
+        element={<AuthenticatedRoute roles={["TENANT"]} />}
+      >
+        <Route path=":propertyId" element={<DashboardSideBar />}>
+          <Route element={<PropertyLayout />}>
+            <Route index element={<PropertyEdit />} />
+            <Route path="rooms" element={<PropertyRooms />} />
+            <Route path="availability" element={<PropertyAvailability />} />
+            <Route path="special-price" element={<PropertySpecialPrice />} />
+          </Route>
+        </Route>
+        <Route path="add" element={<DashboardSideBar />}>
+          <Route index element={<PropertyAdd />} />
+        </Route>
+      </Route>
+
+      <Route
         path="category-area"
         element={<AuthenticatedRoute roles={["TENANT"]} />}
       >
@@ -63,7 +86,6 @@ function App() {
           <Route index element={<CategoryArea />} />
         </Route>
       </Route>
-
 
       {/* Non-authenticated Routes */}
       <Route path="/login" element={<NonAuthenticatedRoute />}>

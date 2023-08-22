@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Category_area.hasMany(models.Property, {
+        foreignKey: "category_area_id",
+      });
+      Category_area.belongsTo(models.User, { foreignKey: "user_id" });
     }
   }
   Category_area.init(
@@ -20,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Category_area",
+      timestamps: false,
     }
   );
   return Category_area;

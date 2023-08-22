@@ -1,9 +1,7 @@
 import {
   BuildingLibraryIcon,
   ChartPieIcon,
-  CurrencyDollarIcon,
   DocumentDuplicateIcon,
-  KeyIcon,
 } from "@heroicons/react/24/solid";
 
 const navigation = [
@@ -17,8 +15,6 @@ const navigation = [
       { name: "Category Area", href: "/category-area" },
     ],
   },
-  { name: "Room", href: "/room", icon: KeyIcon, current: false },
-  { name: "Price", href: "#", icon: CurrencyDollarIcon, current: false },
   {
     name: "Order",
     href: "#",

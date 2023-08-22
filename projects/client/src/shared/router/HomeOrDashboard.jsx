@@ -1,6 +1,6 @@
 import jwt from "jwt-decode";
 import Home from "../../pages/Home";
-import PropertyList from "../../pages/tenant/PropertyList";
+import PropertyList from "../../pages/tenant/property/PropertyList";
 import useToken from "../hooks/useToken";
 
 const HomeOrDashboard = () => {

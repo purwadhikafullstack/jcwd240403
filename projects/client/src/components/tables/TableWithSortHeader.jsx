@@ -9,6 +9,7 @@ export default function TableWithSortHeader({
   data,
   onEdit,
   onDelete,
+  onSelect = null,
 }) {
   const dataTable = data ? data?.map(({ id, ...rest }) => rest) : [];
   const headers = dataTable.length > 0 ? Object.keys(dataTable[0]) : null;
@@ -66,7 +67,11 @@ export default function TableWithSortHeader({
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
                     {dataTable.map((res, idx) => (
-                      <tr key={idx} className="cursor-pointer">
+                      <tr
+                        onClick={() => onSelect && onSelect(data[idx].id)}
+                        key={idx}
+                        className="cursor-pointer"
+                      >
                         {headers.map((header) => (
                           <td
                             className={`${
@@ -86,12 +91,14 @@ export default function TableWithSortHeader({
                           >
                             Edit
                           </button>
-                          <button
-                            onClick={() => onDelete(data[idx])}
-                            className="text-white bg-rose-400 px-2 py-1 rounded hover:bg-rose-500"
-                          >
-                            Delete
-                          </button>
+                          {onDelete && (
+                            <button
+                              onClick={() => onDelete(data[idx])}
+                              className="text-white bg-rose-400 px-2 py-1 rounded hover:bg-rose-500"
+                            >
+                              Delete
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -103,8 +110,9 @@ export default function TableWithSortHeader({
           {/* <Pagination /> */}
         </>
       ) : (
-        <p className="mt-40 text-2xl text-center w-full">
-          Your data input seems to be empty. Let's fill it in!
+        <p className="mt-40 text-xl text-center w-full">
+          Your data seems to be empty.
+          <br /> <span className="font-bold">Let's fill it in!</span>
         </p>
       )}
     </div>

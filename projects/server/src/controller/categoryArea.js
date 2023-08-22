@@ -77,9 +77,9 @@ module.exports = {
         where: { user_id: userId, is_deleted: false },
       });
 
-      if (!result) {
+      if (result.length === 0) {
         return res.status(200).send({
-          data: [],
+          message: "You dont have any category area created",
         });
       }
 

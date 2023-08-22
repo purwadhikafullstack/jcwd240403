@@ -11,7 +11,7 @@ export const AuthenticatedRoute = ({ roles }) => {
     token &&
     jwt(token).role === "TENANT"
   ) {
-    return <Navigate to="/dashboard" />;
+    return <Navigate to="/" />;
   }
 
   if (token && roles.includes(jwt(token).role)) {
