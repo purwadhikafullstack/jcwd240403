@@ -41,4 +41,13 @@ module.exports = {
       message: "Role is not allowed to access",
     });
   },
+
+  async verifyUser(req, res, next) {
+    if (req.user.role === "USER") {
+      return next();
+    }
+    res.status(401).send({
+      message: "Role is not allowed to access",
+    });
+  },
 };
