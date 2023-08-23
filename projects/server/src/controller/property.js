@@ -249,6 +249,67 @@ module.exports = {
     }
   },
 
+  async updatePhotos(req, res) {
+    try {
+      const propId = req.params.id;
+      let imageIds;
+      let images;
+
+      if (req.files) {
+        images = req.files.map((file) => ({
+          img: setFromFileNameToDBValue(file.filename),
+          property_id: propId,
+        }));
+      }
+      const result = await db.Picture.bulkCreate(images);
+
+      if (req.body.ids) {
+        imageIds = req.body.ids.split(",").map((id) => Number(id));
+        console.log("length", imageIds.length);
+        for (let i = 0; i < imageIds.length; i++) {
+          const imageId = imageIds[i];
+          const deleteImg = await db.Picture.findOne({
+            where: {
+              id: imageId,
+              property_id: propId,
+            },
+          });
+
+          if (!deleteImg) {
+            return res.status(400).send({
+              message: "Photo not found",
+            });
+          }
+
+          const oldImage = deleteImg.getDataValue("img");
+          // console.log("OLD IMAGE PATH", oldImage);
+          const oldImageFile = getFilenameFromDbValue(oldImage);
+          // console.log("OLD IMAGE", oldImageFile);
+          const coba = getAbsolutePathPublicFile(oldImageFile);
+          console.log("COBA", coba);
+          // imageRecord.img = setFromFileNameToDBValue(req.files[i].filename);
+
+          if (deleteImg) {
+            fs.unlinkSync(getAbsolutePathPublicFile(oldImageFile));
+          }
+
+          await deleteImg.destroy();
+        }
+      }
+
+      res.status(200).send({
+        message: "Success update photos",
+        data: result,
+      });
+    } catch (error) {
+      console.log("updatephotos", error);
+      res.status(500).send({
+        message: "Something wrong on serever",
+        error,
+      });
+    }
+  },
+
   async deleteProperty(req, res) {
     try {
       const id = Number(req.params.id);
