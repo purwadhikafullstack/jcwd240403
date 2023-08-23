@@ -5,6 +5,7 @@ const shared = require("./shared");
 const room = require("./room");
 const profile = require("./profile");
 const product = require("./product");
+const transaction = require("./transaction");
 
 module.exports = {
   auth,
@@ -14,4 +15,5 @@ module.exports = {
   room,
   profile,
   product,
+  transaction,
 };
