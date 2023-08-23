@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import api from "../../../../shared/api";
-import { useParams } from "react-router-dom";
+import PropertyDetailForm from "../../../../components/forms/property/PropertyDetailForm/PropertyAddForm";
+import { useNavigate, useParams } from "react-router-dom";
+import PropertyLayout from "../../../../components/layouts/PropertyLayout";
+import GeneralModal from "../../../../components/modals/GeneralModal";
 import PropertyEditForm from "../../../../components/forms/property/PropertyDetailForm/PropertyEditForm";
 import LoadingCard from "../../../../components/cards/LoadingCard";
-import { Buffer } from "buffer";
-import { toast } from "react-hot-toast";
 
 function PropertyEdit() {
   const { propertyId } = useParams();
@@ -13,7 +14,6 @@ function PropertyEdit() {
   const [locations, setLocations] = useState([]);
   const [categoryAreas, setCategoryAreas] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [deletedImages, setDeletedImages] = useState([]);
   const [initialValues, setInitialValues] = useState({
     name: "",
     description: "",
@@ -66,22 +66,16 @@ function PropertyEdit() {
     }
   };
 
-  const handleFormSubmit = async (values, { setSubmitting }) => {
+  console.log(initialValues);
+
+  const handleFormSubmit = (values, { setSubmitting }) => {
     console.log(values);
     setSubmitting(false);
-    try {
-      await Promise.all([updateProperty(values), uploadImages(values.images)]);
-      toast.success("Successfully updated!");
-      fetchAllData();
-    } catch (err) {
-      console.log("err", err);
-      toast.error(err.response.data.error); // You can customize the error message
-    }
   };
 
   const updateProperty = async (values) => {
     return api
-      .patch("/property/edit-property/" + propertyId, {
+      .post("/property/edit-property/" + propertyId, {
         name: values.name,
         locationId: values.location.id,
         propTypeId: values.propertyType.id,
@@ -91,49 +85,41 @@ function PropertyEdit() {
       .then(({ data }) => data.data.id)
       .catch((err) => {
         console.error("property err", err);
-        throw err;
+        return err;
       });
   };
 
-  const uploadImages = async (images) => {
+  const uploadImages = async (propId, images) => {
     const formData = new FormData();
 
-    formData.append("propId", propertyId);
+    formData.append("propId", propId);
 
-    if (deletedImages.length > 0) {
-      const ids = deletedImages.map((item) => item.id).toString();
-      formData.append("ids", ids);
-    }
+    // Append the images to the FormData object
+    images.forEach((image, index) => {
+      // Extract the base64 data
+      const base64Data = image.split(",")[1];
 
-    const isLocalImage = images.filter((image) => typeof image === "string");
+      // Convert the base64 data to a Buffer
+      const buffer = Buffer.from(base64Data, "base64");
 
-    if (isLocalImage.length > 0) {
-      // Append the images to the FormData object
-      isLocalImage.forEach((image, index) => {
-        // Extract the base64 data
-        const base64Data = image.split(",")[1];
-        // Convert the base64 data to a Buffer
-        const buffer = Buffer.from(base64Data, "base64");
-        // Convert the buffer to a Blob and append it to the FormData
-        const blob = new Blob([buffer], { type: "image/png" });
-        formData.append(`files`, blob);
-      });
-    }
+      // Convert the buffer to a Blob and append it to the FormData
+      const blob = new Blob([buffer], { type: "image/png" });
+      formData.append(`files`, blob);
+    });
 
     try {
-      const response = await api.post(
-        `/property/${propertyId}/photos`,
-        formData
-      );
+      const response = await api.post("/property/edit-photos" + 1, formData);
+
       if (response.status !== 200) {
         throw new Error("Failed to upload images");
       }
+
       // Handle the response as needed
       const result = await response.data;
       console.log("Images uploaded successfully", result);
     } catch (error) {
       console.error("Error uploading images:", error);
-      throw error;
+      return error;
     }
   };
 
@@ -153,9 +139,6 @@ function PropertyEdit() {
         locations={locations}
         categoryAreas={categoryAreas}
         submitLabel={"Update Property"}
-        setDeletedImages={(data) => {
-          setDeletedImages([...deletedImages, data]);
-        }}
       />
     </div>
   );

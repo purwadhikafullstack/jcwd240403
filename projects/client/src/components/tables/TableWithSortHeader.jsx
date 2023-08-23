@@ -9,6 +9,7 @@ export default function TableWithSortHeader({
   data,
   onEdit,
   onDelete,
+  onSelect = null,
 }) {
   const dataTable = data ? data?.map(({ id, ...rest }) => rest) : [];
   const headers = dataTable.length > 0 ? Object.keys(dataTable[0]) : null;
@@ -66,7 +67,11 @@ export default function TableWithSortHeader({
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
                     {dataTable.map((res, idx) => (
-                      <tr key={idx} className="cursor-pointer">
+                      <tr
+                        onClick={() => onSelect && onSelect(data[idx].id)}
+                        key={idx}
+                        className="cursor-pointer"
+                      >
                         {headers.map((header) => (
                           <td
                             className={`${

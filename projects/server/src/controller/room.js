@@ -91,6 +91,9 @@ module.exports = {
       const id = req.params.id;
       const { propId, name, description, price } = req.body;
       let imageURL;
+      if (req.file) {
+        imageURL = setFromFileNameToDBValue(req.file.filename);
+      }
 
       const room = await db.Room.findOne({
         where: { id: id, property_id: propId },
@@ -102,17 +105,11 @@ module.exports = {
         });
       }
 
-      if (req.file) {
-        console.log("FILEEEEE!!!");
-        imageURL = setFromFileNameToDBValue(req.file.filename);
-        const oldImage = room.getDataValue("room_img");
-        const oldImageFile = getFilenameFromDbValue(oldImage);
-        if (oldImage) {
-          fs.unlinkSync(getAbsolutePathPublicFile(oldImageFile));
-        }
+      const oldImage = room.getDataValue("room_img");
+      const oldImageFile = getFilenameFromDbValue(oldImage);
+      if (oldImage) {
+        fs.unlinkSync(getAbsolutePathPublicFile(oldImageFile));
       }
-
-      console.log("image", req);
 
       const editRoom = await db.Room.update(
         {

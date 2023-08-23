@@ -14,7 +14,6 @@ const PropertyEditForm = forwardRef(
       locations,
       categoryAreas,
       submitLabel,
-      setDeletedImages,
     },
     ref
   ) => {
@@ -27,25 +26,6 @@ const PropertyEditForm = forwardRef(
       images: Yup.array()
         .min(1, "At least one image is required")
         .max(6, "Maximum of 6 images only")
-        .test("fileSize", "Each image must be 1 MB or less", (images) => {
-          if (!images) return false;
-
-          // Iterate through each image and check if it's less than or equal to 1 MB
-          for (const image of images) {
-            if (typeof image === "string") {
-              const base64Length = image.length - image.indexOf(",") - 1;
-              const bufferLength =
-                base64Length * 0.75 -
-                (image.split("base64,")[0].length -
-                  image.split(",").length +
-                  1);
-              const sizeInMB = bufferLength / (1024 * 1024);
-              if (sizeInMB > 1) return false;
-            }
-          }
-
-          return true;
-        })
         .required("Required"),
     });
 
@@ -77,7 +57,6 @@ const PropertyEditForm = forwardRef(
                 onImagesChange={(newImages) =>
                   setFieldValue("images", newImages)
                 }
-                setDeletedImages={setDeletedImages}
               />
               {errors.images && touched.images && (
                 <p className="text-red-500 text-xs mt-1">{errors.images}</p>

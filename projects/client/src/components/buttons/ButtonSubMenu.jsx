@@ -18,7 +18,7 @@ function ButtonSubMenu({ tab }) {
         isActive(tab.href)
           ? "border-primary text-primary"
           : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700",
-        "group inline-flex items-center border-b-2 py-4 px-1 text-sm font-medium shrink-0"
+        "group inline-flex items-center border-b-2 py-4 px-1 text-sm font-medium"
       )}
       aria-current={tab.current ? "page" : undefined}
     >

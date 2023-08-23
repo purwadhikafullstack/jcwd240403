@@ -1,7 +1,7 @@
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import React from "react";
 
-function BuildingImageUpload({ images, onImagesChange, setDeletedImages }) {
+function BuildingImageUpload({ images, onImagesChange }) {
   const handleImagesChange = (e) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
     Promise.all(
@@ -22,7 +22,6 @@ function BuildingImageUpload({ images, onImagesChange, setDeletedImages }) {
     const newImages = [...images];
     newImages.splice(index, 1);
     onImagesChange(newImages);
-    setDeletedImages(images[index]);
   };
 
   return (

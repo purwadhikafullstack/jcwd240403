@@ -2,13 +2,7 @@ import React from "react";
 import RoomCard from "./RoomCard";
 import FormSection from "../FormSection";
 
-const RoomsSectionForm = ({
-  values,
-  errors,
-  touched,
-  setFieldValue,
-  setDeletedExistingRoom,
-}) => {
+const RoomsSectionForm = ({ values, errors, touched, setFieldValue }) => {
   return (
     <div className="space-y-5">
       <div className="flex flex-row justify-between items-center">
@@ -32,36 +26,20 @@ const RoomsSectionForm = ({
         </button>
       </div>
       <FormSection>
-        {values.existingRooms &&
-          values.existingRooms.map((room, index) => {
-            return (
-              <RoomCard
-                key={room.id + index}
-                room={room}
-                index={index}
-                values={values}
-                errors={errors}
-                touched={touched}
-                setFieldValue={setFieldValue}
-                setDeletedExistingRoom={setDeletedExistingRoom}
-              />
-            );
-          })}
-
-        {values.rooms &&
-          values.rooms.map((room, index) => {
-            return (
-              <RoomCard
-                key={index}
-                room={room}
-                index={index}
-                values={values}
-                errors={errors}
-                touched={touched}
-                setFieldValue={setFieldValue}
-              />
-            );
-          })}
+        {values.rooms.map((room, index) => {
+          console.log("roasdom", values);
+          return (
+            <RoomCard
+              key={index}
+              room={room}
+              index={index}
+              values={values}
+              errors={errors}
+              touched={touched}
+              setFieldValue={setFieldValue}
+            />
+          );
+        })}
       </FormSection>
     </div>
   );

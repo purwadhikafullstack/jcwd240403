@@ -54,12 +54,4 @@ router.delete(
   propertyController.deleteProperty
 );
 
-router.post(
-  "/:id/photos",
-  multerMiddleware,
-  authMiddleware.verifyAccessToken,
-  authMiddleware.verifyTenant,
-  propertyController.updatePhotos
-);
-
 module.exports = router;
