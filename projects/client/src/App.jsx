@@ -27,6 +27,7 @@ import PropertyRooms from "./pages/tenant/property/propertyDetails/PropertyRooms
 import PropertyAvailability from "./pages/tenant/property/propertyDetails/PropertyAvailability";
 import PropertySpecialPrice from "./pages/tenant/property/propertyDetails/PropertySpecialPrice";
 import VerifyEmail from "./pages/user/VerifyEmail";
+import AvailableProperty from "./pages/user/property/AvailableProperty";
 
 function App() {
   const { token } = useToken();
@@ -58,6 +59,9 @@ function App() {
       </Route>
       <Route path="/verify-email/:otp/:email" element={<AuthenticatedRoute roles={["USER"]} />}>
         <Route index element={<VerifyEmail />} />
+      </Route>
+      <Route path="/property" element={<AuthenticatedRoute roles={["USER"]} />}>
+        <Route index element={<AvailableProperty />} />
       </Route>
 
       {/* TENANT Authenticated Routes */}
