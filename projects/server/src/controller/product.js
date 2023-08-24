@@ -20,6 +20,12 @@ const getAllProperty = async (req, res) => {
       },
       include: [
         {
+          model: db.Property_type,
+        },
+        {
+          model: db.Location,
+        },
+        {
           model: db.Room,
           attributes: [
             "id",
@@ -35,18 +41,21 @@ const getAllProperty = async (req, res) => {
           },
           include: [
             {
+              model: db.Special_price,
+            },
+            {
               model: db.Room_status,
               attributes: ["id", "start_date", "end_date"],
               where: {
                 [Op.and]: [
                   {
                     start_date: {
-                      [Op.lte]: start_date,
+                      [Op.lte]: new Date(`${start_date} 00:00:00`),
                     },
                   },
                   {
                     end_date: {
-                      [Op.gte]: end_date,
+                      [Op.gte]: new Date(`${end_date} 23:59:59`),
                     },
                   },
                 ],
@@ -80,6 +89,12 @@ const getDetailProperty = async (req, res) => {
       },
       include: [
         {
+          model: db.Property_type,
+        },
+        {
+          model: db.Location,
+        },
+        {
           model: db.Room,
           attributes: [
             "id",
@@ -94,6 +109,9 @@ const getDetailProperty = async (req, res) => {
             deletedAt: null,
           },
           include: [
+            {
+              model: db.Special_price,
+            },
             {
               model: db.Room_status,
               attributes: ["id", "start_date", "end_date"],

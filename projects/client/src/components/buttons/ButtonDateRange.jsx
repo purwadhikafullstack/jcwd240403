@@ -35,7 +35,7 @@ function ButtonDateRange({ selectedDays, handleDayClick, today, totalNight }) {
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-0 translate-y-1"
           >
-            <Popover.Panel className="absolute left-1/2 z-10 mt-3 max-w-sm -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl w-fit">
+            <Popover.Panel className="absolute left-1/2 z-10 mt-3 max-w-sm -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl w-fit bg-slate-50">
               <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 p-3">
                 <DatePicker
                   selectedDays={selectedDays}
