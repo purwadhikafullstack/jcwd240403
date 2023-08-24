@@ -1,5 +1,11 @@
 const db = require("../models");
 
+const alphabetRandom = async () => {
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  const randomCharacter = alphabet[Math.floor(Math.random() * alphabet.length)];
+  return randomCharacter;
+};
 const bookProperty = async (req, res) => {
   try {
     const user_id = req.user.id;
@@ -16,9 +22,9 @@ const bookProperty = async (req, res) => {
     });
     let price = dataRoom.Special_price?.price ?? dataRoom.base_price;
     const booking_status = "WAITING_FOR_PAYMENT";
-    const booking_code = `B-${user_id}-${room_id}-${
-      check_in_date.split("T")[0]
-    }`;
+    const booking_code = `${await alphabetRandom()}${Math.floor(
+      1000 + Math.random() * 9000
+    ).toString()}${await alphabetRandom()}`;
     const dateInConvertion = new Date(check_in_date).getTime();
     const dateOutConvertion = new Date(check_out_date).getTime();
     const timeDiff = dateOutConvertion - dateInConvertion;
