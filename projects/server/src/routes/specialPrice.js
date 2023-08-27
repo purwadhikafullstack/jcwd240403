@@ -16,4 +16,18 @@ router.get(
   priceController.getAllSpecialPrice
 );
 
+router.get(
+  "/:id",
+  authMiddleware.verifyAccessToken,
+  authMiddleware.verifyTenant,
+  priceController.getOneSpecialPrice
+);
+
+router.patch(
+  "/edit/:id",
+  authMiddleware.verifyAccessToken,
+  authMiddleware.verifyTenant,
+  priceController.editSpecialPrice
+);
+
 module.exports = router;

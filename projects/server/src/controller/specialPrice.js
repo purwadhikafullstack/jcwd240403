@@ -82,4 +82,73 @@ module.exports = {
       });
     }
   },
+
+  async getOneSpecialPrice(req, res) {
+    try {
+      const id = req.params.id;
+      const result = await db.Special_price.findOne({
+        where: { id: id },
+        include: [{ model: db.Room }],
+      });
+      if (!result) {
+        return res.status(400).send({
+          message: "No special price data found",
+        });
+      }
+
+      res.status(200).send({
+        message: "Success get one special price data",
+        data: result,
+      });
+    } catch (error) {
+      console.log("get one special price", error);
+      res.status(500).send({
+        message: "Something wrong on server",
+        error,
+      });
+    }
+  },
+
+  async editSpecialPrice(req, res) {
+    try {
+      const id = req.params.id;
+      const { specialPrice, startDate, endDate, isActive } = req.body;
+
+      const isExist = await db.Special_price.findOne({
+        where: { id: id },
+      });
+      if (!isExist) {
+        return res.status(400).send({
+          message: "Special price data not found",
+        });
+      }
+
+      const updatePrice = await db.Special_price.update(
+        {
+          price: specialPrice,
+          start_date: moment(startDate)
+            .startOf("day")
+            .format("YYYY-MM-DD HH:mm:ss"),
+          end_date: moment(endDate).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
+          is_active: isActive,
+        },
+        { where: { id: id } }
+      );
+
+      const updated = await db.Special_price.findOne({
+        where: { id: id },
+      });
+
+      res.status(201).send({
+        message: "Success edit special price",
+        data: updated,
+      });
+    } catch (error) {
+      console.log("edit special price", error);
+      res.status(500).send({
+        message: "Something wrong on server",
+        error,
+      });
+    }
+  },
 };
