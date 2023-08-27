@@ -4,9 +4,10 @@ import React, { Fragment } from "react";
 import DatePicker from "../datepicker/DatePicker";
 import moment from "moment";
 
-function ButtonDateRange({ selectedDays, handleDayClick, today, totalNight }) {
+
+function ButtonDateRange({ selectedDays, handleDayClick, today, totalNight, className }) {
   return (
-    <Popover className="relative">
+    <Popover className={`relative ${className}`} >
       {({ close }) => (
         <>
           <Popover.Button className="flex flex-row items-center w-full">

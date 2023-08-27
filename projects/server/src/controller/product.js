@@ -20,6 +20,9 @@ const getAllProperty = async (req, res) => {
       },
       include: [
         {
+          model: db.Picture,
+        },
+        {
           model: db.Property_type,
         },
         {
@@ -88,6 +91,9 @@ const getDetailProperty = async (req, res) => {
         deletedAt: null,
       },
       include: [
+        {
+          model: db.Picture,
+        },
         {
           model: db.Property_type,
         },
