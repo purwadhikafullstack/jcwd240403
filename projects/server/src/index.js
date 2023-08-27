@@ -28,6 +28,8 @@ app.use("/api/profile", routes.profile);
 app.use("/api/property", routes.property);
 app.use("/api/room", routes.room);
 app.use("/api", routes.shared);
+app.use("/api/special-price", routes.specialPrice);
+app.use("/api/room-status", routes.roomStatus);
 
 // app.get("/api", (req, res) => {
 //   res.send(`Hello, this is my API`);
