@@ -12,6 +12,7 @@ function Dropdown({
   label,
   error,
 }) {
+  console.log("labelField", error);
   return (
     <div className={`w-full space-y-1 ${className}`}>
       <label className="text-sm">{label}</label>
@@ -76,7 +77,7 @@ function Dropdown({
         </div>
       </Listbox>
       {/* error message from formik */}
-      {error && <p className="text-red-500 text-xs">{error}</p>}
+      {error && <p className="text-red-500 text-xs pt-2 z-10">{error}</p>}
     </div>
   );
 }

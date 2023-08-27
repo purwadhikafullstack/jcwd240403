@@ -9,7 +9,7 @@ import { toast } from "react-hot-toast";
 function PropertyRoom() {
   const { propertyId } = useParams();
   const propertyDetailRef = useRef();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [deletedExistingRoom, setDeletedExistingRoom] = useState([]);
   const [initialValues, setInitialValues] = useState({
     rooms: [],
@@ -33,6 +33,7 @@ function PropertyRoom() {
       const res = await api.get(`/room/all/${propertyId}`);
       const existingRooms = res.data.data.map(mapRoomData);
       setInitialValues({ ...initialValues, existingRooms });
+      setIsLoading(false);
     } catch (err) {
       console.error(err);
     }
@@ -133,8 +134,6 @@ function PropertyRoom() {
       throw error;
     }
   };
-
-  console.log("init", initialValues);
 
   return isLoading ? (
     <div className="bg-gray-900/10 h-[89vh] flex items-center justify-center">
