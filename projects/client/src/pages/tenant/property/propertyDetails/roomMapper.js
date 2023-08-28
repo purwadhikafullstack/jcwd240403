@@ -1,0 +1,22 @@
+export const mapRoomData = (room) => ({
+  id: room.id,
+  name: room.name,
+  roomImage: room.room_img,
+  description: room.description,
+  basePrice: room.base_price,
+});
+
+export const mapRoomAvailabilityData = (room) => ({
+  id: room.id,
+  name: room.name,
+  roomStatuses: room.Room_statuses.map(mapRoomStatusData),
+});
+
+export const mapRoomStatusData = (roomStatus) => ({
+  id: roomStatus.id,
+  roomId: roomStatus.room_id,
+  reason: roomStatus.custom_status,
+  start_date: roomStatus.start_date,
+  end_date: roomStatus.end_date,
+  isActive: roomStatus.is_active,
+});

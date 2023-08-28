@@ -1,9 +1,8 @@
 import React from "react";
 
 function TextAreaWithLabel({ field, label, ...props }) {
-  const { touched, errors } = props.form;
+  const { errors } = props.form;
 
-  console.log("err", errors);
   return (
     <div className="space-y-1">
       <label className="text-sm">{label}</label>

@@ -1,11 +1,10 @@
-import React from "react";
-import { Formik, Form, Field } from "formik";
+import React, { useEffect, useState } from "react";
+import { Formik } from "formik";
 import * as Yup from "yup";
-import FormModal from "./FormModal";
-import SwitchWithLabel from "../switch/SwitchWithLabel";
-import DatePickerWithLabel from "../datepicker/DatePickerWithLabel";
-import TextAreaWithLabel from "../textInputs/TextAreaWithLabel";
-import Dropdown from "../dropdown/Dropdown";
+import { mapRoomData } from "../../pages/tenant/property/propertyDetails/roomMapper";
+import api from "../../shared/api";
+import { useParams } from "react-router-dom";
+import RoomAvailabilityForm from "../forms/property/PropertyDetailForm/RoomAvailabilitySectionForm";
 
 const VALIDATION_SCHEMA = Yup.object({
   room: Yup.object().nullable().required("Required"),
@@ -18,84 +17,68 @@ const VALIDATION_SCHEMA = Yup.object({
   reason: Yup.string().required("Reason is required"),
 });
 
-const MODAL_CONFIG = {
-  add: {
-    title: "Set Room Availability",
-    buttonLabel: "Submit",
-  },
-  edit: {
-    title: "Edit Availability Config",
-    buttonLabel: "Update",
-  },
-};
-
 const RoomAvailabilityFormModal = ({
   isOpen,
   closeModal,
   modalSubmit,
   modalType,
   selectedRoomAvailability,
-  deleteRoomAvailability,
-  rooms,
 }) => {
+  const { propertyId } = useParams();
+  const [rooms, setRooms] = useState([]);
+  const [initialValues, setInitialValues] = useState({
+    room: null,
+    isActive: true,
+    startDate: "",
+    endDate: "",
+    reason: "",
+  });
+
+  useEffect(() => {
+    const fetchAllData = async () => {
+      try {
+        const res = await api.get(`/room/all/${propertyId}`);
+        const rooms = res.data.data.map(mapRoomData);
+        setRooms(rooms);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchAllData();
+    if (selectedRoomAvailability) {
+      const { roomId, isActive, start_date, end_date, reason } =
+        selectedRoomAvailability;
+      const room = rooms.find((room) => room.id === roomId);
+      setInitialValues({
+        room,
+        isActive,
+        startDate: start_date,
+        endDate: end_date,
+        reason,
+      });
+    }
+  }, [selectedRoomAvailability, propertyId, rooms]);
+
   return (
     <Formik
-      initialValues={{
-        name: selectedRoomAvailability ? selectedRoomAvailability.name : "",
-        selectedDays: { from: null, to: null }, // added this line
-      }}
+      initialValues={initialValues}
       enableReinitialize
       validationSchema={VALIDATION_SCHEMA}
       onSubmit={modalSubmit}
     >
-      {({ handleSubmit, values, setFieldValue, touched, errors }) => {
-        console.log("values", errors);
+      {({ handleSubmit, values, setFieldValue, errors }) => {
         return (
-          <Form onSubmit={handleSubmit}>
-            <FormModal
-              isOpen={isOpen}
-              closeModal={closeModal}
-              onClickButton={() => {
-                handleSubmit();
-              }}
-              {...MODAL_CONFIG[modalType]}
-            >
-              <div className="flex flex-col space-y-2 mt-4">
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <Dropdown
-                      items={rooms || []}
-                      onItemChange={(e) => setFieldValue("room", e)}
-                      selected={values.room}
-                      labelField={"room"}
-                      label={"Room"}
-                      error={errors.room}
-                    />
-                    <Field
-                      label="Enable Rule"
-                      name="isActive"
-                      component={SwitchWithLabel}
-                    />
-                    <Field
-                      label="Start Date"
-                      name="startDate"
-                      component={DatePickerWithLabel}
-                    />
-                    <Field
-                      label="End Date"
-                      name="endDate"
-                      component={DatePickerWithLabel}
-                    />
-                  </div>
-                  <Field
-                    label="Reason"
-                    name="reason"
-                    component={TextAreaWithLabel}
-                  />
-                </div>
-              </div>
-            </FormModal>
-          </Form>
+          <RoomAvailabilityForm
+            values={values}
+            errors={errors}
+            setFieldValue={setFieldValue}
+            closeModal={closeModal}
+            handleSubmit={handleSubmit}
+            isOpen={isOpen}
+            modalType={modalType}
+            rooms={rooms}
+          />
         );
       }}
     </Formik>

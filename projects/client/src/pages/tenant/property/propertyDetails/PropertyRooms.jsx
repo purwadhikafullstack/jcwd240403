@@ -5,6 +5,7 @@ import LoadingCard from "../../../../components/cards/LoadingCard";
 import PropertyRoomForm from "../../../../components/forms/property/PropertyDetailForm/PropertyRoomForm";
 import { Buffer } from "buffer";
 import { toast } from "react-hot-toast";
+import { mapRoomData } from "./roomMapper";
 
 function PropertyRoom() {
   const { propertyId } = useParams();
@@ -19,14 +20,6 @@ function PropertyRoom() {
   useEffect(() => {
     fetchAllData();
   }, []);
-
-  const mapRoomData = (room) => ({
-    id: room.id,
-    name: room.name,
-    roomImage: room.room_img,
-    description: room.description,
-    basePrice: room.base_price,
-  });
 
   const fetchAllData = async () => {
     try {
