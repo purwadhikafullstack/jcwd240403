@@ -1,41 +1,105 @@
-import React, { useState } from "react";
-import LoadingCard from "../../../../components/cards/LoadingCard";
-import TableWithSortHeader from "../../../../components/tables/TableWithSortHeader";
+import React, { useEffect, useState, useCallback } from "react";
+import { useParams } from "react-router-dom";
+import api from "../../../../shared/api";
+import moment from "moment";
+import TableWithGroupedRows from "../../../../components/tables/TableWithGroupedRows";
+import { mapRoomSpecialPriceData } from "./dataMapper";
+import RoomSpecialPriceFormModal from "../../../../components/modals/RoomSpecialPriceFormModal";
 
-function PropertySpecialPrice() {
-  const [list, setList] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+const PropertySpecialPrice = () => {
+  const { propertyId } = useParams();
+  const [modalType, setModalType] = useState("add");
+  const [selectedRoomSpecialPrice, setSelectedRoomSpecialPrice] =
+    useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [tableData, setTableData] = useState([]);
 
-  const tableData = list;
+  const setModal = useCallback((type, value = null) => {
+    setModalType(type);
+    setSelectedRoomSpecialPrice(value);
+    setIsOpen(true);
+  }, []);
 
-  const onAddHandler = () => {
-    console.log("Add");
+  const fetchRoomAvailability = useCallback(async () => {
+    try {
+      const { data } = await api.get(`/special-price/all/${propertyId}`);
+      const mappedData = data?.data?.length
+        ? data.data.map(mapRoomSpecialPriceData)
+        : [];
+      setTableData(mappedData);
+    } catch (error) {
+      console.error("Error fetching room availability:", error);
+    }
+  }, [propertyId]);
+
+  useEffect(() => {
+    fetchRoomAvailability();
+  }, [fetchRoomAvailability]);
+
+  const modifyAvailability = async (method, url, payload = {}) => {
+    try {
+      await api[method](url, payload);
+      fetchRoomAvailability();
+      setIsOpen(false);
+      setSelectedRoomSpecialPrice(null);
+    } catch (error) {
+      console.error("Error modifying category:", error);
+    }
   };
 
-  const onSelectHandler = (room) => {
-    console.log("Edit");
+  const addAvailability = (form) => {
+    const payload = {
+      roomId: form.room.id,
+      specialPrice: form.price,
+      startDate: moment(form.startDate).format("YYYY-MM-DD"),
+      endDate: moment(form.endDate).format("YYYY-MM-DD"),
+    };
+    modifyAvailability("post", "/special-price/create", payload);
   };
 
-  const onDeleteHandler = async (room) => {
-    console.log("Delete");
+  const editAvailability = (form) => {
+    const payload = {
+      specialPrice: form.price,
+      startDate: moment(form.startDate).format("YYYY-MM-DD"),
+      endDate: moment(form.endDate).format("YYYY-MM-DD"),
+      isActive: form.isActive,
+    };
+    modifyAvailability(
+      "patch",
+      `/special-price/edit/${selectedRoomSpecialPrice.id}`,
+      payload
+    );
   };
 
-  return isLoading ? (
-    <div className="bg-gray-900/10 h-[89vh] flex items-center justify-center">
-      <div className="w-full max-w-md transform overflow-hidden shadow-md rounded-3xl bg-white p-6 text-left align-middle transition-all">
-        <LoadingCard />
-      </div>
-    </div>
-  ) : (
-    <TableWithSortHeader
-      title={"Special Price"}
-      description={"Here's the list of special price for each room"}
-      addHandler={onAddHandler}
-      data={tableData}
-      onEdit={onSelectHandler}
-      onDelete={onDeleteHandler}
-    />
+  const closeModal = () => setIsOpen(false);
+
+  const modalSubmit = (values, formikBag) => {
+    modalType === "add" ? addAvailability(values) : editAvailability(values);
+    if (formikBag) {
+      formikBag.setSubmitting(false);
+      formikBag.resetForm();
+    }
+  };
+
+  return (
+    <>
+      <RoomSpecialPriceFormModal
+        closeModal={closeModal}
+        isOpen={isOpen}
+        modalSubmit={modalSubmit}
+        modalType={modalType}
+        selectedRoomAvailability={selectedRoomSpecialPrice}
+      />
+      <TableWithGroupedRows
+        title="Special Price"
+        description="Here you can config special price for each room"
+        addHandler={() => setModal("add")}
+        data={tableData}
+        onEdit={(value) => setModal("edit", value)}
+        arrayKey="specialPrices"
+      />
+    </>
   );
-}
+};
 
 export default PropertySpecialPrice;

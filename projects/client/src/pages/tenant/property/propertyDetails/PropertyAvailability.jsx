@@ -4,7 +4,7 @@ import api from "../../../../shared/api";
 import moment from "moment";
 import RoomAvailabilityFormModal from "../../../../components/modals/RoomAvailabilityFormModal";
 import TableWithGroupedRows from "../../../../components/tables/TableWithGroupedRows";
-import { mapRoomAvailabilityData } from "./roomMapper";
+import { mapRoomAvailabilityData } from "./dataMapper";
 
 const PropertyAvailability = () => {
   const { propertyId } = useParams();

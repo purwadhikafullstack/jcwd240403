@@ -5,7 +5,7 @@ import LoadingCard from "../../../../components/cards/LoadingCard";
 import PropertyRoomForm from "../../../../components/forms/property/PropertyDetailForm/PropertyRoomForm";
 import { Buffer } from "buffer";
 import { toast } from "react-hot-toast";
-import { mapRoomData } from "./roomMapper";
+import { mapRoomData } from "./dataMapper";
 
 function PropertyRoom() {
   const { propertyId } = useParams();

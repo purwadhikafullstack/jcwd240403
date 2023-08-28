@@ -27,8 +27,13 @@ const TableContentGroupedRows = ({
   headers,
   onEdit,
   onDelete,
+  arrayKey,
 }) => {
-  if (!groupedRows.length) {
+  const flattenedSpecialPrices = groupedRows.flatMap(
+    (room) => room.specialPrices
+  );
+
+  if (flattenedSpecialPrices.length === 0) {
     return (
       <p className="mt-40 text-xl text-center w-full">
         Your data seems to be empty.
@@ -71,7 +76,7 @@ const TableContentGroupedRows = ({
                   {row.name}
                 </th>
               </tr>
-              {row.roomStatuses.length === 0 ? (
+              {row[arrayKey].length === 0 ? (
                 <tr className="bg-gray-100">
                   <td
                     colSpan={headers.length + 1}
@@ -81,7 +86,7 @@ const TableContentGroupedRows = ({
                   </td>
                 </tr>
               ) : (
-                row.roomStatuses.map((status, statusIdx) => (
+                row[arrayKey].map((status, statusIdx) => (
                   <tr key={status.id}>
                     {headers.map((header) => (
                       <td

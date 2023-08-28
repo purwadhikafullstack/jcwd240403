@@ -12,11 +12,11 @@ export default function TableWithGroupedRows({
   arrayKey,
 }) {
   const groupedRows = data ?? [];
-  const groupedRoomStatuses =
+  const groupedDataContent =
     data?.flatMap((res) => res[arrayKey].map(({ roomId, ...rest }) => rest)) ??
     [];
   const headers =
-    groupedRoomStatuses.length > 0 ? Object.keys(groupedRoomStatuses[0]) : [];
+    groupedDataContent.length > 0 ? Object.keys(groupedDataContent[0]) : [];
 
   return (
     <div className="flex flex-col bg-white p-4 rounded">
@@ -40,6 +40,7 @@ export default function TableWithGroupedRows({
         headers={headers}
         onEdit={onEdit}
         onDelete={onDelete}
+        arrayKey={arrayKey}
       />
     </div>
   );

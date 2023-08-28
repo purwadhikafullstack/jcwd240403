@@ -12,6 +12,12 @@ export const mapRoomAvailabilityData = (room) => ({
   roomStatuses: room.Room_statuses.map(mapRoomStatusData),
 });
 
+export const mapRoomSpecialPriceData = (room) => ({
+  id: room.id,
+  name: room.name,
+  specialPrices: room.Special_prices.map(mapRoomSpecialPrice),
+});
+
 export const mapRoomStatusData = (roomStatus) => ({
   id: roomStatus.id,
   roomId: roomStatus.room_id,
@@ -19,4 +25,13 @@ export const mapRoomStatusData = (roomStatus) => ({
   start_date: roomStatus.start_date,
   end_date: roomStatus.end_date,
   isActive: roomStatus.is_active,
+});
+
+export const mapRoomSpecialPrice = (specialPrice) => ({
+  id: specialPrice.id,
+  roomId: specialPrice.room_id,
+  price: specialPrice.price,
+  start_date: specialPrice.start_date,
+  end_date: specialPrice.end_date,
+  isActive: specialPrice.is_active,
 });

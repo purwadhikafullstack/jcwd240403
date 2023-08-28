@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { mapRoomData } from "../../pages/tenant/property/propertyDetails/dataMapper";
 import api from "../../shared/api";
 import { useParams } from "react-router-dom";
-import RoomAvailabilityForm from "../forms/property/PropertyDetailForm/RoomAvailabilitySectionForm";
+import RoomSpecialPriceSectionForm from "../forms/property/PropertyDetailForm/RoomSpecialPriceSectionForm";
 
 const VALIDATION_SCHEMA = Yup.object({
   room: Yup.object().nullable().required("Required"),
@@ -14,10 +14,10 @@ const VALIDATION_SCHEMA = Yup.object({
     .required("End date is required")
     .nullable()
     .min(Yup.ref("startDate"), "End date can't be before start date"),
-  reason: Yup.string().required("Reason is required"),
+  price: Yup.string().required("Price is required"),
 });
 
-const RoomAvailabilityFormModal = ({
+const RoomSpecialPriceFormModal = ({
   isOpen,
   closeModal,
   modalSubmit,
@@ -31,7 +31,7 @@ const RoomAvailabilityFormModal = ({
     isActive: true,
     startDate: "",
     endDate: "",
-    reason: "",
+    price: "",
   });
 
   useEffect(() => {
@@ -47,7 +47,7 @@ const RoomAvailabilityFormModal = ({
 
     fetchAllData();
     if (selectedRoomAvailability) {
-      const { roomId, isActive, start_date, end_date, reason } =
+      const { roomId, isActive, start_date, end_date, price } =
         selectedRoomAvailability;
       const room = rooms.find((room) => room.id === roomId);
       setInitialValues({
@@ -55,7 +55,7 @@ const RoomAvailabilityFormModal = ({
         isActive,
         startDate: start_date,
         endDate: end_date,
-        reason,
+        price,
       });
     }
   }, [selectedRoomAvailability, propertyId, rooms]);
@@ -69,7 +69,7 @@ const RoomAvailabilityFormModal = ({
     >
       {({ handleSubmit, values, setFieldValue, errors }) => {
         return (
-          <RoomAvailabilityForm
+          <RoomSpecialPriceSectionForm
             values={values}
             errors={errors}
             setFieldValue={setFieldValue}
@@ -85,4 +85,4 @@ const RoomAvailabilityFormModal = ({
   );
 };
 
-export default RoomAvailabilityFormModal;
+export default RoomSpecialPriceFormModal;
