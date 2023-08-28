@@ -14,7 +14,10 @@ const VALIDATION_SCHEMA = Yup.object({
     .required("End date is required")
     .nullable()
     .min(Yup.ref("startDate"), "End date can't be before start date"),
-  price: Yup.string().required("Price is required"),
+  price: Yup.number()
+    .required("Price is required")
+    .positive("Price must be greater than zero")
+    .typeError("Price must be a number"),
 });
 
 const RoomSpecialPriceFormModal = ({

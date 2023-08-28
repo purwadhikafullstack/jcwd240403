@@ -4,7 +4,13 @@ import { Fragment } from "react";
 // Helper Functions
 const isDate = (str) => !isNaN(new Date(str).getTime());
 
-const renderContentBasedOnType = (value) => {
+const renderContentBasedOnType = (value, key) => {
+  if (key === "price" && typeof value === "number") {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    }).format(value);
+  }
   if (typeof value === "number") return value;
   if (typeof value === "boolean") return value ? "True" : "False";
   return isDate(value) ? moment(value).format("D MMMM YYYY") : value;
@@ -93,7 +99,7 @@ const TableContentGroupedRows = ({
                         key={header}
                         className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-left"
                       >
-                        {renderContentBasedOnType(status[header])}
+                        {renderContentBasedOnType(status[header], header)}
                       </td>
                     ))}
                     <td className="relative whitespace-nowrap py-4 pl-3 pr-4 flex items-center text-right text-sm space-x-4">
