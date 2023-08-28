@@ -9,8 +9,9 @@ import { isBefore, differenceInDays, set } from "date-fns";
 import moment from 'moment';
 import Button from '../../../components/buttons/Button';
 import PropertyCard from '../../../components/cards/PropertyCard';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import TextInput from '../../../components/textInputs/TextInput';
+import { getRange } from '../../../shared/utils';
 
 
 const useQuery = () => {
@@ -20,13 +21,15 @@ const useQuery = () => {
 const AvailableProperty = () => {
 
     let query = useQuery()
+    const navigate = useNavigate();
     const [location, setLocation] = useState(null)
     const [locations, setLocations] = useState(null)
     const [startDate, setStartDate] = useState(null)
     const [endDate, setEndDate] = useState(null)
-    const [properties, setProperties] = useState([])
+    const [properties, setProperties] = useState(null)
     const [propertyTypes, setPropertyTypes] = useState([])
     const [propertyType, setPropertyType] = useState(null)
+    const [rangePrice, setRangePrice] = useState("")
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
@@ -68,8 +71,14 @@ const AvailableProperty = () => {
                 }
             }).then(response => {
                 setProperties(response.data.data)
-                console.log(response.data.data)
+                const prop = response.data.data
             })
+        } else {
+            if (!location) {
+                toast.error("Location Must Be Selected")
+            } else if (!startDate && !endDate) {
+                toast.error("Date Must Be Selected")
+            }
         }
     }
     const getLocations = async () => {
@@ -87,8 +96,17 @@ const AvailableProperty = () => {
     useEffect(() => {
         const konversiStartDate = moment(new Date(selectedDays.from)).format("YYYY-MM-DD")
         const konversiEndate = moment(new Date(selectedDays.to)).format("YYYY-MM-DD")
-        setStartDate(konversiStartDate)
-        setEndDate(konversiEndate)
+        if (selectedDays.from) {
+            setStartDate(konversiStartDate)
+        } else {
+            setStartDate(null)
+        }
+        if (selectedDays.to) {
+            setEndDate(konversiEndate)
+
+        } else {
+            setEndDate(null)
+        }
     }, [selectedDays])
 
     useEffect(() => {
@@ -164,14 +182,39 @@ const AvailableProperty = () => {
                         </div>
                         <div className="flex w-full flex-col gap-y-5">
                             {
-                                properties.map(row => (
+                                (properties != null)
+                                    ?
                                     <>
-                                        <div key={row.id}>
-                                            <PropertyCard title={row.name} price={row.Rooms[0]?.base_price} location={row.Location.city} image={`${process.env.REACT_APP_API_BASE_URL}${row.Rooms[0]?.room_img}`} />
-                                        </div>
+                                        {
+                                            properties.length ?
+                                                properties.map(row => (
+                                                    <>
+                                                        <div key={row.id}>
+                                                            <PropertyCard title={row.name} price={getRange(row.Rooms?.map(row => row.base_price))} location={row.Location.city} image={`${process.env.REACT_APP_API_BASE_URL}${row.Rooms[0]?.room_img}`} >
+                                                                <div className='w-1/3 ml-auto'>
+                                                                    <Button onClick={() => {
+                                                                        navigate(`/property/${row.name}-${row.id}`)
 
+                                                                    }}
+                                                                        label={"Detail"}
+                                                                        type='button'
+                                                                    />
+
+                                                                </div>
+                                                            </PropertyCard>
+                                                        </div>
+
+                                                    </>
+                                                ))
+                                                :
+                                                <>
+                                                    <p className='text-red-700'>Data Not Found</p>
+                                                </>
+                                        }
                                     </>
-                                ))
+                                    :
+                                    <>
+                                    </>
                             }
                         </div>
                     </div>
