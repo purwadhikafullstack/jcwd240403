@@ -1,11 +1,11 @@
 import React from "react";
 
-function PropertyCard({ title, type, location, price }) {
+function PropertyCard({ title, type, location, price, key, image, children }) {
   return (
-    <div className="md:w-[700px] md:h-[200px] h-[180px] flex flex-row bg-white border border-gray-300 rounded-lg">
+    <div className="md:w-full md:max-h-52 h-[180px] flex flex-row bg-white border border-gray-300 rounded-lg" >
       <div className="flex shrink-0">
         <img
-          src="https://cdn.britannica.com/96/115096-050-5AFDAF5D/Bellagio-Hotel-Casino-Las-Vegas.jpg"
+          src={image}
           alt="hotel"
           className="object-cover object-center h-full w-[180px] md:w-[350px] rounded-l-lg"
         />
@@ -21,9 +21,10 @@ function PropertyCard({ title, type, location, price }) {
         </div>
 
         {/* Price */}
-        <div className="flex items-end flex-col border-t pt-3">
+        <div className="flex items-end flex-col border-t pt-3 gap-2">
           <p className="md:text-lg font-bold text-rose-500">{price}</p>
           <p className="text-[10px] md:text-xs">/night/room (tax included)</p>
+          {children}
         </div>
       </div>
     </div>
@@ -35,6 +36,7 @@ PropertyCard.defaultProps = {
   type: "Hotel",
   location: "Jakarta Selatan",
   price: "Rp. 1.000.000",
+  image: "https://cdn.britannica.com/96/115096-050-5AFDAF5D/Bellagio-Hotel-Casino-Las-Vegas.jpg"
 };
 
 export default PropertyCard;
