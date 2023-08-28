@@ -3,33 +3,43 @@ const express = require("express");
 const cors = require("cors");
 const { join } = require("path");
 
+const routes = require("./routes");
+const resetOtpCounterJob = require("./cronJobs/resetOtpCounter");
+
 const PORT = process.env.PORT || 8000;
 const app = express();
-app.use(
-  cors({
-    origin: [
-      process.env.WHITELISTED_DOMAIN &&
-        process.env.WHITELISTED_DOMAIN.split(","),
-    ],
-  })
-);
+
+app.use(cors({}));
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use("/api/static", express.static(join(__dirname, "public")));
 
+resetOtpCounterJob();
 //#region API ROUTES
 
 // ===========================
 // NOTE : Add your routes here
 
-app.get("/api", (req, res) => {
-  res.send(`Hello, this is my API`);
-});
+app.use("/api/auth", routes.auth);
+app.use("/api/category-area", routes.categoryArea);
+app.use("/api/profile", routes.profile);
 
-app.get("/api/greetings", (req, res, next) => {
-  res.status(200).json({
-    message: "Hello, Student !",
-  });
-});
+app.use("/api/property", routes.property);
+app.use("/api/room", routes.room);
+app.use("/api", routes.shared);
+app.use("/api/product", routes.product);
+app.use("/api/transaction", routes.transaction);
+
+// app.get("/api", (req, res) => {
+//   res.send(`Hello, this is my API`);
+// });
+
+// app.get("/api/greetings", (req, res, next) => {
+//   res.status(200).json({
+//     message: "Hello, Student !",
+//   });
+// });
 
 // ===========================
 
