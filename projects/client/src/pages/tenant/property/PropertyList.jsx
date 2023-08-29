@@ -18,7 +18,7 @@ function PropertyList() {
     return api
       .get("/property/mine")
       .then(({ data }) => {
-        const response = data.data.map((property) => {
+        const response = data.data?.map((property) => {
           return {
             id: property.id,
             name: property.name,

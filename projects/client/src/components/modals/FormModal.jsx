@@ -2,7 +2,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import React, { Fragment } from "react";
 import { classNames } from "../../shared/utils";
 
-function CategoryAreaModal({
+function FormModal({
   isOpen,
   closeModal,
   title,
@@ -78,4 +78,4 @@ function CategoryAreaModal({
   );
 }
 
-export default CategoryAreaModal;
+export default FormModal;
