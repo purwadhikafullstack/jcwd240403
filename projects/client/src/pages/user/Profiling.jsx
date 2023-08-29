@@ -78,6 +78,7 @@ function Profiling() {
                     const cekImageType = await isValidFileExtension(value?.type, "image")
                     if (!cekImageType) {
                         toast.error("not a valid image type")
+                        setFoto(null)
                         return false
                     }
                     return true
@@ -85,6 +86,8 @@ function Profiling() {
                     const cekImageSize = (value && value.size <= maxFilesize)
                     if (!cekImageSize) {
                         toast.error("max allowed size is 1 MB")
+                        setFoto(null)
+
                         return false
                     }
                     return true
@@ -116,6 +119,8 @@ function Profiling() {
                 const data = res.data
                 if (data.message) {
                     toast.success(data.message)
+                    setFoto(null)
+
                 }
 
             }).catch((error) => {
