@@ -10,14 +10,27 @@ const Op = db.Sequelize.Op;
 
 const getAllProperty = async (req, res) => {
   try {
-    const { start_date, end_date, location } = req.query;
-    const getAvailable = await db.Property.findAll({
+    const {
+      start_date,
+      end_date,
+      location,
+      search = "",
+      sortBy = [],
+    } = req.query;
+    const pagination = {
+      page: Number(req.query.page) || 1,
+      perPage: Number(req.query.perPage) || 10,
+    };
+    const { count, rows: data } = await db.Property.findAndCountAll({
       attributes: ["id", "name", "description"],
       where: {
         is_active: true,
         location_id: location,
         deletedAt: null,
       },
+      limit: pagination.perPage,
+      offset: pagination.perPage * (pagination.page - 1),
+      distinct: true,
       include: [
         {
           model: db.Picture,
@@ -68,9 +81,17 @@ const getAllProperty = async (req, res) => {
         },
       ],
     });
+    const totalPage = Math.ceil(count / pagination.perPage);
     return res.send({
       status: true,
-      data: getAvailable,
+      data: data,
+      pagination: {
+        page: pagination.page,
+        perPage: pagination.perPage,
+        search: search,
+        totalData: count,
+        totalPage: totalPage,
+      },
     });
   } catch (error) {
     console.log(error);
