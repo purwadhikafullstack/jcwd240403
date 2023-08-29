@@ -20,11 +20,22 @@ const PropertySpecialPrice = () => {
     setIsOpen(true);
   }, []);
 
+  const sortSpecialPricesByUpdatedAt = (data) => {
+    return data.map((room) => ({
+      ...room,
+      Special_prices: room.Special_prices.sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      ),
+    }));
+  };
+
   const fetchRoomAvailability = useCallback(async () => {
     try {
       const { data } = await api.get(`/special-price/all/${propertyId}`);
-      const mappedData = data?.data?.length
-        ? data.data.map(mapRoomSpecialPriceData)
+      const sortedData = sortSpecialPricesByUpdatedAt(data.data);
+      const mappedData = sortedData.length
+        ? sortedData.map(mapRoomSpecialPriceData)
         : [];
       setTableData(mappedData);
     } catch (error) {

@@ -20,13 +20,26 @@ const PropertyAvailability = () => {
     setIsOpen(true);
   }, []);
 
+  const sortAvailabilityByUpdatedAt = (data) => {
+    return data.map((room) => ({
+      ...room,
+      Room_statuses: room.Room_statuses.sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      ),
+    }));
+  };
+
   const fetchRoomAvailability = useCallback(async () => {
     try {
       const { data } = await api.get(`/room-status/all/${propertyId}`);
-      const mappedData = data?.data?.length
-        ? data.data.map(mapRoomAvailabilityData)
+      const sortedData = sortAvailabilityByUpdatedAt(data.data);
+      const mappedData = sortedData.length
+        ? sortedData.map(mapRoomAvailabilityData)
         : [];
       setTableData(mappedData);
+
+      console.log("data", data.data);
     } catch (error) {
       console.error("Error fetching room availability:", error);
     }

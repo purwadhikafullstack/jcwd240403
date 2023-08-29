@@ -13,8 +13,9 @@ export default function TableWithGroupedRows({
 }) {
   const groupedRows = data ?? [];
   const groupedDataContent =
-    data?.flatMap((res) => res[arrayKey].map(({ roomId, ...rest }) => rest)) ??
-    [];
+    data?.flatMap((res) =>
+      res[arrayKey].map(({ roomId, id, ...rest }) => rest)
+    ) ?? [];
   const headers =
     groupedDataContent.length > 0 ? Object.keys(groupedDataContent[0]) : [];
 

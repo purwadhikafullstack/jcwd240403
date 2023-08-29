@@ -12,7 +12,7 @@ const renderContentBasedOnType = (value, key) => {
     }).format(value);
   }
   if (typeof value === "number") return value;
-  if (typeof value === "boolean") return value ? "True" : "False";
+  if (typeof value === "boolean") return value ? "Active" : "Inactive";
   return isDate(value) ? moment(value).format("D MMMM YYYY") : value;
 };
 
@@ -21,7 +21,6 @@ const toReadableString = (str) => {
     start_date: "Start Date",
     end_date: "End Date",
     isActive: "Rule Status",
-    id: "No",
     reason: "Reason",
   };
   return mapping[str] || str;
@@ -77,7 +76,7 @@ const TableContentGroupedRows = ({
               <tr className="border-t border-gray-200">
                 <th
                   colSpan={headers.length + 1}
-                  className="bg-secondary text-black py-2 pl-4 pr-3 text-left text-sm font-semibold"
+                  className="bg-secondary capitalize text-black py-2 pl-4 pr-3 text-left text-sm font-semibold"
                 >
                   {row.name}
                 </th>
