@@ -21,8 +21,10 @@ module.exports = {
       const result = await db.Room_status.create({
         room_id: roomId,
         custom_status: customStatus,
-        start_date: startDate,
-        end_date: endDate,
+        start_date: moment(startDate)
+          .startOf("day")
+          .format("YYYY-MM-DD HH:mm:ss"),
+        end_date: moment(endDate).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
         is_active: true,
       });
       res.status(201).send({
