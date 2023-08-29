@@ -6,6 +6,7 @@ const {
   getAbsolutePathPublicFile,
 } = require("../utils/file");
 const fs = require("fs");
+const Op = db.Sequelize.Op;
 
 module.exports = {
   async getAllMyProp(req, res) {
@@ -337,6 +338,50 @@ module.exports = {
       });
     } catch (error) {
       console.log("deleteprop", error);
+      res.status(500).send({
+        message: "Something wrong on server",
+        error,
+      });
+    }
+  },
+  async availableProperty(req, res) {
+    try {
+      const { date, location } = req.query;
+      const getAvailable = await db.Property.findAll({
+        where: {
+          is_active: true,
+          location_id: location,
+        },
+        include: [
+          {
+            model: db.Room,
+            where: {
+              status: "AVAILABLE",
+            },
+            include: [
+              {
+                model: db.Room_status,
+                where: {
+                  start_date: {
+                    //gte : great than equel
+                    [Op.gte]: date,
+                  },
+                  end_date: {
+                    //lte : less than equel
+                    [Op.lte]: date,
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      });
+      return res.send({
+        status: true,
+        data: getAvailable,
+      });
+    } catch (error) {
+      console.log(error);
       res.status(500).send({
         message: "Something wrong on server",
         error,

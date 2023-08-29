@@ -21,7 +21,7 @@ async function updateAndResendOTP(user) {
   await user.save();
   // Email sending
   let transporter = nodemailer.createTransport({
-    service: "hotmail",
+    service: "gmail",
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,

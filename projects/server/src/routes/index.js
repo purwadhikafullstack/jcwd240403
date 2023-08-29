@@ -6,6 +6,8 @@ const room = require("./room");
 const profile = require("./profile");
 const specialPrice = require("./specialPrice");
 const roomStatus = require("./roomStatus");
+const product = require("./product");
+const transaction = require("./transaction");
 
 module.exports = {
   auth,
@@ -16,4 +18,6 @@ module.exports = {
   profile,
   specialPrice,
   roomStatus,
+  product,
+  transaction,
 };

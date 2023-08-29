@@ -5,6 +5,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import MainContainer from "../../components/layouts/MainContainer";
 import { toast } from "react-hot-toast"
+import * as Yup from "yup";
 
 function Profiling() {
     const [full_name, setFull_name] = useState("")
@@ -65,11 +66,39 @@ function Profiling() {
         setEditable(false)
     }
 
+    const maxFilesize = 1024000
+    const validFileExtension = { image: ["image/jpg", "image/gif", "image/jpeg", "image/png"] }
+    const isValidFileExtension = async (fileName, filetype) => {
+        return fileName && validFileExtension[filetype].includes(fileName)
+    }
     const changeImage = async (e) => {
         if (e.target.files) {
+            const fileSchema = await Yup.object().shape({
+                file: Yup.mixed().required("Required").test("is-valid-type", "not a valid image type", async value => {
+                    const cekImageType = await isValidFileExtension(value?.type, "image")
+                    if (!cekImageType) {
+                        toast.error("not a valid image type")
+                        setFoto(null)
+                        return false
+                    }
+                    return true
+                }).test("is-valid-size", "max allowed size is 1 MB", value => {
+                    const cekImageSize = (value && value.size <= maxFilesize)
+                    if (!cekImageSize) {
+                        toast.error("max allowed size is 1 MB")
+                        setFoto(null)
 
-            setFoto(e.target.files[0])
-            setFototemp(URL.createObjectURL(e.target.files[0]))
+                        return false
+                    }
+                    return true
+                })
+
+            })
+            const cekFileSchema = await fileSchema.validate({ file: e.target.files[0] })
+            if (cekFileSchema) {
+                setFoto(e.target.files[0])
+                setFototemp(await URL.createObjectURL(e.target.files[0]))
+            }
         }
     }
 
@@ -90,6 +119,8 @@ function Profiling() {
                 const data = res.data
                 if (data.message) {
                     toast.success(data.message)
+                    setFoto(null)
+
                 }
 
             }).catch((error) => {
@@ -152,8 +183,9 @@ function Profiling() {
                             <select defaultValue={gender} disabled={editable} name="gender" id="gender" required={true} onChange={(e) => {
                                 setGender(e.target.value)
                             }}>
-                                <option value="MALE">Male</option>
-                                <option value="FEMALE">Female</option>
+                                <option value="">GENDER</option>
+                                <option value="MALE" selected={(gender == "MALE")}>Male</option>
+                                <option value="FEMALE" selected={(gender == "FEMALE")}>Female</option>
                             </select>
                         </div>
                     </div>

@@ -20,10 +20,10 @@ module.exports = {
         type: Sequelize.STRING,
       },
       start_date: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
       },
       end_date: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
       },
       is_active: {
         type: Sequelize.BOOLEAN,

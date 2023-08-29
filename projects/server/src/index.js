@@ -30,6 +30,8 @@ app.use("/api/room", routes.room);
 app.use("/api", routes.shared);
 app.use("/api/special-price", routes.specialPrice);
 app.use("/api/room-status", routes.roomStatus);
+app.use("/api/product", routes.product);
+app.use("/api/transaction", routes.transaction);
 
 // app.get("/api", (req, res) => {
 //   res.send(`Hello, this is my API`);
