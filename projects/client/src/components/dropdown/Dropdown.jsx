@@ -35,46 +35,50 @@ function Dropdown({
             leaveTo="opacity-0"
           >
             <Listbox.Options className="absolute mt-1 z-10 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-              {items.map((item, idx) => (
-                <Listbox.Option
-                  key={idx}
-                  className={({ active }) =>
-                    `relative cursor-default group select-none py-2 pl-10 pr-4 ${active ? "bg-primary text-white" : "text-gray-900"
-                    }`
-                  }
-                  value={item}
-                >
-                  {({ selected, active }) => (
-                    <>
-                      <span
-                        className={`block truncate ${selected ? "font-medium" : "font-normal"
-                          }`}
-                      >
-                        {item[labelField]}
-                      </span>
-                      {selected ? (
+              {items.map((item, idx) => {
+                return (
+                  <Listbox.Option
+                    key={idx}
+                    className={({ active }) =>
+                      `relative cursor-default group select-none py-2 pl-10 pr-4 ${
+                        active ? "bg-primary text-white" : "text-gray-900"
+                      }`
+                    }
+                    value={item}
+                  >
+                    {({ selected, active }) => (
+                      <>
                         <span
-                          className={classNames(
-                            "absolute inset-y-0 left-0 flex items-center pl-3",
-                            selected
-                              ? "text-black group-hover:text-white"
-                              : "text-black",
-                            active ? "text-white" : "text-black"
-                          )}
+                          className={`block truncate ${
+                            selected ? "font-medium" : "font-normal"
+                          }`}
                         >
-                          <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                          {item[labelField]}
                         </span>
-                      ) : null}
-                    </>
-                  )}
-                </Listbox.Option>
-              ))}
+                        {selected ? (
+                          <span
+                            className={classNames(
+                              "absolute inset-y-0 left-0 flex items-center pl-3",
+                              selected
+                                ? "text-black group-hover:text-white"
+                                : "text-black",
+                              active ? "text-white" : "text-black"
+                            )}
+                          >
+                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                          </span>
+                        ) : null}
+                      </>
+                    )}
+                  </Listbox.Option>
+                );
+              })}
             </Listbox.Options>
           </Transition>
         </div>
       </Listbox>
       {/* error message from formik */}
-      {error && <p className="text-red-500 text-xs">{error}</p>}
+      {error && <p className="text-red-500 text-xs pt-2 z-10">{error}</p>}
     </div>
   );
 }

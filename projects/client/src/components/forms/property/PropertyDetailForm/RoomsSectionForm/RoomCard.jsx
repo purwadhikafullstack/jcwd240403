@@ -13,9 +13,9 @@ const RoomCard = ({
   setFieldValue,
   setDeletedExistingRoom,
 }) => {
-  const isExistingRoom = values.existingRooms
-    ? values.existingRooms.includes(room)
-    : false;
+  const newRooms = values.rooms ?? [];
+  const existingRooms = values.existingRooms ?? [];
+  const isExistingRoom = existingRooms ? existingRooms.includes(room) : false;
 
   const getImageURL = () =>
     room.roomImage && room.roomImage.includes("/static")
@@ -24,7 +24,7 @@ const RoomCard = ({
 
   const imageURL = getImageURL();
 
-  const isDisabled = () => [...values.rooms].length === 1;
+  const isDisabled = () => [...existingRooms, ...newRooms].length <= 1;
 
   const fieldNamePrefix = isExistingRoom
     ? `existingRooms[${index}]`
@@ -49,11 +49,9 @@ const RoomCard = ({
   };
 
   const removeRoom = () => {
-    const newRooms = isExistingRoom
-      ? [...values.existingRooms]
-      : [...values.rooms];
-    newRooms.splice(index, 1);
-    setFieldValue(isExistingRoom ? "existingRooms" : "rooms", newRooms);
+    const rooms = isExistingRoom ? [...existingRooms] : [...newRooms];
+    rooms.splice(index, 1);
+    setFieldValue(isExistingRoom ? "existingRooms" : "rooms", rooms);
 
     if (isExistingRoom) {
       setDeletedExistingRoom(room);

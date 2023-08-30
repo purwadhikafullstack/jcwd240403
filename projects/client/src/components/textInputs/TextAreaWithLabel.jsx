@@ -1,7 +1,7 @@
 import React from "react";
 
 function TextAreaWithLabel({ field, label, ...props }) {
-  const { touched, errors } = props.form;
+  const { errors } = props.form;
 
   return (
     <div className="space-y-1">
@@ -13,7 +13,7 @@ function TextAreaWithLabel({ field, label, ...props }) {
         {...props}
       />
       {/* error message from formik */}
-      {touched[field.name] && errors[field.name] && (
+      {errors[field.name] && (
         <p className="text-red-500 text-xs">{errors[field.name]}</p>
       )}{" "}
     </div>

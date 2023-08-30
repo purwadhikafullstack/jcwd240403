@@ -16,8 +16,9 @@ module.exports = (sequelize, DataTypes) => {
     {
       room_id: DataTypes.INTEGER,
       custom_status: DataTypes.STRING,
-      start_date: DataTypes.DATEONLY,
-      end_date: DataTypes.DATEONLY,
+      start_date: DataTypes.STRING,
+      end_date: DataTypes.STRING,
+      is_active: DataTypes.BOOLEAN,
     },
     {
       sequelize,

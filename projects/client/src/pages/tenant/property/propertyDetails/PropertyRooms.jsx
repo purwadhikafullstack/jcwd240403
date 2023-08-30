@@ -5,11 +5,12 @@ import LoadingCard from "../../../../components/cards/LoadingCard";
 import PropertyRoomForm from "../../../../components/forms/property/PropertyDetailForm/PropertyRoomForm";
 import { Buffer } from "buffer";
 import { toast } from "react-hot-toast";
+import { mapRoomData } from "./dataMapper";
 
 function PropertyRoom() {
   const { propertyId } = useParams();
   const propertyDetailRef = useRef();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [deletedExistingRoom, setDeletedExistingRoom] = useState([]);
   const [initialValues, setInitialValues] = useState({
     rooms: [],
@@ -20,19 +21,12 @@ function PropertyRoom() {
     fetchAllData();
   }, []);
 
-  const mapRoomData = (room) => ({
-    id: room.id,
-    name: room.name,
-    roomImage: room.room_img,
-    description: room.description,
-    basePrice: room.base_price,
-  });
-
   const fetchAllData = async () => {
     try {
       const res = await api.get(`/room/all/${propertyId}`);
       const existingRooms = res.data.data.map(mapRoomData);
       setInitialValues({ ...initialValues, existingRooms });
+      setIsLoading(false);
     } catch (err) {
       console.error(err);
     }
@@ -133,8 +127,6 @@ function PropertyRoom() {
       throw error;
     }
   };
-
-  console.log("init", initialValues);
 
   return isLoading ? (
     <div className="bg-gray-900/10 h-[89vh] flex items-center justify-center">

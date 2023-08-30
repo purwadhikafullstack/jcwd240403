@@ -10,7 +10,8 @@
     "start": "nodemon",
     "serve": "node .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "db-reset": "npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate"
+    "db-reset": "npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate",
+    "db-seed": "npx sequelize-cli db:seed:all"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
