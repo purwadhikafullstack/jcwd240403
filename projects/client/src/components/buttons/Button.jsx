@@ -11,7 +11,9 @@ function Button({ label, className, type = "submit", ...props }) {
         className
       )}
     >
-      {label}
+      <p className="flex-shrink-0">
+        {label}
+      </p>
     </button>
   );
 }

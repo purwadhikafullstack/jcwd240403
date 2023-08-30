@@ -2,7 +2,7 @@ import React from "react";
 
 function PropertyCard({ title, type, location, price, key, image, children }) {
   return (
-    <div className="md:w-full md:max-h-52 h-[180px] flex flex-row bg-white border border-gray-300 rounded-lg" >
+    <div className="md:w-full md:max-h-52 min-h-[180px] flex flex-row bg-white border border-gray-300 rounded-lg" >
       <div className="flex shrink-0">
         <img
           src={image}

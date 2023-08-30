@@ -129,13 +129,13 @@ const DetailProperty = () => {
                             <HeadLine label="About Property" />
                             <SubTitle label={property?.description} />
                         </div>
-                        <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-4 mb-32">
                             <HeadLine label="Rooms" />
                             {
                                 property?.Rooms.map(row => (
                                     <>
                                         <div key={row.id}>
-                                            <PropertyCard title={row.name} price={new Intl.NumberFormat().format(row.base_price)} location="" children={<div className='w-1/3 ml-auto'> <Button className="w-28" label="Book Now" /></div>} image={`${process.env.REACT_APP_API_BASE_URL}${row?.room_img}`} />
+                                            <PropertyCard title={row.name} price={new Intl.NumberFormat().format(row.base_price)} location="" children={<div className='w-1/3 ml-auto'> <Button className="w-28 " label="Book Now" /></div>} image={`${process.env.REACT_APP_API_BASE_URL}${row?.room_img}`} />
                                         </div>
 
                                     </>
