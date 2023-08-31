@@ -23,4 +23,11 @@ function getMaximumPrice(prices) {
   return new Intl.NumberFormat().format(maxValue);
 }
 
-export { classNames, getRange, getMaximumPrice, getMinimumPrice };
+const formatToIDR = (amount) => {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+  }).format(amount);
+};
+
+export { classNames, getRange, getMaximumPrice, getMinimumPrice, formatToIDR };

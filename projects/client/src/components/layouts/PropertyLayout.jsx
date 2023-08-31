@@ -32,7 +32,7 @@ export default function PropertyLayout() {
   ];
 
   const onChange = (tab) => {
-    navigate(`/property/${propertyId}${tab.href}`);
+    navigate(`/my-property/${propertyId}${tab.href}`);
   };
 
   // /property/${propertyId}${tab.href}

@@ -6,13 +6,13 @@ function ButtonSubMenu({ tab }) {
   const { propertyId } = useParams();
   const { pathname } = useLocation();
   const isActive = (href) => {
-    const match = pathname.match(/(\/[a-z]+\/\d+)(\/.*)/)[2];
-    return match === href;
+    const match = pathname.match(/\/my-property\/\d+(\/.*)$/);
+    return match ? match[1] === href : false;
   };
 
   return (
     <Link
-      to={`/property/${propertyId}${tab.href}`}
+      to={`/my-property/${propertyId}${tab.href}`}
       key={tab.name}
       className={classNames(
         isActive(tab.href)
