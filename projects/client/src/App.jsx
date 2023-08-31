@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import NotFound from "./pages/NotFound";
-import Book from "./pages/user/Book";
 // import Dashboard from "./pages/tenant/Dashboard";
 import Profiling from "./pages/user/Profiling";
 import Login from "./pages/Login";
@@ -30,6 +29,8 @@ import VerifyEmail from "./pages/user/VerifyEmail";
 import AvailableProperty from "./pages/user/property/AvailableProperty";
 import DetailProperty from "./pages/user/property/DetailProperty";
 import BookingProperty from "./pages/user/userTransaction/Booking";
+import PaymentProof from "./pages/user/userTransaction/PaymentProof";
+import OrderList from "./pages/user/userTransaction/OrderList";
 
 function App() {
   const { token } = useToken();
@@ -50,9 +51,6 @@ function App() {
       </Route>
 
       {/* USER Authenticated Routes */}
-      <Route path="book" element={<AuthenticatedRoute roles={["USER"]} />}>
-        <Route index element={<Book />} />
-      </Route>
       <Route path="profile" element={<AuthenticatedRoute roles={["USER"]} />}>
         <Route index element={<Profiling />} />
       </Route>
@@ -70,6 +68,12 @@ function App() {
       </Route>
       <Route path="/booking" element={<AuthenticatedRoute roles={["USER"]} />}>
         <Route index element={<BookingProperty />} />
+      </Route>
+      <Route path="/paymentproof" element={<AuthenticatedRoute roles={["USER"]} />}>
+        <Route index element={<PaymentProof />} />
+      </Route>
+      <Route path="/orderlist" element={<AuthenticatedRoute roles={["USER"]} />}>
+        <Route index element={<OrderList />} />
       </Route>
 
       {/* TENANT Authenticated Routes */}
