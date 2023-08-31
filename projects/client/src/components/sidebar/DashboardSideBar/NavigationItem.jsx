@@ -13,7 +13,7 @@ function NavigationItem({ item }) {
     // Check if the pathname includes the item's href
 
     if (href === "/")
-      return pathname === "/" || pathname.startsWith("/property/");
+      return pathname === "/" || pathname.startsWith("/my-property/");
     return pathname.includes(href);
   };
   return (
@@ -44,7 +44,7 @@ function NavigationItem({ item }) {
                 as="a"
                 className={classNames(
                   item.current ? "bg-gray-50" : "hover:bg-gray-50",
-                  isActiveLink(item.href) || pathname.includes('/category-area')
+                  isActiveLink(item.href) || pathname.includes("/category-area")
                     ? "text-primary"
                     : "text-white bg-transparent",
                   "flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold text-primary"
@@ -53,7 +53,8 @@ function NavigationItem({ item }) {
                 <item.icon
                   className={classNames(
                     "h-6 w-6 shrink-0",
-                    isActiveLink(item.href)|| pathname.includes('/category-area')
+                    isActiveLink(item.href) ||
+                      pathname.includes("/category-area")
                       ? "bg-gray-50 text-primary"
                       : "text-white"
                   )}

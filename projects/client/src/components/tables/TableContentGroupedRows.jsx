@@ -38,7 +38,14 @@ const TableContentGroupedRows = ({
     (room) => room.specialPrices
   );
 
-  if (flattenedSpecialPrices.length === 0) {
+  const flattenedAvailability = groupedRows.flatMap(
+    (room) => room.roomStatuses
+  );
+
+  if (
+    flattenedSpecialPrices.length === 0 ||
+    flattenedAvailability.length === 0
+  ) {
     return (
       <p className="mt-40 text-xl text-center w-full">
         Your data seems to be empty.

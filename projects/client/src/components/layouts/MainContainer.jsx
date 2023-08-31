@@ -1,17 +1,13 @@
 import React from "react";
 import NavBar from "../navbar/NavBar";
 import { Toaster, ToastIcon, resolveValue } from "react-hot-toast";
-import { duration } from "moment";
 import { Transition } from "@headlessui/react";
-
-
+import Footer from "../footer";
 
 function MainContainer({ children }) {
   return (
-    <div className="w-screen h-screen flex flex-col ">
-      <Toaster position="top-center" toastOptions={
-        { duration: 3000 }
-      }>
+    <div className="max-w-7xl mx-auto h-screen flex flex-col md:px-5">
+      <Toaster position="top-center" toastOptions={{ duration: 3000 }}>
         {(t) => (
           <Transition
             appear
@@ -23,17 +19,15 @@ function MainContainer({ children }) {
             leave="transition-all duration-200"
             leaveFrom=" opacity-100 scale-100"
             leaveTo="opacity-0 scale-0"
-
           >
             <ToastIcon toast={t} />
             <p>{resolveValue(t.message)}</p>
           </Transition>
-
         )}
       </Toaster>
       <NavBar />
-      <div className="w-full">{children}</div>
-
+      {children}
+      <Footer />
     </div>
   );
 }
