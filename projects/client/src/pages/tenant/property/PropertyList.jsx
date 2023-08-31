@@ -35,11 +35,11 @@ function PropertyList() {
 
   const onAddHandler = () => {
     console.log("Add");
-    navigate("/property/add");
+    navigate("/my-property/add");
   };
 
   const onSelectHandler = (property) => {
-    navigate(`/property/${property.id}/`);
+    navigate(`/my-property/${property.id}/`);
   };
 
   const onDeleteHandler = async (property) => {

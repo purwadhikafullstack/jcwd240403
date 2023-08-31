@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 // import Dashboard from "./pages/tenant/Dashboard";
 import Profiling from "./pages/user/Profiling";
@@ -57,13 +57,19 @@ function App() {
       <Route path="password" element={<AuthenticatedRoute roles={["USER"]} />}>
         <Route index element={<ChangePassword />} />
       </Route>
-      <Route path="/verify-email/:otp/:email" element={<AuthenticatedRoute roles={["USER"]} />}>
+      <Route
+        path="/verify-email/:otp/:email"
+        element={<AuthenticatedRoute roles={["USER"]} />}
+      >
         <Route index element={<VerifyEmail />} />
       </Route>
       <Route path="/property" element={<AuthenticatedRoute roles={["USER"]} />}>
         <Route index element={<AvailableProperty />} />
       </Route>
-      <Route path="/property/:id" element={<AuthenticatedRoute roles={["USER"]} />}>
+      <Route
+        path="/property/:id"
+        element={<AuthenticatedRoute roles={["USER"]} />}
+      >
         <Route index element={<DetailProperty />} />
       </Route>
       <Route path="/booking" element={<AuthenticatedRoute roles={["USER"]} />}>
@@ -78,7 +84,7 @@ function App() {
 
       {/* TENANT Authenticated Routes */}
       <Route
-        path="property"
+        path="/my-property"
         element={<AuthenticatedRoute roles={["TENANT"]} />}
       >
         <Route path=":propertyId" element={<DashboardSideBar />}>
@@ -114,11 +120,9 @@ function App() {
         <Route index element={<VerifyOTP />} />
       </Route>
 
-
       {/* Open Routes */}
-      <Route path="*" element={<OpenRoute />}>
-        <Route index element={<NotFound />} />
-      </Route>
+      <Route path="/404" element={<NotFound />} />
+      <Route path="*" element={<Navigate to="/404" replace />} />
     </Routes>
   );
 }

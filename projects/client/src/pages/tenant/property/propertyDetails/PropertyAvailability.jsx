@@ -38,8 +38,6 @@ const PropertyAvailability = () => {
         ? sortedData.map(mapRoomAvailabilityData)
         : [];
       setTableData(mappedData);
-
-      console.log("data", data.data);
     } catch (error) {
       console.error("Error fetching room availability:", error);
     }

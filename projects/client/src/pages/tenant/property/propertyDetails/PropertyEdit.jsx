@@ -62,7 +62,7 @@ function PropertyEdit() {
       }
     } catch (err) {
       console.error(err);
-      // Add your error handling logic here
+      // error handling logic
     }
   };
 
