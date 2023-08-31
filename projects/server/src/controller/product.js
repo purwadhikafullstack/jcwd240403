@@ -58,6 +58,35 @@ const getAllProperty = async (req, res) => {
           include: [
             {
               model: db.Special_price,
+              where: {
+                [Op.and]: [
+                  {
+                    start_date: {
+                      [Op.or]: [
+                        {
+                          [Op.lte]: new Date(`${start_date} 00:00:00`),
+                        },
+                        {
+                          [Op.gte]: new Date(`${start_date} 00:00:00`),
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    end_date: {
+                      [Op.or]: [
+                        {
+                          [Op.gte]: new Date(`${end_date} 23:59:59`),
+                        },
+                        {
+                          [Op.lte]: new Date(`${end_date} 23:59:59`),
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+              required: false,
             },
             {
               model: db.Room_status,
@@ -105,6 +134,7 @@ const getAllProperty = async (req, res) => {
 const getDetailProperty = async (req, res) => {
   try {
     const { id } = req.params;
+    const { start_date, end_date, search = "", sortBy = [] } = req.query;
     const getDetail = await db.Property.findOne({
       attributes: ["id", "name", "description"],
       where: {
@@ -135,13 +165,58 @@ const getDetailProperty = async (req, res) => {
             status: "AVAILABLE",
             deletedAt: null,
           },
+          required: false,
           include: [
             {
               model: db.Special_price,
+              where: {
+                [Op.and]: [
+                  {
+                    start_date: {
+                      [Op.or]: [
+                        {
+                          [Op.lte]: new Date(`${start_date} 00:00:00`),
+                        },
+                        {
+                          [Op.gte]: new Date(`${start_date} 00:00:00`),
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    end_date: {
+                      [Op.or]: [
+                        {
+                          [Op.gte]: new Date(`${end_date} 23:59:59`),
+                        },
+                        {
+                          [Op.lte]: new Date(`${end_date} 23:59:59`),
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+              required: false,
             },
             {
               model: db.Room_status,
               attributes: ["id", "start_date", "end_date"],
+              where: {
+                [Op.and]: [
+                  {
+                    start_date: {
+                      [Op.lte]: new Date(`${start_date} 00:00:00`),
+                    },
+                  },
+                  {
+                    end_date: {
+                      [Op.gte]: new Date(`${end_date} 23:59:59`),
+                    },
+                  },
+                ],
+              },
+              required: false,
             },
           ],
         },

@@ -15,23 +15,31 @@ import HeadLine from '../../../components/texts/HeadLine';
 import SubTitle from '../../../components/texts/SubTitle';
 import Caption from '../../../components/texts/Caption';
 import Title from '../../../components/texts/Title';
-import { useParams } from 'react-router-dom';
-import { getMinimumPrice } from '../../../shared/utils';
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { getMinimumPrice, getRange } from '../../../shared/utils';
 
 
+const useQuery = () => {
+    const { search } = useLocation()
+    return useMemo(() => new URLSearchParams(search), [search])
+}
 
 const DetailProperty = () => {
+    let [searchParams] = useSearchParams()
+    let query = useQuery()
+    const [startDate, setStartDate] = useState(searchParams?.get("start_date") ?? new Date())
+    const [endDate, setEndDate] = useState(searchParams?.get("end_date") ?? new Date())
     const [property, setProperty] = useState(null)
     const [minPrice, setMinPrice] = useState(0)
     let { id } = useParams()
     const today = new Date();
     const tomorrow = new Date(today);
     const [selectedDays, setSelectedDays] = useState({
-        from: today,
-        to: tomorrow,
+        from: startDate,
+        to: endDate,
     });
     const getDetailProperty = async (e) => {
-        await axios.get(`${process.env.REACT_APP_API_BASE_URL}/product/${id.split("-")[1]}`, {
+        await axios.get(`${process.env.REACT_APP_API_BASE_URL}/product/${id.split("-")[1]}?start_date=${startDate}&end_date=${endDate}`, {
             headers: {
                 authorization: `Bearer ${localStorage.getItem("token")}`
             }
@@ -135,7 +143,14 @@ const DetailProperty = () => {
                                 property?.Rooms.map(row => (
                                     <>
                                         <div key={row.id}>
-                                            <PropertyCard title={row.name} price={new Intl.NumberFormat().format(row.base_price)} location="" children={<div className='w-1/3 ml-auto'> <Button className="w-28 " label="Book Now" /></div>} image={`${process.env.REACT_APP_API_BASE_URL}${row?.room_img}`} />
+                                            <PropertyCard title={row.name}
+                                                price={
+                                                    getRange(
+                                                        [...row.Special_prices?.map(srow => srow.price), ...[row.base_price]]
+                                                        // row.Special_prices.length ? [...row.Special_prices?.map(srow => srow.price)] : [...row.Special_prices?.map(srow => srow.price), ...[row.base_price]]
+                                                    )
+                                                }
+                                                location="" children={<div className='w-1/3 ml-auto'> <Button className="w-28 " label="Book Now" /></div>} image={`${process.env.REACT_APP_API_BASE_URL}${row?.room_img}`} />
                                         </div>
 
                                     </>

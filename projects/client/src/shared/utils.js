@@ -3,14 +3,21 @@ function classNames(...classes) {
 }
 
 function getRange(prices) {
+  // console.log(prices);
   let minValue = Math.min(...prices);
   let maxValue = Math.max(...prices);
   if (minValue == maxValue) {
     return new Intl.NumberFormat().format(minValue);
   } else {
-    return `${new Intl.NumberFormat().format(
-      minValue
-    )} - ${new Intl.NumberFormat().format(maxValue)}`;
+    if (minValue && maxValue) {
+      return `${new Intl.NumberFormat().format(
+        minValue
+      )} - ${new Intl.NumberFormat().format(maxValue)}`;
+    } else {
+      maxValue > minValue
+        ? new Intl.NumberFormat().format(maxValue)
+        : new Intl.NumberFormat().format(minValue);
+    }
   }
 }
 
