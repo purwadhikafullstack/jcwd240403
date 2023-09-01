@@ -59,30 +59,28 @@ const getAllProperty = async (req, res) => {
             {
               model: db.Special_price,
               where: {
-                [Op.and]: [
+                [Op.or]: [
                   {
                     start_date: {
-                      [Op.or]: [
-                        {
-                          [Op.lte]: new Date(`${start_date} 00:00:00`),
-                        },
-                        {
-                          [Op.gte]: new Date(`${start_date} 00:00:00`),
-                        },
+                      [Op.between]: [
+                        new Date(`${start_date} 00:00:00`),
+                        new Date(`${end_date} 23:59:59`),
                       ],
                     },
                   },
                   {
-                    end_date: {
-                      [Op.or]: [
-                        {
+                    [Op.and]: [
+                      {
+                        start_date: {
+                          [Op.lte]: new Date(`${start_date} 00:00:00`),
+                        },
+                      },
+                      {
+                        end_date: {
                           [Op.gte]: new Date(`${end_date} 23:59:59`),
                         },
-                        {
-                          [Op.lte]: new Date(`${end_date} 23:59:59`),
-                        },
-                      ],
-                    },
+                      },
+                    ],
                   },
                 ],
               },
@@ -92,16 +90,20 @@ const getAllProperty = async (req, res) => {
               model: db.Room_status,
               attributes: ["id", "start_date", "end_date"],
               where: {
-                [Op.and]: [
+                [Op.or]: [
                   {
-                    start_date: {
-                      [Op.lte]: new Date(`${start_date} 00:00:00`),
-                    },
-                  },
-                  {
-                    end_date: {
-                      [Op.gte]: new Date(`${end_date} 23:59:59`),
-                    },
+                    [Op.not]: [
+                      {
+                        start_date: {
+                          [Op.lte]: new Date(`${start_date} 00:00:00`),
+                        },
+                      },
+                      {
+                        end_date: {
+                          [Op.gte]: new Date(`${end_date} 23:59:59`),
+                        },
+                      },
+                    ],
                   },
                 ],
               },
@@ -170,30 +172,28 @@ const getDetailProperty = async (req, res) => {
             {
               model: db.Special_price,
               where: {
-                [Op.and]: [
+                [Op.or]: [
                   {
                     start_date: {
-                      [Op.or]: [
-                        {
-                          [Op.lte]: new Date(`${start_date} 00:00:00`),
-                        },
-                        {
-                          [Op.gte]: new Date(`${start_date} 00:00:00`),
-                        },
+                      [Op.between]: [
+                        new Date(`${start_date} 00:00:00`),
+                        new Date(`${end_date} 23:59:59`),
                       ],
                     },
                   },
                   {
-                    end_date: {
-                      [Op.or]: [
-                        {
+                    [Op.and]: [
+                      {
+                        start_date: {
+                          [Op.lte]: new Date(`${start_date} 00:00:00`),
+                        },
+                      },
+                      {
+                        end_date: {
                           [Op.gte]: new Date(`${end_date} 23:59:59`),
                         },
-                        {
-                          [Op.lte]: new Date(`${end_date} 23:59:59`),
-                        },
-                      ],
-                    },
+                      },
+                    ],
                   },
                 ],
               },
@@ -203,7 +203,7 @@ const getDetailProperty = async (req, res) => {
               model: db.Room_status,
               attributes: ["id", "start_date", "end_date"],
               where: {
-                [Op.and]: [
+                [Op.not]: [
                   {
                     start_date: {
                       [Op.lte]: new Date(`${start_date} 00:00:00`),
@@ -216,7 +216,6 @@ const getDetailProperty = async (req, res) => {
                   },
                 ],
               },
-              required: false,
             },
           ],
         },
