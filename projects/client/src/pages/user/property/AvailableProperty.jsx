@@ -190,10 +190,24 @@ const AvailableProperty = () => {
                                                 properties.map(row => (
                                                     <>
                                                         <div key={row.id}>
-                                                            <PropertyCard title={row.name} price={getRange(row.Rooms?.map(row => row.base_price))} location={row.Location.city} image={`${process.env.REACT_APP_API_BASE_URL}${row.Rooms[0]?.room_img}`} >
+                                                            <PropertyCard title={row.name}
+                                                                price={
+                                                                    getRange(
+                                                                        row.Rooms?.map(row => {
+                                                                            let prices = []
+                                                                            prices.push(row.base_price)
+                                                                            if (row.Special_prices) {
+                                                                                prices.push(row.Special_prices.map(srow => srow.price))
+                                                                            }
+                                                                            return prices.flat()
+                                                                        }).flat()
+                                                                        // row.Rooms?.map(row => row.base_price)
+                                                                    )
+                                                                }
+                                                                location={row.Location.city} image={`${process.env.REACT_APP_API_BASE_URL}${row.Rooms[0]?.room_img}`} >
                                                                 <div className='w-1/3 ml-auto'>
                                                                     <Button onClick={() => {
-                                                                        navigate(`/property/${row.name}-${row.id}`)
+                                                                        navigate(`/property/${row.name}-${row.id}?start_date=${startDate}&end_date=${endDate}`)
 
                                                                     }}
                                                                         label={"Detail"}
@@ -202,7 +216,7 @@ const AvailableProperty = () => {
 
                                                                 </div>
                                                             </PropertyCard>
-                                                        </div>
+                                                        </div >
 
                                                     </>
                                                 ))
@@ -220,7 +234,7 @@ const AvailableProperty = () => {
                     </div>
                 </div>
 
-            </MainContainer>
+            </MainContainer >
         </>
     )
 }
