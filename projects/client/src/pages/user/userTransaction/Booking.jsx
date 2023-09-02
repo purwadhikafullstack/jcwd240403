@@ -28,6 +28,8 @@ const BookingProperty = () => {
     const navigate = useNavigate();
     const [startDate, setStartDate] = useState(searchParams?.get("start_date") ?? new Date())
     const [room, setRoom] = useState(null)
+    const [totaldays, setTotalDays] = useState(0)
+    const [confirm, setConfirm] = useState(false)
     const [price, setPrice] = useState(0)
     const [endDate, setEndDate] = useState(searchParams?.get("end_date") ?? new Date())
     const getThisRoom = async () => {
@@ -47,6 +49,7 @@ const BookingProperty = () => {
         const dateOutConvertion = new Date(endDate).getTime();
         const timeDiff = dateOutConvertion - dateInConvertion;
         const days = Math.ceil(Math.abs(timeDiff) / (1000 * 3600 * 24))
+        setTotalDays(days)
         let totalSpecialPrice = 0;
         let totalSpecialPriceDays = 0;
 
@@ -54,26 +57,38 @@ const BookingProperty = () => {
         room.Special_prices.forEach(row => {
             const csd = new Date(row.start_date).getTime()
             const ced = new Date(row.end_date).getTime()
-            const tmpc = Math.abs(csd - ced)
-            const tmpd = Math.ceil(Math.abs(tmpc) / (1000 * 3600 * 24))
-            totalSpecialPriceDays = totalSpecialPriceDays + tmpd
-            totalSpecialPrice += (tmpd * row.price)
-
-            // if (new Date(row.start_date) >= new Date(startDate) && new Date(row.end_date) >= new Date(startDate)) {
-            //     const tmpsd = (new Date(row.start_date).getTime()) - (new Date(startDate).getTime())
-            //     const tmpsdDays = Math.ceil(Math.abs(tmpsd) / (1000 * 3600 * 24)); 
-            // }
-            // if (new Date(row.end_date) >= new Date(endDate) && new Date(row.start_date) <= new Date(endDate)) {
-            //     const tmped = (new Date(row.end_date).getTime()) - (new Date(endDate).getTime())
-            //     const tmpedDays = Math.ceil(Math.abs(tmped) / (1000 * 3600 * 24));
-            // }
-
+            const tmpc = ced - csd
+            const tmpd = Math.ceil(tmpc / (1000 * 3600 * 24))
+            if (days <= tmpd) {
+                totalSpecialPriceDays += days
+            } else {
+                totalSpecialPriceDays += tmpd
+            }
+            totalSpecialPrice += (totalSpecialPriceDays * row.price)
         })
         let totalBasePrice = 0
-        let totalBasePriceDays = Math.abs(days - totalSpecialPriceDays);
+        let totalBasePriceDays = days - totalSpecialPriceDays;
         totalBasePrice += (totalBasePriceDays * room.base_price)
         setPrice(totalBasePrice + totalSpecialPrice)
+    }
 
+    const bookingConfirm = async (e) => {
+        e.preventDefault()
+        await axios.post(`${process.env.REACT_APP_API_BASE_URL}/transaction/book`, {
+            check_in_date: startDate,
+            check_out_date: endDate,
+            total_invoice: price,
+            room_id: searchParams.get("room")
+        }, {
+            headers: {
+                authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+        }).then(response => {
+            if (response.data.status) {
+                toast.success(response.data.message)
+                navigate(`/paymentproof/${response.data.data.booking_code}`)
+            }
+        })
     }
     useEffect(() => {
         getThisRoom()
@@ -109,7 +124,22 @@ const BookingProperty = () => {
                         <Body label={"Total Price"} />
                         <Title label={new Intl.NumberFormat().format(price)} />
                     </Column>
-                    <Button className="mx-auto w-36 mb-60" label={"Make Payment"} type='button' onClick={totalPrice} />
+                    {
+                        confirm ?
+                            <>
+                                <Row className="mx-auto gap-5">
+                                    <Button className="mx-auto w-36 mb-60" label={"Confirm Booking"} type='button' onClick={bookingConfirm} />
+                                    <Button className="mx-auto w-36 mb-60 bg-red-600" label={"Cancel"} type='button' onClick={() => { setConfirm(false) }} />
+
+                                </Row>
+
+                            </>
+                            :
+                            <>
+                                <Button className="mx-auto w-36 mb-60" label={"Make Payment"} type='button' onClick={() => { setConfirm(true) }} />
+
+                            </>
+                    }
                 </Column>
 
             </MainContainer>

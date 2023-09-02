@@ -151,7 +151,7 @@ const DetailProperty = () => {
                                                 location=""
                                                 children={
                                                     <div className='w-1/3 ml-auto'>
-                                                        <Button type='button' className="w-28 " label="Book Now" onClick={() => {
+                                                        <Button type='button' className="w-28 ml-auto " label="Book Now" onClick={() => {
                                                             navigate(`/booking?start_date=${startDate}&end_date=${endDate}&room=${row.id}`)
                                                         }} />
                                                     </div>
