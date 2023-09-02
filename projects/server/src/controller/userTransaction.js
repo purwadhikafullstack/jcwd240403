@@ -177,6 +177,7 @@ const uploadPaymentProof = async (req, res) => {
       const uploadProof = await db.Booking.update(
         {
           payment_proof: imageUrl,
+          book_status: "PROCESSING_PAYMENT",
         },
         {
           where: {
