@@ -22,8 +22,6 @@ function ForgotPassword() {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      console.log("Form values", values);
-
       try {
         await api.post("/auth/forgot-password", values);
         formik.resetForm();

@@ -92,7 +92,10 @@ const NavBar = () => {
                   <div className="px-1 py-1 ">
                     <Menu.Item>
                       <button
-                        onClick={removeToken}
+                        onClick={() => {
+                          removeToken();
+                          navigateTo("/login");
+                        }}
                         className={`group flex w-full items-center rounded-md px-2 py-2 text-sm `}
                       >
                         <TbDoorExit

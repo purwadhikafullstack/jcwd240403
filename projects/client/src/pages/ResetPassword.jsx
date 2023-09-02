@@ -28,8 +28,6 @@ function ResetPassword() {
     },
     validationSchema,
     onSubmit: async (values) => {
-      console.log("Form values", values, token);
-
       try {
         await api.patch("/auth/reset-password", {
           token,
@@ -87,7 +85,9 @@ function ResetPassword() {
           ) : null}
         </div>
         {errorMessage && (
-          <p className="text-red-500 text-sm text-left w-full">{errorMessage}</p>
+          <p className="text-red-500 text-sm text-left w-full">
+            {errorMessage}
+          </p>
         )}
         <div className="flex flex-col items-center justify-center w-full pt-5">
           <button

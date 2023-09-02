@@ -27,8 +27,6 @@ function ChangePass() {
     },
     validationSchema,
     onSubmit: async (values) => {
-      console.log("Form values", values);
-
       try {
         await api.patch("/profile/change-password", values);
         formik.resetForm();
