@@ -75,7 +75,7 @@ function App() {
       <Route path="/booking" element={<AuthenticatedRoute roles={["USER"]} />}>
         <Route index element={<BookingProperty />} />
       </Route>
-      <Route path="/paymentproof" element={<AuthenticatedRoute roles={["USER"]} />}>
+      <Route path="/paymentproof/:booking_code" element={<AuthenticatedRoute roles={["USER"]} />}>
         <Route index element={<PaymentProof />} />
       </Route>
       <Route path="/orderlist" element={<AuthenticatedRoute roles={["USER"]} />}>

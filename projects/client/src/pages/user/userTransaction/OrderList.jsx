@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import MainContainer from '../../../components/layouts/MainContainer'
 import Column from '../../../components/widget/Column'
 import HeadLine from '../../../components/texts/HeadLine'
@@ -12,12 +12,29 @@ import Button from '../../../components/buttons/Button'
 import PropertyCard from '../../../components/cards/PropertyCard'
 import SubTitle from '../../../components/texts/SubTitle'
 import Cardorder from '../../../components/cards/CardOrder'
+import axios from 'axios'
+import moment from 'moment';
 
 
 function OrderList() {
-    const [bookingStatus, setBookingStatus] = useState([
+    const [bookingStatus, setBookingStatus] = useState([])
+    const [orders, setOrders] = useState(null)
+    const getAllOrder = async (e) => {
+        await axios.get(`${process.env.REACT_APP_API_BASE_URL}/transaction/order`, {
+            headers: {
+                authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+        }).then(response => {
+            if (response.data.status) {
+                setOrders(response.data.data)
+                console.log(response.data.data)
+            }
+        })
+    }
 
-    ])
+    useEffect(() => {
+        getAllOrder()
+    }, [])
     return (
         <>
             <MainContainer>
@@ -54,9 +71,21 @@ function OrderList() {
 
                             </CardView>
                         </Column>
-                        <Column className="w-full">
-                            <Cardorder header={<SubTitle label={"Booking Id : R4347P"} />} title={"Property Name Here"}
-                                image={`https://bowa.com/wp-content/uploads/2015/07/MAY-Potomac-MD-Whole-House-Renovation-Sitting-Room.jpg`} />
+                        <Column className="w-full gap-y-4">
+                            {
+                                orders?.length ?
+                                    <>
+                                        {
+                                            orders.map(row => (
+                                                <Cardorder key={row.id} header={<SubTitle label={`Booking Id : ${row.booking_code}`} />} title={row.Room?.Property?.name}
+                                                    image={`${process.env.REACT_APP_API_BASE_URL}${row.Room?.room_img}`}
+                                                    type={`${row.Room?.Property?.Property_type?.name} - ${row.Room?.name}`}
+                                                    check_in={moment(row.check_in_date, "YYYY-MM-DD").format("DD/MM/YYYY")} check_out={moment(row.check_out_date, "YYYY-MM-DD").format("DD/MM/YYYY")} />
+                                            ))
+                                        }
+                                    </>
+                                    : <></>
+                            }
                         </Column>
                     </Row>
                 </Column>
