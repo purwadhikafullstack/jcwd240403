@@ -169,59 +169,57 @@ const updateProfilePicture = async (req, res) => {
 
 const changePassword = async (req, res) => {
   try {
-    const { old_password, password, password_confirmation } = req.body;
-    const token = req.user;
-    const user_id = token.id;
-    const result = await db.User.findOne({
+    const { oldPass, newPass, confirmPass } = req.body;
+    const id = req.user.id;
+    const user = await db.User.findOne({
       where: {
-        id: user_id,
+        id: id,
       },
     });
-    // cek password lama
-    const isValid = await bcrypt.compare(old_password, result.password);
-    // result : mencari data user ada apa tidak
-    //isValid : mencocokan old_password yang dimasukan sama dengan password lama di DB
-    if (result && isValid) {
-      // cek password confirmation
-      if (password == password_confirmation) {
+
+    const isValid = await bcrypt.compare(oldPass, user.password);
+
+    if (user && isValid) {
+      if (newPass == confirmPass) {
         const salt = await bcrypt.genSalt(10);
-        const hashPassword = await bcrypt.hash(password, salt);
-        // memasukan data update
-        const updatePassword = await db.User.update(
+        const hashPassword = await bcrypt.hash(newPass, salt);
+
+        const resetPassword = await db.User.update(
           { password: hashPassword },
           {
             where: {
-              id: user_id,
+              id: id,
             },
           }
         );
-        if (updatePassword) {
-          res.send({
-            status: true,
-            message: "Update Password Success",
+
+        const updated = await db.User.findOne({
+          where: { id: id },
+        });
+        if (resetPassword) {
+          return res.status(200).send({
+            message: "Reset password success",
+            data: updated,
           });
         } else {
-          return res.send({
-            message: "Update Password Fail Please Try Again",
-            status: false,
+          return res.status(400).send({
+            message: "Failed reset password.",
           });
         }
       } else {
-        return res.send({
-          message: "Password Confirmation Does Not Match",
-          status: false,
+        return res.status(400).send({
+          message: "Password confirmation did not match",
         });
       }
     } else {
-      return res.send({
-        message: "wrong Password",
-        status: false,
+      return res.status(400).send({
+        message: "Wrong password",
       });
     }
   } catch (error) {
-    console.log(error);
+    console.log("change pass", error);
     res.status(500).send({
-      message: "fatal error on server",
+      message: "Something wrong on server",
       error,
     });
   }

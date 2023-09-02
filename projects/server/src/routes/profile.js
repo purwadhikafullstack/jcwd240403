@@ -20,6 +20,6 @@ router.patch(
   updateProfilePicture
 );
 
-router.patch("/password", verifying.verifyAccessToken, changePassword);
+router.patch("/change-password", verifying.verifyAccessToken, changePassword);
 
 module.exports = router;
