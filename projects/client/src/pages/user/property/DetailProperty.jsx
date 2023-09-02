@@ -15,18 +15,13 @@ import HeadLine from '../../../components/texts/HeadLine';
 import SubTitle from '../../../components/texts/SubTitle';
 import Caption from '../../../components/texts/Caption';
 import Title from '../../../components/texts/Title';
-import { useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { getMinimumPrice, getRange } from '../../../shared/utils';
 
 
-const useQuery = () => {
-    const { search } = useLocation()
-    return useMemo(() => new URLSearchParams(search), [search])
-}
-
 const DetailProperty = () => {
     let [searchParams] = useSearchParams()
-    let query = useQuery()
+    const navigate = useNavigate();
     const [startDate, setStartDate] = useState(searchParams?.get("start_date") ?? new Date())
     const [endDate, setEndDate] = useState(searchParams?.get("end_date") ?? new Date())
     const [property, setProperty] = useState(null)
@@ -146,11 +141,22 @@ const DetailProperty = () => {
                                             <PropertyCard title={row.name}
                                                 price={
                                                     getRange(
-                                                        [...row.Special_prices?.map(srow => srow.price), ...[row.base_price]]
-                                                        // row.Special_prices.length ? [...row.Special_prices?.map(srow => srow.price)] : [...row.Special_prices?.map(srow => srow.price), ...[row.base_price]]
+                                                        row.Special_prices ?
+                                                            (row.Special_prices.find(srow => srow.start_date == startDate && srow.end_date == endDate) ? [row.Special_prices.find(srow => srow.start_date == startDate && srow.end_date == endDate).price] : [...row.Special_prices?.map(srow => srow.price), ...[row.base_price]])
+                                                            : [row.base_price]
+                                                        // [...row.Special_prices?.map(srow => srow.price), ...[row.base_price]]
+                                                        // row.Special_prices.length ? [...row.Special_prices?.map(srow => srow.price)]/ : [...row.Special_prices?.map(srow => srow.price), ...[row.base_price]]
                                                     )
                                                 }
-                                                location="" children={<div className='w-1/3 ml-auto'> <Button className="w-28 " label="Book Now" /></div>} image={`${process.env.REACT_APP_API_BASE_URL}${row?.room_img}`} />
+                                                location=""
+                                                children={
+                                                    <div className='w-1/3 ml-auto'>
+                                                        <Button type='button' className="w-28 " label="Book Now" onClick={() => {
+                                                            navigate(`/booking?start_date=${startDate}&end_date=${endDate}&room=${row.id}`)
+                                                        }} />
+                                                    </div>
+                                                }
+                                                image={`${process.env.REACT_APP_API_BASE_URL}${row?.room_img}`} />
                                         </div>
 
                                     </>
