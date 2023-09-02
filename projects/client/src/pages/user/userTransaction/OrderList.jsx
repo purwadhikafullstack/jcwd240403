@@ -41,7 +41,7 @@ function OrderList() {
                 <Column className="max-w-7xl mx-auto gap-10">
                     <HeadLine label={"My Bookings"} />
                     <Row className="w-full gap-8">
-                        <Column className="gap-8 w-full max-w-sm">
+                        <Column className="gap-8 w-1/3 max-w-sm">
                             <CardView className="w-full gap-5">
                                 <Title label={"Sort By"} />
                                 <div className='flex gap-2 '>
@@ -80,7 +80,8 @@ function OrderList() {
                                                 <Cardorder key={row.id} header={<SubTitle label={`Booking Id : ${row.booking_code}`} />} title={row.Room?.Property?.name}
                                                     image={`${process.env.REACT_APP_API_BASE_URL}${row.Room?.room_img}`}
                                                     type={`${row.Room?.Property?.Property_type?.name} - ${row.Room?.name}`}
-                                                    check_in={moment(row.check_in_date, "YYYY-MM-DD").format("DD/MM/YYYY")} check_out={moment(row.check_out_date, "YYYY-MM-DD").format("DD/MM/YYYY")} />
+                                                    check_in={moment(row.check_in_date, "YYYY-MM-DD").format("DD/MM/YYYY")}
+                                                    check_out={moment(row.check_out_date, "YYYY-MM-DD").format("DD/MM/YYYY")} />
                                             ))
                                         }
                                     </>

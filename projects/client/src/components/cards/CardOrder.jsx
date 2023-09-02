@@ -6,7 +6,7 @@ import Body from "../texts/Body";
 import { TbArrowRight } from 'react-icons/tb';
 import SubTitle from "../texts/SubTitle";
 
-function Cardorder({ title, type, check_in, check_out, status, image, header = null }) {
+function Cardorder({ title, type, check_in, check_out, status, image, header = null, className }) {
     return (
         <div className="md:w-full md:min-h-[13rem] flex flex-col bg-white border border-gray-300 rounded-lg overflow-hidden" >
             <div className="px-4 py-2 border-b bg-slate-100">
