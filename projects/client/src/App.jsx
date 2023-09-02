@@ -13,7 +13,6 @@ import jwt from "jwt-decode";
 import {
   AuthenticatedRoute,
   NonAuthenticatedRoute,
-  OpenRoute,
 } from "./shared/router/RouteGuards";
 import HomeOrDashboard from "./shared/router/HomeOrDashboard";
 import DashboardSideBar from "./components/sidebar/DashboardSideBar";
@@ -31,6 +30,8 @@ import DetailProperty from "./pages/user/property/DetailProperty";
 import BookingProperty from "./pages/user/userTransaction/Booking";
 import PaymentProof from "./pages/user/userTransaction/PaymentProof";
 import OrderList from "./pages/user/userTransaction/OrderList";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   const { token } = useToken();
@@ -54,7 +55,10 @@ function App() {
       <Route path="profile" element={<AuthenticatedRoute roles={["USER"]} />}>
         <Route index element={<Profiling />} />
       </Route>
-      <Route path="password" element={<AuthenticatedRoute roles={["USER"]} />}>
+      <Route
+        path="change-password"
+        element={<AuthenticatedRoute roles={["USER"]} />}
+      >
         <Route index element={<ChangePassword />} />
       </Route>
       <Route
@@ -75,10 +79,16 @@ function App() {
       <Route path="/booking" element={<AuthenticatedRoute roles={["USER"]} />}>
         <Route index element={<BookingProperty />} />
       </Route>
-      <Route path="/paymentproof/:booking_code" element={<AuthenticatedRoute roles={["USER"]} />}>
+      <Route
+        path="/paymentproof/:booking_code"
+        element={<AuthenticatedRoute roles={["USER"]} />}
+      >
         <Route index element={<PaymentProof />} />
       </Route>
-      <Route path="/orderlist" element={<AuthenticatedRoute roles={["USER"]} />}>
+      <Route
+        path="/orderlist"
+        element={<AuthenticatedRoute roles={["USER"]} />}
+      >
         <Route index element={<OrderList />} />
       </Route>
 
@@ -115,6 +125,12 @@ function App() {
       </Route>
       <Route path="/register" element={<NonAuthenticatedRoute />}>
         <Route index element={<Register />} />
+      </Route>
+      <Route path="/forgot-password" element={<NonAuthenticatedRoute />}>
+        <Route index element={<ForgotPassword />} />
+      </Route>
+      <Route path="/reset-password/:token" element={<NonAuthenticatedRoute />}>
+        <Route index element={<ResetPassword />} />
       </Route>
       <Route path="/verify/:token" element={<NonAuthenticatedRoute />}>
         <Route index element={<VerifyOTP />} />

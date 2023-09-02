@@ -2,6 +2,7 @@ import React from "react";
 import Button from "../../buttons/Button";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { Link } from "react-router-dom";
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -71,12 +72,13 @@ function LoginForm({ handleLogin }) {
 
       <div className="flex items-center justify-end">
         <div className="text-sm leading-6">
-          <button
+          <Link
+            to="/forgot-password"
             type="button"
             className="font-semibold text-black hover:text-black/80"
           >
             Forgot password?
-          </button>
+          </Link>
         </div>
       </div>
 
