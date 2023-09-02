@@ -83,10 +83,6 @@ function Home() {
     to: tomorrow,
   });
 
-  useEffect(() => {
-    api.get();
-  }, []);
-
   const handleDayClick = (day, modifiers = {}) => {
     if (modifiers.disabled) {
       return;
