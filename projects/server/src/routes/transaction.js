@@ -9,6 +9,7 @@ const {
   cancelOrder,
   uploadPaymentProof,
   getAllOrder,
+  checkBooking,
 } = require("../controller/userTransaction");
 
 router.get(
@@ -51,4 +52,12 @@ router.get(
   verifying.verifyUser,
   getAllOrder
 );
+
+router.post(
+  "/book/:room_id",
+  verifying.verifyAccessToken,
+  verifying.verifyUser,
+  checkBooking
+);
+
 module.exports = router;

@@ -27,7 +27,6 @@ function OrderList() {
         }).then(response => {
             if (response.data.status) {
                 setOrders(response.data.data)
-                console.log(response.data.data)
             }
         })
     }
@@ -77,11 +76,16 @@ function OrderList() {
                                     <>
                                         {
                                             orders.map(row => (
-                                                <Cardorder key={row.id} header={<SubTitle label={`Booking Id : ${row.booking_code}`} />} title={row.Room?.Property?.name}
+                                                <Cardorder key={row.id}
+                                                    header={<SubTitle label={`Booking Id : ${row.booking_code}`} />}
+                                                    title={row.Room?.Property?.name}
                                                     image={`${process.env.REACT_APP_API_BASE_URL}${row.Room?.room_img}`}
                                                     type={`${row.Room?.Property?.Property_type?.name} - ${row.Room?.name}`}
                                                     check_in={moment(row.check_in_date, "YYYY-MM-DD").format("DD/MM/YYYY")}
-                                                    check_out={moment(row.check_out_date, "YYYY-MM-DD").format("DD/MM/YYYY")} />
+                                                    check_out={moment(row.check_out_date, "YYYY-MM-DD").format("DD/MM/YYYY")}
+                                                    status={row.booking_status}
+                                                    booking_code={row.booking_code}
+                                                />
                                             ))
                                         }
                                     </>
