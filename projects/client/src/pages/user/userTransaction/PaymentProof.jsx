@@ -38,6 +38,7 @@ function PaymentProof() {
                 setBooking(response.data.data)
                 setCheckIn(response.data.data.check_in_date)
                 setCheckOut(response.data.data.check_out_date)
+                setRoomId(response.data.data.room_id)
                 const interval = setInterval(() => {
                     getTimeRemaining(response.data.data)
                 }, 1000);
