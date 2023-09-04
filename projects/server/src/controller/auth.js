@@ -1,7 +1,7 @@
 const db = require("../models");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-// const crypto = require("crypto");
+const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const moment = require("moment-timezone");
 require("dotenv").config();
@@ -355,6 +355,103 @@ module.exports = {
       console.error(error);
       res.status(500).send({
         message: "Internal server error",
+      });
+    }
+  },
+
+  async forgetPassword(req, res) {
+    try {
+      const { email } = req.body;
+
+      const user = await db.User.findOne({
+        where: { email: email },
+        include: [{ model: db.Profile }],
+      });
+
+      if (!user) {
+        return res.status(400).send({
+          message: "No user found with this email.",
+        });
+      }
+
+      const forgotToken = crypto.randomBytes(16).toString("hex");
+
+      // Email sending
+      let transporter = nodemailer.createTransport({
+        service: "hotmail",
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      });
+
+      let mailOptions = {
+        from: process.env.SMTP_USER,
+        to: email,
+        subject: "Reset password request.",
+        text: `Hello ${user.Profile.full_name},
+
+        Please click the following link to reset your password:
+
+        http://localhost:3000/reset-password/${forgotToken}
+
+        Thanks,
+        Innsight Team`,
+      };
+
+      transporter.sendMail(mailOptions, function (err, info) {
+        if (err) {
+          console.log("TRANSPORTER_ERR", err, mailOptions);
+        } else {
+          console.log("Email sent", info);
+        }
+      });
+
+      user.forgot_token = forgotToken;
+      await user.save();
+
+      res.status(200).send({
+        message: "Reset password request success, please check your email.",
+        data: user,
+      });
+    } catch (error) {
+      console.log("forgot pass", error);
+      res.status(500).send({
+        message: "Something wrong on server",
+        error,
+      });
+    }
+  },
+
+  async resetPassword(req, res) {
+    try {
+      const { token, password } = req.body;
+      const user = await db.User.findOne({
+        where: { forgot_token: token },
+      });
+
+      if (!user) {
+        return res.status(400).send({
+          message: "Token not valid.",
+        });
+      }
+
+      // generate password
+      const salt = await bcrypt.genSalt(10);
+      const hashPassword = await bcrypt.hash(password, salt);
+
+      user.password = hashPassword;
+      user.forgot_token = null;
+      await user.save();
+
+      res.status(200).send({
+        message: "Success reset password.",
+      });
+    } catch (error) {
+      console.log("reset pass", error);
+      res.status(500).send({
+        message: "Something wrong on server",
+        error,
       });
     }
   },

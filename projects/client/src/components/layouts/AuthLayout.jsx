@@ -23,6 +23,8 @@ const socialLogin = [
 
 function AuthLayout({ title, isUser, setIsUser, children, page }) {
   const navigate = useNavigate();
+  const isNonRole =
+    page === "otp" || page === "Forgot Password" || page === "Reset Password";
 
   const handleNavigate = () => {
     switch (page) {
@@ -54,7 +56,7 @@ function AuthLayout({ title, isUser, setIsUser, children, page }) {
 
         <div
           className={classNames(
-            page === "otp"
+            isNonRole
               ? "hidden"
               : "absolute top-2 right-1 md:top-3 md:right-3 flex flex-row gap-2 items-center scale-90"
           )}
@@ -85,7 +87,7 @@ function AuthLayout({ title, isUser, setIsUser, children, page }) {
             {/* FORM COMPONENT */}
             {children}
 
-            <div className={page === "otp" ? "hidden" : "block"}>
+            <div className={isNonRole ? "hidden" : "block"}>
               <div className="relative mt-5">
                 <div
                   className="absolute inset-0 flex items-center"
@@ -128,9 +130,7 @@ function AuthLayout({ title, isUser, setIsUser, children, page }) {
             </div>
             <p
               className={classNames(
-                page === "otp"
-                  ? "hidden"
-                  : "pt-4 text-center text-sm text-gray-500"
+                isNonRole ? "hidden" : "pt-4 text-center text-sm text-gray-500"
               )}
             >
               {page === "login" ? `Not a member? ` : `Have an account? `}
