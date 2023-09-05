@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
+const template = require("../services/emailTemplates");
 const moment = require("moment-timezone");
 require("dotenv").config();
 
@@ -72,7 +73,6 @@ module.exports = {
         imageURL = setFromFileNameToDBValue(req.file.filename);
         console.log(imageURL);
       }
-      console.log("onauth", imageURL, req.file);
 
       if (password !== confirmPassword)
         return res.status(400).send({
@@ -116,41 +116,12 @@ module.exports = {
         document_identity: imageURL,
       });
 
-      // Email sending
-      let transporter = nodemailer.createTransport({
-        service: "hotmail",
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      });
-
-      let mailOptions = {
-        from: process.env.SMTP_USER,
-        to: email,
-        subject: "Welcome!",
-        text: `Hello ${newProfile.full_name},
-  
-        Welcome to Innsight!
-  
-        Your verification OTP is: ${newUser.otp}
-        This OTP will be expired in 24 hour. Do not share this OTP to anyone and keep it for yourself :).
-        Please click the following link to complete your registration:
-  
-        http://localhost:3000/verify/${newUser.verify_token}
-  
-  
-        Thanks,
-        Innsight Team`,
-      };
-
-      transporter.sendMail(mailOptions, function (err, info) {
-        if (err) {
-          console.log("TRANSPORTER_ERR", err, mailOptions);
-        } else {
-          console.log("Email sent", info);
-        }
-      });
+      template.emailRegister(
+        email,
+        newProfile.full_name,
+        newUser.otp,
+        newUser.verify_token
+      );
 
       res.status(201).send({
         message: "Registration success and email verification already send",
@@ -253,7 +224,7 @@ module.exports = {
 
       if (!user) {
         return res.status(400).send({
-          message: "Verification invallid or acount already verified",
+          message: "Verification invalid or account already verified",
         });
       }
 

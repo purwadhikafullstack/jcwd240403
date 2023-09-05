@@ -25,9 +25,17 @@ router.patch("/verify-email/:otp/:email", authController.verify_email);
 
 router.post("/resend-otp", authController.resendOTP);
 
-router.post("/forgot-password", authController.forgetPassword);
+router.post(
+  "/forgot-password",
+  validation.validateForgotPassword,
+  authController.forgetPassword
+);
 
-router.patch("/reset-password", authController.resetPassword);
+router.patch(
+  "/reset-password",
+  validation.validateResetPassword,
+  authController.resetPassword
+);
 
 router.get(
   "/loginWithToken",
