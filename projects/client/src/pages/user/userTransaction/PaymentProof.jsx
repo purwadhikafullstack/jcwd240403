@@ -29,11 +29,15 @@ function PaymentProof() {
     const navigate = useNavigate();
     let { booking_code } = useParams()
     const getBooking = async () => {
+        console.log("Masuk")
+        console.log(booking_code)
+
         await axios.get(`${process.env.REACT_APP_API_BASE_URL}/transaction/book/${booking_code}`, {
             headers: {
                 authorization: `Bearer ${localStorage.getItem("token")}`
             }
         }).then(response => {
+            console.log(response)
             if (response.data.status) {
                 setBooking(response.data.data)
                 setCheckIn(response.data.data.check_in_date)
@@ -128,7 +132,7 @@ function PaymentProof() {
         getBooking()
 
 
-    }, [])
+    }, [booking_code])
     return (
         <>
             <MainContainer>
@@ -150,23 +154,24 @@ function PaymentProof() {
                         <Column className="gap-8">
                             <Column>
 
-                                <label htmlFor="Payment_Proof" className="flex  flex-col cursor-pointer border p-6 bg-slate-50 rounded-md w-1/2 max-w-[1/2] mx-auto h-52">
+                                <label htmlFor="Payment_Proof" className="flex  flex-col gap-3 cursor-pointer border p-6 bg-slate-50 rounded-md min-w-[10rem] aspect-square mx-auto h-52">
                                     <input onChange={changeImage} id="Payment_Proof" type="file" className="hidden" />
-                                    <div className="my-auto">
-                                        <TbPlus className='h-10 w-10 mx-auto' />
-                                        <Body className="text-center" label={"Choose File"} />
-                                    </div>
+                                    {
+                                        tmpPhoto ?
+                                            <>
+                                                <img src={tmpPhoto} alt="Payment Proof" className='w-full aspect-square object-cover mx-auto' />
+                                            </>
+                                            : <>
+                                                <div className="my-auto">
+                                                    <TbPlus className='h-10 w-10 mx-auto' />
+                                                    <Body className="text-center" label={"Choose File"} />
+                                                </div>
+                                            </>
+                                    }
+
                                 </label>
                             </Column>
-                            {
-                                tmpPhoto ?
-                                    <>
-                                        <Column>
-                                            <img src={tmpPhoto} alt="Payment Proof" className='w-1/3 mx-auto' />
-                                        </Column>
-                                    </>
-                                    : <></>
-                            }
+
                             <Row className="justify-between w-1/2 mx-auto gap-10">
                                 <Button className="w-fit px-6 bg-red-950" label={"Cancle Booking"} type='button' onClick={cancelOrder} />
                                 <Button label={"Submit"} type='button' onClick={uploadPaymentProof} />

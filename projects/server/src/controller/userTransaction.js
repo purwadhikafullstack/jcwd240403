@@ -216,10 +216,38 @@ const getAllOrder = async (req, res) => {
   try {
     const token = req.user;
     const user_id = token.id;
-    const getList = await db.Booking.findAll({
+    const {
+      start_date,
+      end_date,
+      booking_code = "",
+      booking_status,
+      sortBy = "",
+    } = req.query;
+    let orderby = ["id", "asc"];
+    if (sortBy === "LowestPrice") {
+      orderby = ["total_invoice", "ASC"];
+    }
+    if (sortBy === "HighestPrice") {
+      orderby = ["total_invoice", "DESC"];
+    }
+    const pagination = {
+      page: Number(req.query.page) || 1,
+      perPage: Number(req.query.perPage) || 10,
+    };
+    const { count, rows: data } = await db.Booking.findAndCountAll({
       where: {
         user_id: user_id,
+        booking_code: {
+          [Op.like]: `%${booking_code}%`,
+        },
+        booking_status: {
+          [Op.like]: `%${booking_status}%`,
+        },
       },
+      limit: pagination.perPage,
+      offset: pagination.perPage * (pagination.page - 1),
+      distinct: true,
+      order: [orderby],
       include: [
         {
           model: db.Room,
@@ -239,9 +267,16 @@ const getAllOrder = async (req, res) => {
         },
       ],
     });
+    const totalPage = Math.ceil(count / pagination.perPage);
     return res.send({
       status: true,
-      data: getList,
+      data: data,
+      pagination: {
+        page: pagination.page,
+        perPage: pagination.perPage,
+        totalData: count,
+        totalPage: totalPage,
+      },
     });
   } catch (error) {
     console.log(error);
