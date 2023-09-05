@@ -177,7 +177,7 @@ const uploadPaymentProof = async (req, res) => {
       const uploadProof = await db.Booking.update(
         {
           payment_proof: imageUrl,
-          book_status: "PROCESSING_PAYMENT",
+          booking_status: "PROCESSING_PAYMENT",
         },
         {
           where: {
@@ -277,6 +277,42 @@ const cancelOrder = async (req, res) => {
   }
 };
 
+const checkBooking = async (req, res) => {
+  try {
+    const { start_date, end_date } = req.body;
+    const { room_id } = req.params;
+    const checkBooked = await db.Booking.findOne({
+      where: {
+        room_id: room_id,
+        [Op.or]: [
+          {
+            check_in_date: start_date,
+          },
+          {
+            check_out_date: end_date,
+          },
+        ],
+      },
+    });
+    if (checkBooked) {
+      return res.send({
+        status: false,
+        message: "Room Already Booked",
+      });
+    } else {
+      return res.send({
+        status: true,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "fatal error on server",
+      error,
+    });
+  }
+};
+
 module.exports = {
   bookProperty,
   uploadPaymentProof,
@@ -284,4 +320,5 @@ module.exports = {
   cancelOrder,
   getThisRoom,
   bookPropertyDetail,
+  checkBooking,
 };

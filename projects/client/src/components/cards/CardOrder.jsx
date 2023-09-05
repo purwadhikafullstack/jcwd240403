@@ -5,8 +5,11 @@ import Caption from "../texts/Caption";
 import Body from "../texts/Body";
 import { TbArrowRight } from 'react-icons/tb';
 import SubTitle from "../texts/SubTitle";
+import { Link, useNavigate } from "react-router-dom";
+import Button from "../buttons/Button";
 
-function Cardorder({ title, type, check_in, check_out, status, image, header = null, className }) {
+function Cardorder({ title, type, check_in, check_out, status, image, header = null, booking_code }) {
+    const navigate = useNavigate()
     return (
         <div className="md:w-full md:min-h-[13rem] flex flex-col bg-white border border-gray-300 rounded-lg overflow-hidden" >
             <div className="px-4 py-2 border-b bg-slate-100">
@@ -45,7 +48,15 @@ function Cardorder({ title, type, check_in, check_out, status, image, header = n
 
                     {/* Price */}
                     <div className="flex items-end flex-col border-t pt-3 gap-2">
-                        <SubTitle label={status} />
+                        {
+                            status === "WAITING_FOR_PAYMENT" ?
+                                <>
+                                    <Button type="button" label={status.replaceAll("_", " ")} onClick={() => navigate(`/paymentproof/${booking_code}`)} />
+                                </> :
+                                <>
+                                    <SubTitle label={status.replaceAll("_", " ")} />
+                                </>
+                        }
                     </div>
                 </div>
             </Row>

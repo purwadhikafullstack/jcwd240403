@@ -18,7 +18,13 @@ import * as Yup from "yup";
 function PaymentProof() {
     const [booking, setBooking] = useState({})
     const [photo, setPhoto] = useState(null)
+    const [hour, setHour] = useState(0)
+    const [minute, setMinute] = useState(0)
+    const [second, setSecond] = useState(0)
     const [tmpPhoto, setTmpPhoto] = useState(null)
+    const [checkIn, setCheckIn] = useState(null)
+    const [checkOut, setCheckOut] = useState(null)
+    const [roomId, setRoomId] = useState(0)
     let [searchParams] = useSearchParams()
     const navigate = useNavigate();
     let { booking_code } = useParams()
@@ -30,6 +36,12 @@ function PaymentProof() {
         }).then(response => {
             if (response.data.status) {
                 setBooking(response.data.data)
+                setCheckIn(response.data.data.check_in_date)
+                setCheckOut(response.data.data.check_out_date)
+                setRoomId(response.data.data.room_id)
+                const interval = setInterval(() => {
+                    getTimeRemaining(response.data.data)
+                }, 1000);
             }
         })
     }
@@ -40,9 +52,21 @@ function PaymentProof() {
             }
         }).then(response => {
             if (response.data.status) {
-                navigate(`/booking?start_date=${booking?.check_in_date}&end_date=${booking?.check_out_date}&room=${booking?.room_id}`)
+                navigate(`/booking?start_date=${checkIn}&end_date=${checkOut}&room=${roomId}`)
             }
         })
+    }
+
+    const getTimeRemaining = async (booking) => {
+        const currentTime = new Date().getTime()
+        const transactionTime = new Date(booking.createdAt).getTime()
+        const diff = new Date(transactionTime + (2 * 3600 * 1000)).getTime() - currentTime
+        setHour(Math.floor((diff / (1000 * 3600)) % 24))
+        setMinute(Math.floor((diff / 1000 / 60) % 60))
+        setSecond(Math.floor((diff / 1000) % 60))
+        if (diff < 0) {
+            cancelOrder()
+        }
     }
 
     const maxFilesize = 1024000
@@ -103,13 +127,15 @@ function PaymentProof() {
     useEffect(() => {
         getBooking()
 
+
     }, [])
     return (
         <>
             <MainContainer>
                 <Column className="max-w-7xl mx-auto gap-10">
+                    <div className='gap-10' />
                     <CardView className="mx-auto min-w-[10rem]">
-                        <SubTitle className="text-center" label={"23:22"} />
+                        <SubTitle className="text-center" label={`${hour} Hours : ${minute} Minutes : ${second} Seconds Remaining`} />
                     </CardView>
                     <Column>
                         <Title label={"Amount "} />
@@ -142,11 +168,13 @@ function PaymentProof() {
                                     : <></>
                             }
                             <Row className="justify-between w-1/2 mx-auto gap-10">
-                                <Button className="w-fit px-6" label={"Cancle Booking"} type='button' onClick={cancelOrder} />
+                                <Button className="w-fit px-6 bg-red-950" label={"Cancle Booking"} type='button' onClick={cancelOrder} />
                                 <Button label={"Submit"} type='button' onClick={uploadPaymentProof} />
 
                             </Row>
+                            <div className='gap-10' />
                         </Column>
+
                     </Column>
 
 
