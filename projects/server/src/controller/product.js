@@ -6,7 +6,7 @@ const {
   getAbsolutePathPublicFile,
 } = require("../utils/file");
 const fs = require("fs");
-const Op = db.Sequelize.Op;
+const { Op } = require("sequelize");
 
 const getAllProperty = async (req, res) => {
   try {
@@ -14,9 +14,24 @@ const getAllProperty = async (req, res) => {
       start_date,
       end_date,
       location,
-      search = "",
-      sortBy = [],
+      name = "",
+      sortBy = "",
+      typeRoom = "",
     } = req.query;
+    let wheretype = {},
+      orderby = ["id", "asc"];
+    if (typeRoom) {
+      wheretype = {
+        property_type_id: typeRoom,
+      };
+    }
+    if (sortBy === "LowestPrice") {
+      orderby = [{ model: db.Room }, "base_price", "ASC"];
+    }
+    if (sortBy === "HighestPrices") {
+      orderby = [{ model: db.Room }, "base_price", "DESC"];
+    }
+
     const pagination = {
       page: Number(req.query.page) || 1,
       perPage: Number(req.query.perPage) || 10,
@@ -27,10 +42,19 @@ const getAllProperty = async (req, res) => {
         is_active: true,
         location_id: location,
         deletedAt: null,
+        ...wheretype,
+        [Op.or]: [
+          {
+            name: {
+              [Op.like]: `%${name}%`,
+            },
+          },
+        ],
       },
       limit: pagination.perPage,
       offset: pagination.perPage * (pagination.page - 1),
       distinct: true,
+      order: [orderby],
       include: [
         {
           model: db.Picture,
@@ -89,6 +113,7 @@ const getAllProperty = async (req, res) => {
             {
               model: db.Room_status,
               attributes: ["id", "start_date", "end_date"],
+              required: false,
               where: {
                 [Op.or]: [
                   {
@@ -119,7 +144,7 @@ const getAllProperty = async (req, res) => {
       pagination: {
         page: pagination.page,
         perPage: pagination.perPage,
-        search: search,
+        search: name,
         totalData: count,
         totalPage: totalPage,
       },
@@ -202,6 +227,7 @@ const getDetailProperty = async (req, res) => {
             {
               model: db.Room_status,
               attributes: ["id", "start_date", "end_date"],
+              required: false,
               where: {
                 [Op.not]: [
                   {

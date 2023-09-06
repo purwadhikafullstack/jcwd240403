@@ -12,6 +12,7 @@ import PropertyCard from '../../../components/cards/PropertyCard';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import TextInput from '../../../components/textInputs/TextInput';
 import { getRange } from '../../../shared/utils';
+import Pagination from '../../../components/pagination/Pagination';
 
 
 const useQuery = () => {
@@ -26,9 +27,14 @@ const AvailableProperty = () => {
     const [locations, setLocations] = useState(null)
     const [startDate, setStartDate] = useState(null)
     const [endDate, setEndDate] = useState(null)
+    const [currentPage, setCurrentPage] = useState(1)
+    const [totalPage, setTotalPage] = useState(1)
+    const [limitPage, setLimitPage] = useState(10)
+    const [sortBy, setSortBy] = useState(null)
+    const [nameFilter, setNameFilter] = useState(null)
+    const [typeFilter, setTypeFilter] = useState(null)
     const [properties, setProperties] = useState(null)
     const [propertyTypes, setPropertyTypes] = useState([])
-    const [propertyType, setPropertyType] = useState(null)
     const [rangePrice, setRangePrice] = useState("")
     const today = new Date();
     const tomorrow = new Date(today);
@@ -65,13 +71,14 @@ const AvailableProperty = () => {
     };
     const availableData = async () => {
         if (location && startDate && endDate) {
-            await axios.get(`${process.env.REACT_APP_API_BASE_URL}/product?location=${location.id}&start_date=${startDate}&end_date=${endDate}`, {
+            await axios.get(`${process.env.REACT_APP_API_BASE_URL}/product?location=${location.id}&start_date=${startDate}&end_date=${endDate}&page=${currentPage}&perPage=${limitPage}&sortBy=${sortBy}&name=${nameFilter ?? ''}&typeRoom=${typeFilter?.id ?? ""}`, {
                 headers: {
                     authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             }).then(response => {
                 setProperties(response.data.data)
                 const prop = response.data.data
+                setTotalPage(response.data.pagination.totalPage)
             })
         } else {
             if (!location) {
@@ -92,6 +99,31 @@ const AvailableProperty = () => {
         const data = response.data
         setPropertyTypes(data.data)
     }
+
+    const onChangePage = (page) => {
+        setCurrentPage(page)
+
+    }
+
+    const onChangeSort = (e) => {
+        // e.preventDefault()
+        const { value } = e.target
+        setSortBy(value)
+    }
+
+    const onChangeFilterName = (e) => {
+        const { value } = e.target
+        setNameFilter(value)
+        console.log(value)
+    }
+    const onChangeFilterType = (e) => {
+        setTypeFilter(e)
+        console.log(e)
+    }
+
+    useEffect(() => {
+        if (location != null) { availableData() }
+    }, [currentPage, sortBy])
 
     useEffect(() => {
         const konversiStartDate = moment(new Date(selectedDays.from)).format("YYYY-MM-DD")
@@ -118,7 +150,7 @@ const AvailableProperty = () => {
             <MainContainer>
                 <div className="w-full max-w-7xl flex flex-col mx-auto gap-5">
 
-                    <div className="flex justify-between py-4 px-2 bg-white rounded-md border sticky top-16  ">
+                    <div className="flex justify-between py-4 px-2 bg-white rounded-md border ">
                         <div className="flex w-full ">
 
                             <div className="w-1/3 p-3">
@@ -149,33 +181,33 @@ const AvailableProperty = () => {
                                 <h6>sort by</h6>
                                 <div className='flex gap-2 '>
 
-                                    <input type="radio" id='1' name='sort ' className='cursor-pointer' /> <label className='cursor-pointer' htmlFor="1">highest Price</label>
+                                    <input type="radio" id='1' name='sort' value={"HighestPrices"} onChange={onChangeSort} className='cursor-pointer' /> <label className='cursor-pointer' htmlFor="1">highest Price</label>
                                 </div>
                                 <div className='flex gap-2 '>
-                                    <input type="radio" id='2' name='sort' className='cursor-pointer' /> <label className='cursor-pointer' htmlFor="2">lowest Price</label>
+                                    <input type="radio" id='2' name='sort' value={"LowestPice"} onChange={onChangeSort} className='cursor-pointer' /> <label className='cursor-pointer' htmlFor="2">lowest Price</label>
 
                                 </div>
                                 <div className='flex gap-2 '>
 
-                                    <input type="radio" id='3' name='sort' className='cursor-pointer' /> <label className='cursor-pointer' htmlFor="3">A - Z</label>
+                                    <input type="radio" id='3' name='sort' value={"A-Z"} onChange={onChangeSort} className='cursor-pointer' /> <label className='cursor-pointer' htmlFor="3">A - Z</label>
                                 </div>
                                 <div className='flex gap-2 '>
-                                    <input type="radio" id='4' name='sort' className='cursor-pointer' /> <label className='cursor-pointer' htmlFor="4">Z - A</label>
+                                    <input type="radio" id='4' name='sort' value={"Z-A"} onChange={onChangeSort} className='cursor-pointer' /> <label className='cursor-pointer' htmlFor="4">Z - A</label>
 
                                 </div>
 
                             </div>
                             <div className='w-full h-auto flex flex-col bg-white p-4 rounded-md gap-5 border'>
                                 <h6>Filter</h6>
-                                <TextInput label={"Name"} placeholder={"Name"} />
+                                <TextInput label={"Name"} placeholder={"Name"} onChange={onChangeFilterName} />
                                 {
                                     propertyTypes && <Dropdown items={propertyTypes} labelField={"name"}
-                                        label={"Type"} onItemChange={(e) => setPropertyType(e)}
-                                        selected={propertyType} />
+                                        label={"Type"} onItemChange={onChangeFilterType}
+                                        selected={typeFilter} />
                                 }
 
                                 <div className="w-1/3 ml-auto">
-                                    <Button label={"Apply"} type='button' />
+                                    <Button label={"Apply"} type='button' onClick={availableData} />
                                 </div>
                             </div>
 
@@ -230,6 +262,10 @@ const AvailableProperty = () => {
                                     <>
                                     </>
                             }
+                            {
+                                properties != null && <Pagination totalPage={totalPage} onChangePage={onChangePage} />
+                            }
+
                         </div>
                     </div>
                 </div>
