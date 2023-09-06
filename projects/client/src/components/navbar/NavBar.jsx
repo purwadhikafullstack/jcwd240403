@@ -20,7 +20,7 @@ const NavBar = () => {
   }, [token]);
   return (
     <>
-      <div className="sticky z-30 bg-white border-b border-gray-300 max-w-7xl md:mx-auto top-0 w-full flex items-center justify-between flex-row px-10 py-3 md:px-5">
+      <div className="sticky z-30 bg-white border-b mb-16 border-gray-300 max-w-7xl md:mx-auto top-0 w-full flex items-center justify-between flex-row px-10 py-3 md:px-5">
         <ButtonWithLogo
           onClick={() => {
             navigateTo("/");

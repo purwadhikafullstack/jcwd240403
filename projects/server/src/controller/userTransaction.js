@@ -63,6 +63,7 @@ const getThisRoom = async (req, res) => {
         {
           model: db.Room_status,
           attributes: ["id", "start_date", "end_date"],
+          required: false,
           where: {
             [Op.not]: [
               {
@@ -212,23 +213,68 @@ const uploadPaymentProof = async (req, res) => {
   }
 };
 
+const cancelBookingOrder = async (req, res) => {
+  try {
+    const token = req.user;
+    const user_id = token.id;
+    const { booking_code } = req.params;
+    const cancelThis = await db.Booking.update(
+      {
+        booking_status: "CANCELED",
+      },
+      {
+        where: {
+          booking_code: booking_code,
+          user_id: user_id,
+        },
+      }
+    );
+    return res.send({
+      status: true,
+      data: cancelThis,
+      message: "Order Has Been Canceled",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "fatal error on server",
+      error,
+    });
+  }
+};
+
 const getAllOrder = async (req, res) => {
   try {
     const token = req.user;
     const user_id = token.id;
-    const {
-      start_date,
-      end_date,
-      booking_code = "",
-      booking_status,
-      sortBy = "",
-    } = req.query;
+    const { date, booking_code = "", booking_status, sortBy = "" } = req.query;
+    let whereDate = {};
+    if (date) {
+      whereDate = {
+        [Op.or]: [
+          {
+            check_in_date: date,
+          },
+          {
+            check_out_date: date,
+          },
+        ],
+      };
+    }
     let orderby = ["id", "asc"];
     if (sortBy === "LowestPrice") {
       orderby = ["total_invoice", "ASC"];
+      // orderby = [{ model: db.Booking }, "total_invoice", "ASC"];
     }
     if (sortBy === "HighestPrice") {
       orderby = ["total_invoice", "DESC"];
+      // orderby = [{ model: db.Booking }, "total_invoice", "DESC"];
+    }
+    if (sortBy === "A-Z") {
+      orderby = [{ model: db.Room }, { model: db.Property }, "name", "ASC"];
+    }
+    if (sortBy === "Z-A") {
+      orderby = [{ model: db.Room }, { model: db.Property }, "name", "DESC"];
     }
     const pagination = {
       page: Number(req.query.page) || 1,
@@ -243,6 +289,7 @@ const getAllOrder = async (req, res) => {
         booking_status: {
           [Op.like]: `%${booking_status}%`,
         },
+        ...whereDate,
       },
       limit: pagination.perPage,
       offset: pagination.perPage * (pagination.page - 1),
@@ -356,4 +403,5 @@ module.exports = {
   getThisRoom,
   bookPropertyDetail,
   checkBooking,
+  cancelBookingOrder,
 };

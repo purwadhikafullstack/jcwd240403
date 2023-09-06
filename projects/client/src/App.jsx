@@ -67,7 +67,7 @@ function App() {
       >
         <Route index element={<VerifyEmail />} />
       </Route>
-      <Route path="/property" element={<AuthenticatedRoute roles={["USER"]} />}>
+      <Route path="/property">
         <Route index element={<AvailableProperty />} />
       </Route>
       <Route

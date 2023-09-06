@@ -110,9 +110,9 @@ const BookingProperty = () => {
     return (
         <>
             <MainContainer>
-                <Column className="max-w-7xl mx-auto gap-10">
-                    <Row className="gap-10 ">
-                        <img className='w-1/2 aspect-video rounded-lg' src={`${process.env.REACT_APP_API_BASE_URL}${room?.room_img}`} alt="" />
+                <Column className="w-full max-w-7xl mx-auto gap-10">
+                    <Row className="w-full gap-10 ">
+                        <img className='min-w-[50%] aspect-video rounded-lg' src={`${process.env.REACT_APP_API_BASE_URL}${room?.room_img}`} alt="" />
                         <Column className="w-full gap-5">
                             <HeadLine label={room?.Property?.name} />
                             <SubTitle label={room?.Property?.Property_type?.name} />
