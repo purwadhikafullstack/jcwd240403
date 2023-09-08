@@ -17,6 +17,8 @@ import Caption from '../../../components/texts/Caption';
 import Title from '../../../components/texts/Title';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { getMinimumPrice, getRange } from '../../../shared/utils';
+import Carousel from '../../../components/widget/Carousel'
+import Slider from 'react-slick';
 
 
 const DetailProperty = () => {
@@ -33,6 +35,16 @@ const DetailProperty = () => {
         from: startDate,
         to: endDate,
     });
+    const setting = {
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 3000,
+
+    }
     const getDetailProperty = async (e) => {
         await axios.get(`${process.env.REACT_APP_API_BASE_URL}/product/${id.split("-")[1]}?start_date=${startDate}&end_date=${endDate}`, {
             headers: {
@@ -98,20 +110,24 @@ const DetailProperty = () => {
                             </div>
                         </div>
                     </div>
-                    <div class="flex flex-row gap-5 snap-x overflow-x-auto snap-mandatory ">
-                        {
-                            property?.Pictures.map((row, idx) => (
-                                <>
-                                    <div className={`${idx == 0 ? "ml-32" : idx == property?.Pictures.length - 1 ? "ml-5 mr-32" : "ml-5"} snap-center w-full aspect-video max-w-4xl flex-shrink-0`}>
-                                        <img className=' w-full aspect-video object-cover rounded-xl' src={`${process.env.REACT_APP_API_BASE_URL}${row?.img}`} />
-                                    </div >
+
+                    <div>
+
+                        <Slider  {...setting}>
+                            {
+                                property?.Pictures.map((row, idx) => (
+                                    <>
+                                        <div key={idx} className={` w-full aspect-video flex-shrink-0`}>
+                                            <img className=' w-full aspect-video object-cover rounded-xl' src={`${process.env.REACT_APP_API_BASE_URL}${row?.img}`} />
+                                        </div >
 
 
-                                </>
-                            ))
-                        }
-
+                                    </>
+                                ))
+                            }
+                        </Slider>
                     </div>
+
                     <div className="flex flex-col gap-12 w-full max-w-7xl mx-auto">
                         <div className="flex flex-col gap-4">
                             <HeadLine label={property?.name} />

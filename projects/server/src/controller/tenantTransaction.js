@@ -37,6 +37,11 @@ const getAllOrders = async (req, res) => {
       include: [
         {
           model: db.User,
+          include: [
+            {
+              model: db.Profile,
+            },
+          ],
         },
         {
           model: db.Room,
@@ -52,6 +57,9 @@ const getAllOrders = async (req, res) => {
               include: [
                 {
                   model: db.Property_type,
+                },
+                {
+                  model: db.Location,
                 },
               ],
             },
@@ -140,6 +148,17 @@ const confirmPayment = async (req, res) => {
       });
     }
     if (payment_status == "DECLINED") {
+      await db.Booking.update(
+        {
+          booking_status: "WAITING_FOR_PAYMENT",
+        },
+        {
+          where: {
+            booking_code: booking_code,
+            user_id: user_id,
+          },
+        }
+      );
       message = "Payment Declined";
     }
     return res.send({

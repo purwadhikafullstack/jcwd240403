@@ -17,9 +17,10 @@ const navigation = [
   },
   {
     name: "Order",
-    href: "#",
+    href: "/order",
     icon: DocumentDuplicateIcon,
-    current: false,
+    current: true,
+    children: [{ name: "Order List", href: "/order-list" }],
   },
   { name: "Reports", href: "#", icon: ChartPieIcon, current: false },
 ];
