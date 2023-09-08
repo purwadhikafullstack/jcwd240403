@@ -15,17 +15,18 @@ import Cardorder from '../../../components/cards/CardOrder'
 import axios from 'axios'
 import moment from 'moment';
 import Pagination from '../../../components/pagination/Pagination'
+import { toast } from 'react-hot-toast'
 
 
 function OrderList() {
-    const [bookingStatus, setBookingStatus] = useState([{ id: 1, name: 'WAITING FOR PAYMENT', value: "WAITING_FOR_PAYMENT" },
+    const [bookingStatus, setBookingStatus] = useState([{ id: 0, name: "ALL", value: null }, { id: 1, name: 'WAITING FOR PAYMENT', value: "WAITING_FOR_PAYMENT" },
     { id: 2, name: `PROCESSING PAYMENT`, value: "PROCESSING_PAYMENT" },
     { id: 3, name: `DONE`, value: "DONE" },
     { id: 4, name: `CANCELED`, value: "CANCELED" }])
     const [orders, setOrders] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPage, setTotalPage] = useState(1)
-    const [limitPage, setLimitPage] = useState(2)
+    const [limitPage, setLimitPage] = useState(10)
     const [sortBy, setSortBy] = useState(null)
     const [bookingIdFilter, setBookingIdFilter] = useState(null)
     const [bookingDateFilter, setBookingDateFilter] = useState(null)
@@ -73,6 +74,20 @@ function OrderList() {
         console.log(value)
     }
 
+    const cancelOrder = async (booking_code) => {
+        await axios.patch(`${process.env.REACT_APP_API_BASE_URL}/transaction/cancel/${booking_code}`, {}, {
+            headers: {
+                authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+        }).then(res => {
+            if (res.data.status) {
+                toast.success(res.data.message)
+                getAllOrder()
+            }
+        })
+
+    }
+
     useEffect(() => {
         getAllOrder()
     }, [currentPage, sortBy])
@@ -90,7 +105,7 @@ function OrderList() {
                                     <input type="radio" id='1' name='sort' value={"HighestPrice"} onChange={onChangeSort} className='cursor-pointer' /> <label className='cursor-pointer' htmlFor="1">highest Price</label>
                                 </div>
                                 <div className='flex gap-2 '>
-                                    <input type="radio" id='2' name='sort' value={"LowestPice"} onChange={onChangeSort} className='cursor-pointer' /> <label className='cursor-pointer' htmlFor="2">lowest Price</label>
+                                    <input type="radio" id='2' name='sort' value={"LowestPrice"} onChange={onChangeSort} className='cursor-pointer' /> <label className='cursor-pointer' htmlFor="2">lowest Price</label>
 
                                 </div>
                                 <div className='flex gap-2 '>
@@ -127,6 +142,9 @@ function OrderList() {
                                                     check_out={moment(row.check_out_date, "YYYY-MM-DD").format("DD/MM/YYYY")}
                                                     status={row.booking_status}
                                                     booking_code={row.booking_code}
+                                                    transactionTime={row.createdAt}
+                                                    confirmCancel={() => { cancelOrder(row.booking_code) }}
+
                                                 />
                                             ))
                                         }

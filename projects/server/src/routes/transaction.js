@@ -10,7 +10,15 @@ const {
   uploadPaymentProof,
   getAllOrder,
   checkBooking,
+  cancelBookingOrder,
 } = require("../controller/userTransaction");
+const {
+  getAllOrders,
+  cancelOrder: cancelUserOrder,
+  confirmPayment,
+} = require("../controller/tenantTransaction");
+
+// User Transaction
 
 router.get(
   "/book",
@@ -39,6 +47,13 @@ router.delete(
 );
 
 router.patch(
+  "/cancel/:booking_code",
+  verifying.verifyAccessToken,
+  verifying.verifyUser,
+  cancelBookingOrder
+);
+
+router.patch(
   "/book/:booking_code",
   verifying.verifyAccessToken,
   multerMiddleware,
@@ -58,6 +73,29 @@ router.post(
   verifying.verifyAccessToken,
   verifying.verifyUser,
   checkBooking
+);
+
+//Tenant Transaction
+
+router.get(
+  "/order-user",
+  verifying.verifyAccessToken,
+  verifying.verifyTenant,
+  getAllOrders
+);
+
+router.patch(
+  "/order-user/:booking_code/:user_id",
+  verifying.verifyAccessToken,
+  verifying.verifyTenant,
+  cancelUserOrder
+);
+
+router.post(
+  "/order-user/:booking_code/:user_id",
+  verifying.verifyAccessToken,
+  verifying.verifyTenant,
+  confirmPayment
 );
 
 module.exports = router;

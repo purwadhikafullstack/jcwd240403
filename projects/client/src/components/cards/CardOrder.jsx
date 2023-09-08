@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Row from "../widget/Row";
 import Column from "../widget/Column";
 import Caption from "../texts/Caption";
@@ -8,8 +8,27 @@ import SubTitle from "../texts/SubTitle";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../buttons/Button";
 
-function Cardorder({ title, type, check_in, check_out, status, image, header = null, booking_code }) {
+function Cardorder({ title, type, check_in, check_out, status, image, header = null, booking_code, transactionTime, confirmCancel }) {
+    const [showButton, setShowButton] = useState(false)
+    const [isExpired, setIsExpired] = useState(false)
+    const [confirm, setConfirm] = useState(false)
     const navigate = useNavigate()
+    const checkExpired = () => {
+        if (status == "WAITING_FOR_PAYMENT") {
+            const currentTime = new Date().getTime()
+            const transactionDate = new Date(transactionTime).getTime()
+            const diff = new Date(transactionDate + (2 * 3600 * 1000)).getTime() - currentTime
+            if (diff > 0) {
+                setShowButton(true)
+                setIsExpired(false)
+            } else {
+                setIsExpired(true)
+            }
+        }
+    }
+    useEffect(() => {
+        checkExpired()
+    }, [])
     return (
         <div className="md:w-full md:min-h-[13rem] flex flex-col bg-white border border-gray-300 rounded-lg overflow-hidden" >
             <div className="px-4 py-2 border-b bg-slate-100">
@@ -52,6 +71,34 @@ function Cardorder({ title, type, check_in, check_out, status, image, header = n
                             status === "WAITING_FOR_PAYMENT" ?
                                 <>
                                     <Button type="button" label={status.replaceAll("_", " ")} onClick={() => navigate(`/paymentproof/${booking_code}`)} />
+                                    {
+                                        showButton ?
+                                            <>
+                                                {
+                                                    confirm ?
+                                                        <>
+                                                            <Row className="gap-5 mx-auto">
+                                                                <Column>
+                                                                    <Button label={"Yes, Cancel Order"} type="button" onClick={confirmCancel} />
+                                                                </Column>
+                                                                <Column>
+                                                                    <Button className="bg-gray-800" label={"Close"} type="button" onClick={() => setConfirm(false)} />
+                                                                </Column>
+                                                            </Row>
+                                                        </>
+                                                        :
+                                                        <>
+                                                            <Button type="button" className="bg-red-900" label={"Cancel Booking"} onClick={() => setConfirm(true)} />
+                                                        </>
+                                                }
+                                            </>
+                                            :
+                                            <>
+                                                {
+                                                    isExpired ? <><SubTitle label={"Expierd"} /></> : <></>
+                                                }
+                                            </>
+                                    }
                                 </> :
                                 <>
                                     <SubTitle label={status.replaceAll("_", " ")} />

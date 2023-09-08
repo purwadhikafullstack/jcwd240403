@@ -31,6 +31,12 @@ const getAllProperty = async (req, res) => {
     if (sortBy === "HighestPrices") {
       orderby = [{ model: db.Room }, "base_price", "DESC"];
     }
+    if (sortBy === "A-Z") {
+      orderby = ["name", "ASC"];
+    }
+    if (sortBy === "Z-A") {
+      orderby = ["name", "DESC"];
+    }
 
     const pagination = {
       page: Number(req.query.page) || 1,
