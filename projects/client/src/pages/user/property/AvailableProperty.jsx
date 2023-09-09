@@ -184,7 +184,7 @@ const AvailableProperty = () => {
                                     <input type="radio" id='1' name='sort' value={"HighestPrices"} onChange={onChangeSort} className='cursor-pointer' /> <label className='cursor-pointer' htmlFor="1">highest Price</label>
                                 </div>
                                 <div className='flex gap-2 '>
-                                    <input type="radio" id='2' name='sort' value={"LowestPice"} onChange={onChangeSort} className='cursor-pointer' /> <label className='cursor-pointer' htmlFor="2">lowest Price</label>
+                                    <input type="radio" id='2' name='sort' value={"LowestPrice"} onChange={onChangeSort} className='cursor-pointer' /> <label className='cursor-pointer' htmlFor="2">lowest Price</label>
 
                                 </div>
                                 <div className='flex gap-2 '>

@@ -33,6 +33,7 @@ import OrderList from "./pages/user/userTransaction/OrderList";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import TenantOrderList from "./pages/tenant/TenantOrderList";
+import VerifyPayment from "./pages/user/userTransaction/VerifyPayment";
 
 
 function App() {
@@ -92,6 +93,12 @@ function App() {
         element={<AuthenticatedRoute roles={["USER"]} />}
       >
         <Route index element={<OrderList />} />
+      </Route>
+      <Route
+        path="/verify-payment/:verify_code"
+        element={<AuthenticatedRoute roles={["USER"]} />}
+      >
+        <Route index element={<VerifyPayment />} />
       </Route>
 
       {/* TENANT Authenticated Routes */}
