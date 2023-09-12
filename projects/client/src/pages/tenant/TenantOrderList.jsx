@@ -11,6 +11,9 @@ import SubTitle from '../../components/texts/SubTitle'
 import Button from '../../components/buttons/Button'
 import Row from '../../components/widget/Row'
 import Dropdown from '../../components/dropdown/Dropdown'
+import TextInput from '../../components/textInputs/TextInput'
+import TextAreaWithLabel from '../../components/textInputs/TextAreaWithLabel'
+import { Field } from 'formik'
 
 
 function TenantOrderList() {
@@ -18,6 +21,10 @@ function TenantOrderList() {
     const [listOrder, setListOrder] = useState([])
     const [orderData, setOrderData] = useState([])
     const [show, setShow] = useState(false)
+    const [sendReason, setSendReason] = useState("")
+    const [reason, setReason] = useState("")
+    const [showDecline, setShowDecline] = useState(false)
+    const [showCancel, setShowCancel] = useState(false)
     const [cancelConfirm, setCancelConfirm] = useState(0)
     const [order, setOrder] = useState(null)
     const [statusBy, setStatusBy] = useState(null)
@@ -42,7 +49,8 @@ function TenantOrderList() {
 
     const acceptOrder = async (action) => {
         axios.post(`${process.env.REACT_APP_API_BASE_URL}/transaction/order-user/${order.booking_code}/${order.user_id}`, {
-            payment_status: action == 10 ? "ACCEPTED" : "DECLINED"
+            payment_status: action == 10 ? "ACCEPTED" : "DECLINED",
+            reject_reason: reason
         }, {
             headers: {
                 authorization: `Bearer ${localStorage.getItem("token")}`
@@ -53,7 +61,10 @@ function TenantOrderList() {
         })
     }
     const cancelOrder = async (action) => {
-        axios.patch(`${process.env.REACT_APP_API_BASE_URL}/transaction/order-user/${order.booking_code}/${order.user_id}`, {}, {
+        axios.patch(`${process.env.REACT_APP_API_BASE_URL}/transaction/order-user/${order.booking_code}/${order.user_id}`, {
+            cancel_reason: reason
+
+        }, {
             headers: {
                 authorization: `Bearer ${localStorage.getItem("token")}`
             }
@@ -82,6 +93,10 @@ function TenantOrderList() {
                 setTypeFilter([{ id: "", name: "All" }, ...response.data.data.propertyType])
             }
         })
+    }
+
+    const reasonHandler = (e) => {
+        setReason(e.target.value)
     }
 
 
@@ -121,24 +136,74 @@ function TenantOrderList() {
                             <SubTitle label={order.booking_code} />
                         </Column>
                         <img className='w-full max-w-sm rounded-lg mx-auto' src={`${process.env.REACT_APP_API_BASE_URL}${order.payment_proof}`} />
+                        <Row>
+                            {
+                                sendReason ?
+                                    <>
+                                        <TextAreaWithLabel label={`${sendReason} Reason`} placeholder={`${sendReason} Reason`} form={{ errors: [] }} onChange={reasonHandler} />
+                                    </>
+                                    :
+                                    <></>
+                            }
+                        </Row>
                         <Row className="w-full justify-between">
                             <Row className="gap-3 my-auto">
                                 <Button label={"Accept"} className="bg-blue-600 hover:bg-blue-800" type='button' onClick={() => acceptOrder(10)} />
-                                <Button label={"Decline"} className="bg-orange-600 hover:bg-orange-800" type='button' onClick={() => acceptOrder(20)} />
+                                {
+                                    showDecline ?
+                                        <>
+                                            <Button label={"yes, Decline"} className="bg-orange-600 hover:bg-orange-800" type='button' onClick={() => {
+                                                acceptOrder(20)
+                                                setShowDecline(false)
+                                                setSendReason("")
+
+                                            }} />
+                                            <Button label={"Close"} className="bg-orange-600 hover:bg-orange-800" type='button' onClick={() => {
+                                                setShowDecline(false)
+                                                setSendReason("")
+                                            }} />
+
+                                        </>
+                                        :
+                                        <>
+                                            <Button label={"Decline"} className="bg-orange-600 hover:bg-orange-800" type='button' onClick={() => {
+                                                setShowDecline(true)
+                                                setSendReason("decline")
+                                                setShowCancel(false)
+                                                setCancelConfirm(null)
+                                            }} />
+
+                                        </>
+                                }
                             </Row>
                             <Column>
                                 {
                                     order?.id == cancelConfirm ?
                                         <>
                                             <div className='gap-4'>
-                                                <Button label={"Yes, Cancel This Order"} className="w-fit bg-red-600 my-2 hover:bg-red-800" type='button' onClick={() => cancelOrder()} />
-                                                <Button label={"Close"} className="w-fit bg-gray-600 my-2 hover:bg-gray-800" type='button' onClick={() => setCancelConfirm(0)} />
+                                                <Button label={"Yes, Cancel This Order"} className="w-fit bg-red-600 my-2 hover:bg-red-800" type='button' onClick={() => {
+                                                    cancelOrder()
+                                                    setShowCancel(false)
+                                                    setSendReason("")
+                                                    setCancelConfirm(null)
+
+                                                }} />
+                                                <Button label={"Close"} className="w-fit bg-gray-600 my-2 hover:bg-gray-800" type='button' onClick={() => {
+                                                    setCancelConfirm(0)
+                                                    setShowCancel(false)
+                                                    setSendReason("")
+                                                }} />
 
                                             </div>
                                         </>
                                         :
                                         <>
-                                            <Button label={"Cancel Order"} type='button' className={"w-fit bg-red-600 hover:bg-red-800"} onClick={() => setCancelConfirm(order.id)} />
+                                            <Button label={"Cancel Order"} type='button' className={"w-fit bg-red-600 hover:bg-red-800"} onClick={() => {
+                                                setCancelConfirm(order.id)
+                                                setShowCancel(true)
+                                                setSendReason("cancel")
+                                                setShowDecline(false)
+                                            }} />
                                         </>
                                 }
                             </Column>

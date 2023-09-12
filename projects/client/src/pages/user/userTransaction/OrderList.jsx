@@ -142,7 +142,7 @@ function OrderList() {
                                                     check_out={moment(row.check_out_date, "YYYY-MM-DD").format("DD/MM/YYYY")}
                                                     status={row.booking_status}
                                                     booking_code={row.booking_code}
-                                                    transactionTime={row.createdAt}
+                                                    transactionTime={row.updatedAt}
                                                     confirmCancel={() => { cancelOrder(row.booking_code) }}
 
                                                 />

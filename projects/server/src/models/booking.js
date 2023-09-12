@@ -31,6 +31,12 @@ module.exports = (sequelize, DataTypes) => {
         "DONE",
         "CANCELED"
       ),
+      cancel_reason: {
+        type: DataTypes.STRING,
+      },
+      reject_reason: {
+        type: DataTypes.STRING,
+      },
     },
     {
       sequelize,
