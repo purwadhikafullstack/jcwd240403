@@ -395,6 +395,50 @@ const checkBooking = async (req, res) => {
   }
 };
 
+const verifyPayment = async (req, res) => {
+  try {
+    const token = req.user;
+    const user_id = token.id;
+    const { booking_code } = req.params;
+    const userId = req.body.user_id;
+    if (userId == user_id) {
+      const verify = await db.Booking.update(
+        {
+          booking_status: "DONE",
+        },
+        {
+          where: {
+            user_id: user_id,
+            booking_code: booking_code,
+          },
+        }
+      );
+      if (verify) {
+        return res.send({
+          status: true,
+          message: "Payment Verified Successfully",
+        });
+      } else {
+        return res.send({
+          status: false,
+          message: "Payment Verify Failed",
+        });
+      }
+    } else {
+      return res.send({
+        status: false,
+        message: "User And Credential Does Not Match",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "fatal error on server",
+      error,
+    });
+  }
+};
+
 module.exports = {
   bookProperty,
   uploadPaymentProof,
@@ -404,4 +448,5 @@ module.exports = {
   bookPropertyDetail,
   checkBooking,
   cancelBookingOrder,
+  verifyPayment,
 };

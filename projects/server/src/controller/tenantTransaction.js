@@ -4,6 +4,8 @@ require("dotenv").config();
 
 const getAllOrders = async (req, res) => {
   try {
+    const token = req.user;
+    const user_id = token.id;
     const { status, type, location } = req.query;
     const pagination = {
       page: Number(req.query.page) || 1,
@@ -37,6 +39,11 @@ const getAllOrders = async (req, res) => {
       include: [
         {
           model: db.User,
+          include: [
+            {
+              model: db.Profile,
+            },
+          ],
         },
         {
           model: db.Room,
@@ -48,10 +55,14 @@ const getAllOrders = async (req, res) => {
               where: {
                 ...whereType,
                 ...whereLocation,
+                user_id: user_id,
               },
               include: [
                 {
                   model: db.Property_type,
+                },
+                {
+                  model: db.Location,
                 },
               ],
             },
@@ -68,6 +79,49 @@ const getAllOrders = async (req, res) => {
         perPage: pagination.perPage,
         totalData: count,
         totalPage: totalPage,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "fatal error on server",
+      error,
+    });
+  }
+};
+
+const getFilter = async (req, res) => {
+  try {
+    const status = [
+      {
+        id: "",
+        value: "All",
+      },
+      {
+        id: "WAITING_FOR_PAYMENT",
+        value: "WAITING FOR PAYMENT",
+      },
+      {
+        id: "PROCESSING_PAYMENT",
+        value: "PROCESSING PAYMENT",
+      },
+      {
+        id: "DONE",
+        value: "DONE",
+      },
+      {
+        id: "CANCELED",
+        value: "CANCELED",
+      },
+    ];
+    const location = await db.Location.findAll();
+    const propertyType = await db.Property_type.findAll();
+    return res.send({
+      status: true,
+      data: {
+        status: status,
+        location: location,
+        propertyType: propertyType,
       },
     });
   } catch (error) {
@@ -140,6 +194,17 @@ const confirmPayment = async (req, res) => {
       });
     }
     if (payment_status == "DECLINED") {
+      await db.Booking.update(
+        {
+          booking_status: "WAITING_FOR_PAYMENT",
+        },
+        {
+          where: {
+            booking_code: booking_code,
+            user_id: user_id,
+          },
+        }
+      );
       message = "Payment Declined";
     }
     return res.send({
@@ -205,4 +270,5 @@ module.exports = {
   confirmPayment,
   broadcastRules,
   cancelOrder,
+  getFilter,
 };

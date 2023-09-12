@@ -1,11 +1,12 @@
 import React, { Fragment, useEffect, useState } from "react";
 import ButtonWithLogo from "../buttons/ButtonWithLogo";
-import { KeyIcon, UserIcon } from "@heroicons/react/24/solid";
+import { KeyIcon, UserIcon, } from "@heroicons/react/24/solid";
 import { Link, useNavigate } from "react-router-dom";
 import useToken from "../../shared/hooks/useToken";
 import { Menu, Transition } from "@headlessui/react";
 import { TbDoorExit } from "react-icons/tb";
 import jwtDecode from "jwt-decode";
+import { ClipboardIcon } from "@heroicons/react/20/solid";
 
 const NavBar = () => {
   const { token, removeToken } = useToken();
@@ -85,6 +86,24 @@ const NavBar = () => {
                         />
                         <span className="group-hover:text-primary">
                           Change Password
+                        </span>
+                      </button>
+                    </Menu.Item>
+                  </div>
+                  <div className="px-1 py-1 ">
+                    <Menu.Item>
+                      <button
+                        onClick={() => {
+                          navigateTo("/orderList");
+                        }}
+                        className={`group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                      >
+                        <ClipboardIcon
+                          className="mr-2 h-5 w-5 group-hover:text-primary"
+                          aria-hidden="true"
+                        />
+                        <span className="group-hover:text-primary">
+                          My Booking
                         </span>
                       </button>
                     </Menu.Item>

@@ -11,11 +11,13 @@ const {
   getAllOrder,
   checkBooking,
   cancelBookingOrder,
+  verifyPayment,
 } = require("../controller/userTransaction");
 const {
   getAllOrders,
   cancelOrder: cancelUserOrder,
   confirmPayment,
+  getFilter,
 } = require("../controller/tenantTransaction");
 
 // User Transaction
@@ -75,6 +77,13 @@ router.post(
   checkBooking
 );
 
+router.patch(
+  "/verify/:booking_code",
+  verifying.verifyAccessToken,
+  verifying.verifyUser,
+  verifyPayment
+);
+
 //Tenant Transaction
 
 router.get(
@@ -96,6 +105,13 @@ router.post(
   verifying.verifyAccessToken,
   verifying.verifyTenant,
   confirmPayment
+);
+
+router.get(
+  "/filter",
+  verifying.verifyAccessToken,
+  verifying.verifyTenant,
+  getFilter
 );
 
 module.exports = router;
