@@ -8,7 +8,7 @@ import SubTitle from "../texts/SubTitle";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../buttons/Button";
 
-function Cardorder({ title, type, check_in, check_out, status, image, header = null, booking_code, transactionTime, confirmCancel }) {
+function Cardorder({ title, type, check_in, check_out, status, image, header = null, booking_code, transactionTime, confirmCancel, isDone = false, reviewButton }) {
     const [showButton, setShowButton] = useState(false)
     const [isExpired, setIsExpired] = useState(false)
     const [confirm, setConfirm] = useState(false)
@@ -101,13 +101,25 @@ function Cardorder({ title, type, check_in, check_out, status, image, header = n
                                     }
                                 </> :
                                 <>
-                                    <SubTitle label={status.replaceAll("_", " ")} />
+                                    {
+                                        isDone ?
+
+                                            <>
+                                                <SubTitle label={status.replaceAll("_", " ")} />
+                                                <Button label={"Review"} type="button" onClick={reviewButton} />
+                                            </>
+
+                                            :
+                                            <>
+                                                <SubTitle label={status.replaceAll("_", " ")} />
+                                            </>
+                                    }
                                 </>
                         }
                     </div>
                 </div>
-            </Row>
-        </div>
+            </Row >
+        </div >
     );
 }
 

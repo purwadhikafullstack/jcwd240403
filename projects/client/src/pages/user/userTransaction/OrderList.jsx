@@ -16,6 +16,8 @@ import axios from 'axios'
 import moment from 'moment';
 import Pagination from '../../../components/pagination/Pagination'
 import { toast } from 'react-hot-toast'
+import ModalDialog from '../../../components/widget/ModalDialog'
+import TextAreaWithLabel from '../../../components/textInputs/TextAreaWithLabel'
 
 
 function OrderList() {
@@ -28,6 +30,9 @@ function OrderList() {
     const [totalPage, setTotalPage] = useState(1)
     const [limitPage, setLimitPage] = useState(10)
     const [sortBy, setSortBy] = useState(null)
+    const [comment, setComment] = useState("")
+    const [showModal, setShowModal] = useState(false)
+    const [bookingId, setBookingId] = useState(null)
     const [bookingIdFilter, setBookingIdFilter] = useState(null)
     const [bookingDateFilter, setBookingDateFilter] = useState(null)
     const [bookingStatusFilter, setBookingStatusFilter] = useState(null)
@@ -88,6 +93,26 @@ function OrderList() {
 
     }
 
+    const sendReview = async () => {
+        if (comment && bookingId) {
+            await axios.post(`${process.env.REACT_APP_API_BASE_URL}/transaction/review/${bookingId}`, {
+                comment: comment
+            }, {
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            }).then(response => {
+                if (response.data.status) {
+                    toast.success(response.data.message)
+                    setShowModal(false)
+                    setBookingId(null)
+                } else {
+                    toast.error(response.data.message)
+                }
+            })
+        }
+    }
+
     useEffect(() => {
         getAllOrder()
     }, [currentPage, sortBy])
@@ -144,6 +169,11 @@ function OrderList() {
                                                     booking_code={row.booking_code}
                                                     transactionTime={row.updatedAt}
                                                     confirmCancel={() => { cancelOrder(row.booking_code) }}
+                                                    isDone={new Date(row.check_out_date).getTime() <= new Date().getTime()}
+                                                    reviewButton={() => {
+                                                        setBookingId(row.id)
+                                                        setShowModal(true)
+                                                    }}
 
                                                 />
                                             ))
@@ -155,6 +185,24 @@ function OrderList() {
                                 orders != null && <Pagination totalPage={totalPage} onChangePage={onChangePage} />
                             }
                         </Column>
+                        {
+                            bookingId &&
+                            <ModalDialog show={showModal} onClose={() => {
+                                setShowModal(false)
+                                setBookingId(null)
+                            }} className="max-w-xl" >
+                                <Column className="px-6 py-8 gap-5 ">
+                                    <Column>
+                                        <Title label={"Send Your Review"} />
+                                        <SubTitle label={""} />
+                                        <TextAreaWithLabel label={``} placeholder={`Comment Here`} form={{ errors: [] }} onChange={(e) => setComment(e.target.value)} />
+                                        <Button type='button' label={"Send Review"} onClick={sendReview} className={"my-6"} />
+
+                                    </Column>
+                                </Column>
+                            </ModalDialog>
+
+                        }
                     </Row>
                 </Column>
 

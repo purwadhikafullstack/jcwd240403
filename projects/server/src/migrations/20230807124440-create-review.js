@@ -9,17 +9,10 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      user_id: {
+      booking_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: "Users",
-          key: "id",
-        },
-      },
-      property_id: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: "Properties",
+          model: "Bookings",
           key: "id",
         },
       },

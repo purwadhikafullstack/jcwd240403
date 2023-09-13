@@ -19,6 +19,7 @@ const {
   confirmPayment,
   getFilter,
 } = require("../controller/tenantTransaction");
+const { review } = require("../controller/review");
 
 // User Transaction
 
@@ -82,6 +83,13 @@ router.patch(
   verifying.verifyAccessToken,
   verifying.verifyUser,
   verifyPayment
+);
+
+router.post(
+  "/review/:booking_id",
+  verifying.verifyAccessToken,
+  verifying.verifyUser,
+  review
 );
 
 //Tenant Transaction

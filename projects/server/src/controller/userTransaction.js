@@ -312,6 +312,9 @@ const getAllOrder = async (req, res) => {
             },
           ],
         },
+        {
+          model: db.Review,
+        },
       ],
     });
     const totalPage = Math.ceil(count / pagination.perPage);
