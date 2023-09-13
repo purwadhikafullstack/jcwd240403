@@ -7,10 +7,9 @@ module.exports = {
     // check token valid or not
     const { authorization } = req.headers;
     if (!authorization) {
-      res.status(401).send({
-        message: "token is not found",
+      return res.status(401).send({
+        message: "Token is not found.",
       });
-      return;
     }
 
     const [format, token] = authorization.split(" ");
@@ -18,16 +17,15 @@ module.exports = {
       try {
         const payload = jwt.verify(token, secretKey);
         if (!payload) {
-          res.status(401).send({
-            message: "Token verification failed",
+          return res.status(401).send({
+            message: "Token verification failed.",
           });
-          return;
         }
         req.user = payload;
         next();
       } catch (error) {
         res.status(401).send({
-          message: "invalid token",
+          message: "Invalid token.",
           error,
         });
       }

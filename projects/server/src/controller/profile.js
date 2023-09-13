@@ -168,55 +168,48 @@ const updateProfilePicture = async (req, res) => {
 };
 
 const changePassword = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const { oldPass, newPass, confirmPass } = req.body;
     const id = req.user.id;
     const user = await db.User.findOne({
-      where: {
-        id: id,
-      },
+      where: { id: id },
     });
 
     const isValid = await bcrypt.compare(oldPass, user.password);
 
     if (user && isValid) {
-      if (newPass == confirmPass) {
-        const salt = await bcrypt.genSalt(10);
-        const hashPassword = await bcrypt.hash(newPass, salt);
+      const salt = await bcrypt.genSalt(10);
+      const hashPassword = await bcrypt.hash(newPass, salt);
 
-        const resetPassword = await db.User.update(
-          { password: hashPassword },
-          {
-            where: {
-              id: id,
-            },
-          }
-        );
+      const changePassword = await db.User.update(
+        { password: hashPassword },
+        { where: { id: id } },
+        { transaction }
+      );
 
-        const updated = await db.User.findOne({
-          where: { id: id },
+      const updated = await db.User.findOne({
+        where: { id: id },
+      });
+
+      if (changePassword) {
+        await transaction.commit();
+        return res.status(200).send({
+          message: "Change password success.",
+          data: updated,
         });
-        if (resetPassword) {
-          return res.status(200).send({
-            message: "Reset password success",
-            data: updated,
-          });
-        } else {
-          return res.status(400).send({
-            message: "Failed reset password.",
-          });
-        }
       } else {
         return res.status(400).send({
-          message: "Password confirmation did not match",
+          message: "Change password failed.",
         });
       }
     } else {
       return res.status(400).send({
-        message: "Wrong password",
+        message: "Please input your current password correctly.",
       });
     }
   } catch (error) {
+    await transaction.rollback();
     console.log("change pass", error);
     res.status(500).send({
       message: "Something wrong on server",

@@ -15,6 +15,12 @@ router.post(
 
 router.post("/login", validation.validateLogin, authController.login);
 
+router.get(
+  "/keep-login",
+  verifying.verifyAccessToken,
+  authController.keepLogin
+);
+
 router.patch(
   "/verification/:token",
   validation.validateVerify,
@@ -37,9 +43,4 @@ router.patch(
   authController.resetPassword
 );
 
-router.get(
-  "/loginWithToken",
-  verifying.verifyAccessToken,
-  authController.loginWithToken
-);
 module.exports = router;

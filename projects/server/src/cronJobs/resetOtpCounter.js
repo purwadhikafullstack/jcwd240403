@@ -3,7 +3,7 @@ const db = require("../models");
 const moment = require("moment-timezone");
 
 const resetOtpCounterJob = () => {
-  cron.schedule("* * * * *", async function () {
+  cron.schedule("0 * * * *", async function () {
     try {
       const time = moment().format("HH:mm");
       if (time === "00:00") {

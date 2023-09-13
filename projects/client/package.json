@@ -30,7 +30,8 @@
     "react-router-dom": "^6.14.2",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4",
-    "yup": "^1.2.0"
+    "yup": "^1.2.0",
+    "yup-password": "^0.2.2"
   },
   "eslintConfig": {
     "extends": [
