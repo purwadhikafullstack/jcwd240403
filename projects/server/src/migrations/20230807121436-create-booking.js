@@ -55,6 +55,12 @@ module.exports = {
           "CANCELED"
         ),
       },
+      cancel_reason: {
+        type: Sequelize.STRING,
+      },
+      reject_reason: {
+        type: Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

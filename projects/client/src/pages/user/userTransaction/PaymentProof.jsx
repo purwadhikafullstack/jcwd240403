@@ -63,7 +63,7 @@ function PaymentProof() {
 
     const getTimeRemaining = async (booking) => {
         const currentTime = new Date().getTime()
-        const transactionTime = new Date(booking.createdAt).getTime()
+        const transactionTime = new Date(booking.updatedAt).getTime()
         const diff = new Date(transactionTime + (2 * 3600 * 1000)).getTime() - currentTime
         setHour(Math.floor((diff / (1000 * 3600)) % 24))
         setMinute(Math.floor((diff / 1000 / 60) % 60))

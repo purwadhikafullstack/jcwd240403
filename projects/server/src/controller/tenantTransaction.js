@@ -1,6 +1,7 @@
 const db = require("../models");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
+const moment = require("moment-timezone");
 
 const getAllOrders = async (req, res) => {
   try {
@@ -135,12 +136,60 @@ const getFilter = async (req, res) => {
 
 const confirmPayment = async (req, res) => {
   try {
-    const { payment_status } = req.body;
+    const {
+      payment_status,
+      cancel_reason = null,
+      reject_reason = null,
+    } = req.body;
     const { booking_code, user_id } = req.params;
     let message = "";
+
+    let transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+    let mailOptions = {};
+    const getUser = await db.Booking.findOne({
+      where: {
+        booking_code: booking_code,
+        user_id: user_id,
+      },
+      include: [
+        {
+          model: db.User,
+          include: [
+            {
+              model: db.Profile,
+            },
+          ],
+        },
+        {
+          model: db.Room,
+          include: [
+            {
+              model: db.Property,
+              include: [
+                {
+                  model: db.Property_type,
+                },
+                {
+                  model: db.Location,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
     const verifyPayment = await db.Booking.update(
       {
         payment_status: payment_status,
+        cancel_reason: cancel_reason,
+        reject_reason: reject_reason,
       },
       {
         where: {
@@ -150,36 +199,41 @@ const confirmPayment = async (req, res) => {
       }
     );
     if (payment_status == "ACCEPTED") {
-      const getUser = await db.Booking.findOne({
-        where: {
-          booking_code: booking_code,
-          user_id: user_id,
+      await db.Booking.update(
+        {
+          booking_status: "DONE",
         },
-        include: [
-          {
-            model: db.User,
+        {
+          where: {
+            booking_code: booking_code,
+            user_id: user_id,
           },
-        ],
-      });
+        }
+      );
       message = "Payment Accepted, Waiting For User Confirmation";
-      let transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      });
-      let mailOptions = {
+      mailOptions = {
         from: process.env.SMTP_USER,
         to: getUser.User.email,
-        subject: "Verify Payment",
+        subject: "Booking Detail",
         text: `Hello,
   
         Welcome to Innsight!
-  
-        Please click the following link to Verify Your Payment:
-  
-        http://localhost:3000/verify-payment/${booking_code}-${user_id}
+        
+        Your Transaction was Accepted, Here is Your Booking Detail :
+
+        Name : ${getUser.User.Profile.full_name}
+        Booking Code : ${getUser.booking_code}
+        Check in Date : ${moment(getUser.check_in_date, "YYYY-MM-DD").format(
+          "DD/MM/YYYY"
+        )}
+        Check Out Date : ${moment(getUser.check_out_date, "YYYY-MM-DD").format(
+          "DD/MM/YYYY"
+        )}
+        Property Name : ${getUser.Room.Property.name}
+        Property Type : ${getUser.Room.Property.Property_type.name}
+        Room : ${getUser.Room.name}
+        Total : ${new Intl.NumberFormat().format(getUser.total_invoice)}
+        
   
   
         Thanks,
@@ -194,6 +248,7 @@ const confirmPayment = async (req, res) => {
       });
     }
     if (payment_status == "DECLINED") {
+      message = "Payment Declined";
       await db.Booking.update(
         {
           booking_status: "WAITING_FOR_PAYMENT",
@@ -205,7 +260,33 @@ const confirmPayment = async (req, res) => {
           },
         }
       );
-      message = "Payment Declined";
+
+      mailOptions = {
+        from: process.env.SMTP_USER,
+        to: getUser.User.email,
+        subject: message,
+        text: `Hello,
+  
+        Welcome to Innsight!
+        
+        Your Transaction was Declined, the Reason Is Below Here:
+
+       ${reject_reason}
+
+       Please Visit This Link 
+       http://localhost:3000/orderlist
+  
+  
+        Thanks,
+        Innsight Team`,
+      };
+      transporter.sendMail(mailOptions, function (err, info) {
+        if (err) {
+          console.log("TRANSPORTER_ERR", err, mailOptions);
+        } else {
+          console.log("Email sent", info);
+        }
+      });
     }
     return res.send({
       status: true,
@@ -234,9 +315,11 @@ const broadcastRules = async (req, res) => {
 const cancelOrder = async (req, res) => {
   try {
     const { user_id, booking_code } = req.params;
+    const { cancel_reason = null } = req.body;
     const cancelThis = await db.Booking.update(
       {
         booking_status: "CANCELED",
+        cancel_reason: cancel_reason,
       },
       {
         where: {
@@ -245,7 +328,72 @@ const cancelOrder = async (req, res) => {
         },
       }
     );
+    const getUser = await db.Booking.findOne({
+      where: {
+        booking_code: booking_code,
+        user_id: user_id,
+      },
+      include: [
+        {
+          model: db.User,
+          include: [
+            {
+              model: db.Profile,
+            },
+          ],
+        },
+        {
+          model: db.Room,
+          include: [
+            {
+              model: db.Property,
+              include: [
+                {
+                  model: db.Property_type,
+                },
+                {
+                  model: db.Location,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
     if (cancelThis) {
+      let transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      });
+      let mailOptions = {
+        from: process.env.SMTP_USER,
+        to: getUser.User.email,
+        subject: "Transaction Canceled",
+        text: `Hello,
+  
+        Welcome to Innsight!
+        
+        Your Transaction was Canceled, the Reason Is Below Here:
+
+       ${cancel_reason}
+
+       Please Visit This Link 
+       http://localhost:3000/orderlist
+  
+  
+        Thanks,
+        Innsight Team`,
+      };
+      transporter.sendMail(mailOptions, function (err, info) {
+        if (err) {
+          console.log("TRANSPORTER_ERR", err, mailOptions);
+        } else {
+          console.log("Email sent", info);
+        }
+      });
       return res.send({
         status: true,
         message: "Order Canceled",
