@@ -10,6 +10,11 @@ const Op = db.Sequelize.Op;
 const getAllMyProp = async (req, res) => {
   try {
     const userId = req.user.id;
+    const pagination = {
+      page: Number(req.query.page) || 1,
+      perPage: Number(req.query.perPage) || 5,
+    };
+
     const result = await db.Property.findAll({
       where: { user_id: userId, deletedAt: null },
       include: [
@@ -30,14 +35,29 @@ const getAllMyProp = async (req, res) => {
           attributes: ["id", "property_id", "img"],
         },
       ],
+      limit: pagination.perPage,
+      offset: (pagination.page - 1) * pagination.perPage,
     });
+
     if (result.length === 0) {
       return res.status(200).send({
         message: "You dont list any property yet",
       });
     }
+
+    const countData = await db.Property.count({ where: { user_id: userId } });
+    pagination.totalData = countData;
+    const totalPage = Math.ceil(pagination.totalData / pagination.perPage);
+    pagination.totalPage = totalPage;
+
     res.status(200).send({
       message: "Success get all my property",
+      pagination: {
+        page: pagination.page,
+        perPage: pagination.perPage,
+        totalData: pagination.totalData,
+        totalPage: pagination.totalPage,
+      },
       data: result,
     });
   } catch (error) {
