@@ -201,7 +201,7 @@ const DetailProperty = () => {
                                             reviews.map(row => (
                                                 <>
                                                     <Caption label={row.Booking?.User?.Profile?.full_name} />
-                                                    <Title label={row.comment} />
+                                                    <Title className={"font"} label={row.comment} />
                                                 </>
                                             ))
                                         }
