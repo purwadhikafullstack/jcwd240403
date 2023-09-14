@@ -27,6 +27,7 @@ const DetailProperty = () => {
     const [startDate, setStartDate] = useState(searchParams?.get("start_date") ?? new Date())
     const [endDate, setEndDate] = useState(searchParams?.get("end_date") ?? new Date())
     const [property, setProperty] = useState(null)
+    const [reviews, setReviews] = useState([])
     const [minPrice, setMinPrice] = useState(0)
     let { id } = useParams()
     const today = new Date();
@@ -84,8 +85,20 @@ const DetailProperty = () => {
 
         return daysDifference;
     };
+
+    const getReview = async () => {
+        await axios.get(`${process.env.REACT_APP_API_BASE_URL}/transaction/review/property/${id.split("-")[1]}`, {
+            headers: {
+                authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+        }).then(response => {
+            setReviews(response.data.data)
+        })
+    }
+
     useEffect(() => {
         getDetailProperty()
+        getReview()
     }, [])
     return (
         <>
@@ -177,6 +190,24 @@ const DetailProperty = () => {
 
                                     </>
                                 ))
+                            }
+                        </div>
+                        <div className="flex flex-col gap-4 mb-32">
+                            <HeadLine label="Reviews" />
+                            {
+                                reviews.length ?
+                                    <>
+                                        {
+                                            reviews.map(row => (
+                                                <>
+                                                    <Caption label={row.Booking?.User?.Profile?.full_name} />
+                                                    <Title label={row.comment} />
+                                                </>
+                                            ))
+                                        }
+                                    </>
+                                    :
+                                    <></>
                             }
                         </div>
                     </div>
