@@ -197,6 +197,22 @@ const getDetailProperty = async (req, res) => {
           where: {
             status: "AVAILABLE",
             deletedAt: null,
+            // [Op.or]: [
+            //   {
+            //     id: {
+            //       [Op.notIn]: db.Sequelize.literal(`
+            //     SELECT DISTINCT r.id
+            //     FROM Rooms AS r
+            //     LEFT JOIN Room_statuses AS rs ON r.id = rs.room_id
+            //     WHERE (
+            //       (rs.start_date <= '${end_date} 23:59:59' AND rs.end_date >= '${start_date} 00:00:00')
+            //       OR
+            //       (rs.start_date <= '${start_date} 00:00:00' AND rs.end_date >= '${end_date} 23:59:59')
+            //     )
+            //   `),
+            //     },
+            //   },
+            // ],
           },
           required: false,
           include: [
@@ -234,17 +250,83 @@ const getDetailProperty = async (req, res) => {
               model: db.Room_status,
               attributes: ["id", "start_date", "end_date"],
               required: false,
+              // where: {
+              //   [Op.and]: [
+              //     {
+              //       [Op.and]: [
+              //         {
+              //           start_date: {
+              //             [Op.gte]: new Date(`${end_date} 23:59:59`),
+              //           },
+              //         },
+              //         {
+              //           end_date: {
+              //             [Op.gte]: new Date(`${end_date} 23:59:59`),
+              //           },
+              //         },
+              //       ],
+              //     },
+              //     {
+              //       [Op.and]: [
+              //         {
+              //           start_date: {
+              //             [Op.lte]: new Date(`${start_date} 00:00:00`),
+              //           },
+              //         },
+              //         {
+              //           end_date: {
+              //             [Op.lte]: new Date(`${start_date} 00:00:00`),
+              //           },
+              //         },
+              //       ],
+              //     },
+              //     {
+              //       [Op.and]: [
+              //         {
+              //           start_date: {
+              //             [Op.gt]: new Date(`${end_date} 23:59:59`),
+              //           },
+              //         },
+              //         {
+              //           end_date: {
+              //             [Op.lt]: new Date(`${start_date} 00:00:00`),
+              //           },
+              //         },
+              //       ],
+              //     },
+              //   ],
+              // },
               where: {
-                [Op.not]: [
+                [Op.or]: [
                   {
-                    start_date: {
-                      [Op.lte]: new Date(`${start_date} 00:00:00`),
-                    },
+                    [Op.and]: [
+                      {
+                        start_date: {
+                          [Op.lt]: new Date(`${start_date} 00:00:00`),
+                          [Op.gte]: new Date(`${end_date} 23:59:59`),
+                        },
+                      },
+                      {
+                        end_date: {
+                          [Op.lte]: new Date(`${start_date} 00:00:00`),
+                          [Op.gte]: new Date(`${end_date} 23:59:59`),
+                        },
+                      },
+                    ],
                   },
                   {
-                    end_date: {
-                      [Op.gte]: new Date(`${end_date} 23:59:59`),
-                    },
+                    [Op.and]: [
+                      {
+                        start_date: {
+                          [Op.gte]: new Date(`${end_date} 23:59:59`),
+                        },
+                      },
+                      {
+                        end_date: {
+                          [Op.lte]: new Date(`${start_date} 00:00:00`),
+                        },
+                      },
+                    ],
                   },
                 ],
               },
