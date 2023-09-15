@@ -69,6 +69,39 @@ const review = async (req, res) => {
 
 const getReview = async (req, res) => {
   try {
+    const { property_id } = req.params;
+    const reviews = await db.Review.findAll({
+      include: [
+        {
+          model: db.Booking,
+          include: [
+            {
+              model: db.User,
+              include: [
+                {
+                  model: db.Profile,
+                },
+              ],
+            },
+            {
+              model: db.Room,
+              include: [
+                {
+                  model: db.Property,
+                  where: {
+                    id: property_id,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    return res.send({
+      status: true,
+      data: reviews,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send({

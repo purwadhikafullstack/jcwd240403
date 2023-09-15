@@ -102,6 +102,7 @@ function OrderList() {
                     authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             }).then(response => {
+                getAllOrder()
                 if (response.data.status) {
                     toast.success(response.data.message)
                     setShowModal(false)
@@ -169,7 +170,7 @@ function OrderList() {
                                                     booking_code={row.booking_code}
                                                     transactionTime={row.updatedAt}
                                                     confirmCancel={() => { cancelOrder(row.booking_code) }}
-                                                    isDone={new Date(row.check_out_date).getTime() <= new Date().getTime()}
+                                                    isDone={(new Date(row.check_out_date).getTime() <= new Date().getTime()) && row.Review == null}
                                                     reviewButton={() => {
                                                         setBookingId(row.id)
                                                         setShowModal(true)

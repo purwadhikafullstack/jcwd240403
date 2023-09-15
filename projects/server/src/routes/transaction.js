@@ -19,7 +19,7 @@ const {
   confirmPayment,
   getFilter,
 } = require("../controller/tenantTransaction");
-const { review } = require("../controller/review");
+const { review, getReview } = require("../controller/review");
 
 // User Transaction
 
@@ -90,6 +90,13 @@ router.post(
   verifying.verifyAccessToken,
   verifying.verifyUser,
   review
+);
+
+router.get(
+  "/review/property/:property_id",
+  verifying.verifyAccessToken,
+  verifying.verifyUser,
+  getReview
 );
 
 //Tenant Transaction
