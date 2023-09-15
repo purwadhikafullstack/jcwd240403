@@ -179,6 +179,7 @@ const uploadPaymentProof = async (req, res) => {
         {
           payment_proof: imageUrl,
           booking_status: "PROCESSING_PAYMENT",
+          payment_date: new Date(),
         },
         {
           where: {
@@ -375,6 +376,11 @@ const checkBooking = async (req, res) => {
           },
           {
             check_out_date: end_date,
+          },
+        ],
+        [Op.not]: [
+          {
+            booking_status: "CANCELED",
           },
         ],
       },

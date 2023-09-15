@@ -25,6 +25,7 @@ function TenantOrderList() {
     const [reason, setReason] = useState("")
     const [showDecline, setShowDecline] = useState(false)
     const [showCancel, setShowCancel] = useState(false)
+    const [showAction, setShowAction] = useState(true)
     const [cancelConfirm, setCancelConfirm] = useState(0)
     const [order, setOrder] = useState(null)
     const [statusBy, setStatusBy] = useState(null)
@@ -75,10 +76,13 @@ function TenantOrderList() {
     }
 
     const onSelectHandler = (userOrder) => {
-        setShow(true)
         const data = listOrder.find((orders) => orders.id == userOrder.id)
         setOrder(data)
-        console.log(data)
+        setShowAction(false)
+        if (data?.booking_status != "DONE" && data?.booking_status != "CANCELED") {
+            setShowAction(true)
+        }
+        setShow(true)
     };
 
     const getFilter = async () => {
@@ -146,69 +150,76 @@ function TenantOrderList() {
                                     <></>
                             }
                         </Row>
-                        <Row className="w-full justify-between">
-                            <Row className="gap-3 my-auto">
-                                <Button label={"Accept"} className="bg-blue-600 hover:bg-blue-800" type='button' onClick={() => acceptOrder(10)} />
-                                {
-                                    showDecline ?
-                                        <>
-                                            <Button label={"yes, Decline"} className="bg-orange-600 hover:bg-orange-800" type='button' onClick={() => {
-                                                acceptOrder(20)
-                                                setShowDecline(false)
-                                                setSendReason("")
+                        {
+                            showAction ?
+                                <>
+                                    <Row className="w-full justify-between">
+                                        <Row className="gap-3 my-auto">
+                                            <Button label={"Accept"} className="bg-blue-600 hover:bg-blue-800" type='button' onClick={() => acceptOrder(10)} />
+                                            {
+                                                showDecline ?
+                                                    <>
+                                                        <Button label={"yes, Decline"} className="bg-orange-600 hover:bg-orange-800" type='button' onClick={() => {
+                                                            acceptOrder(20)
+                                                            setShowDecline(false)
+                                                            setSendReason("")
 
-                                            }} />
-                                            <Button label={"Close"} className="bg-orange-600 hover:bg-orange-800" type='button' onClick={() => {
-                                                setShowDecline(false)
-                                                setSendReason("")
-                                            }} />
+                                                        }} />
+                                                        <Button label={"Close"} className="bg-orange-600 hover:bg-orange-800" type='button' onClick={() => {
+                                                            setShowDecline(false)
+                                                            setSendReason("")
+                                                        }} />
 
-                                        </>
-                                        :
-                                        <>
-                                            <Button label={"Decline"} className="bg-orange-600 hover:bg-orange-800" type='button' onClick={() => {
-                                                setShowDecline(true)
-                                                setSendReason("decline")
-                                                setShowCancel(false)
-                                                setCancelConfirm(null)
-                                            }} />
+                                                    </>
+                                                    :
+                                                    <>
+                                                        <Button label={"Decline"} className="bg-orange-600 hover:bg-orange-800" type='button' onClick={() => {
+                                                            setShowDecline(true)
+                                                            setSendReason("decline")
+                                                            setShowCancel(false)
+                                                            setCancelConfirm(null)
+                                                        }} />
 
-                                        </>
-                                }
-                            </Row>
-                            <Column>
-                                {
-                                    order?.id == cancelConfirm ?
-                                        <>
-                                            <div className='gap-4'>
-                                                <Button label={"Yes, Cancel This Order"} className="w-fit bg-red-600 my-2 hover:bg-red-800" type='button' onClick={() => {
-                                                    cancelOrder()
-                                                    setShowCancel(false)
-                                                    setSendReason("")
-                                                    setCancelConfirm(null)
+                                                    </>
+                                            }
+                                        </Row>
+                                        <Column>
+                                            {
+                                                order?.id == cancelConfirm ?
+                                                    <>
+                                                        <div className='gap-4'>
+                                                            <Button label={"Yes, Cancel This Order"} className="w-fit bg-red-600 my-2 hover:bg-red-800" type='button' onClick={() => {
+                                                                cancelOrder()
+                                                                setShowCancel(false)
+                                                                setSendReason("")
+                                                                setCancelConfirm(null)
 
-                                                }} />
-                                                <Button label={"Close"} className="w-fit bg-gray-600 my-2 hover:bg-gray-800" type='button' onClick={() => {
-                                                    setCancelConfirm(0)
-                                                    setShowCancel(false)
-                                                    setSendReason("")
-                                                }} />
+                                                            }} />
+                                                            <Button label={"Close"} className="w-fit bg-gray-600 my-2 hover:bg-gray-800" type='button' onClick={() => {
+                                                                setCancelConfirm(0)
+                                                                setShowCancel(false)
+                                                                setSendReason("")
+                                                            }} />
 
-                                            </div>
-                                        </>
-                                        :
-                                        <>
-                                            <Button label={"Cancel Order"} type='button' className={"w-fit bg-red-600 hover:bg-red-800"} onClick={() => {
-                                                setCancelConfirm(order.id)
-                                                setShowCancel(true)
-                                                setSendReason("cancel")
-                                                setShowDecline(false)
-                                            }} />
-                                        </>
-                                }
-                            </Column>
+                                                        </div>
+                                                    </>
+                                                    :
+                                                    <>
+                                                        <Button label={"Cancel Order"} type='button' className={"w-fit bg-red-600 hover:bg-red-800"} onClick={() => {
+                                                            setCancelConfirm(order.id)
+                                                            setShowCancel(true)
+                                                            setSendReason("cancel")
+                                                            setShowDecline(false)
+                                                        }} />
+                                                    </>
+                                            }
+                                        </Column>
 
-                        </Row>
+                                    </Row>
+                                </>
+                                :
+                                <></>
+                        }
                     </Column>
                 </ModalDialog>
             }
