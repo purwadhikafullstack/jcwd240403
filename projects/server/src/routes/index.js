@@ -8,6 +8,7 @@ const specialPrice = require("./specialPrice");
 const roomStatus = require("./roomStatus");
 const product = require("./product");
 const transaction = require("./transaction");
+const report = require("./report");
 
 module.exports = {
   auth,
@@ -20,4 +21,5 @@ module.exports = {
   roomStatus,
   product,
   transaction,
+  report,
 };

@@ -1,11 +1,12 @@
 import React, { Fragment, useEffect, useState } from "react";
 import ButtonWithLogo from "../buttons/ButtonWithLogo";
-import { KeyIcon, UserIcon } from "@heroicons/react/24/solid";
+import { KeyIcon, UserIcon, } from "@heroicons/react/24/solid";
 import { Link, useNavigate } from "react-router-dom";
 import useToken from "../../shared/hooks/useToken";
 import { Menu, Transition } from "@headlessui/react";
 import { TbDoorExit } from "react-icons/tb";
 import jwtDecode from "jwt-decode";
+import { ClipboardIcon } from "@heroicons/react/20/solid";
 
 const NavBar = () => {
   const { token, removeToken } = useToken();
@@ -20,7 +21,7 @@ const NavBar = () => {
   }, [token]);
   return (
     <>
-      <div className="sticky z-30 bg-white border-b border-gray-300 max-w-7xl md:mx-auto top-0 w-full flex items-center justify-between flex-row px-10 py-3 md:px-5">
+      <div className="sticky z-30 bg-white border-b mb-16 border-gray-300 max-w-7xl md:mx-auto top-0 w-full flex items-center justify-between flex-row px-10 py-3 md:px-5">
         <ButtonWithLogo
           onClick={() => {
             navigateTo("/");
@@ -85,6 +86,24 @@ const NavBar = () => {
                         />
                         <span className="group-hover:text-primary">
                           Change Password
+                        </span>
+                      </button>
+                    </Menu.Item>
+                  </div>
+                  <div className="px-1 py-1 ">
+                    <Menu.Item>
+                      <button
+                        onClick={() => {
+                          navigateTo("/orderList");
+                        }}
+                        className={`group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                      >
+                        <ClipboardIcon
+                          className="mr-2 h-5 w-5 group-hover:text-primary"
+                          aria-hidden="true"
+                        />
+                        <span className="group-hover:text-primary">
+                          My Booking
                         </span>
                       </button>
                     </Menu.Item>

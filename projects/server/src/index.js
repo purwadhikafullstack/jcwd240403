@@ -5,6 +5,7 @@ const { join } = require("path");
 
 const routes = require("./routes");
 const resetOtpCounterJob = require("./cronJobs/resetOtpCounter");
+const checkInReminder = require("./cronJobs/checkInReminder");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/static", express.static(join(__dirname, "public")));
 
 resetOtpCounterJob();
+checkInReminder();
 //#region API ROUTES
 
 // ===========================
@@ -32,6 +34,7 @@ app.use("/api/special-price", routes.specialPrice);
 app.use("/api/room-status", routes.roomStatus);
 app.use("/api/product", routes.product);
 app.use("/api/transaction", routes.transaction);
+app.use("/api/report", routes.report);
 
 // app.get("/api", (req, res) => {
 //   res.send(`Hello, this is my API`);

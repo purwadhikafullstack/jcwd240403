@@ -10,6 +10,8 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Booking.belongsTo(models.Room, { foreignKey: "room_id" });
+      Booking.belongsTo(models.User, { foreignKey: "user_id" });
+      Booking.hasOne(models.Review, { foreignKey: "booking_id" });
     }
   }
   Booking.init(
@@ -30,6 +32,12 @@ module.exports = (sequelize, DataTypes) => {
         "DONE",
         "CANCELED"
       ),
+      cancel_reason: {
+        type: DataTypes.STRING,
+      },
+      reject_reason: {
+        type: DataTypes.STRING,
+      },
     },
     {
       sequelize,

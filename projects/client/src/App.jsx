@@ -32,6 +32,9 @@ import PaymentProof from "./pages/user/userTransaction/PaymentProof";
 import OrderList from "./pages/user/userTransaction/OrderList";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import TenantOrderList from "./pages/tenant/TenantOrderList";
+import VerifyPayment from "./pages/user/userTransaction/VerifyPayment";
+
 
 function App() {
   const { token } = useToken();
@@ -67,7 +70,7 @@ function App() {
       >
         <Route index element={<VerifyEmail />} />
       </Route>
-      <Route path="/property" element={<AuthenticatedRoute roles={["USER"]} />}>
+      <Route path="/property">
         <Route index element={<AvailableProperty />} />
       </Route>
       <Route
@@ -90,6 +93,12 @@ function App() {
         element={<AuthenticatedRoute roles={["USER"]} />}
       >
         <Route index element={<OrderList />} />
+      </Route>
+      <Route
+        path="/verify-payment/:verify_code"
+        element={<AuthenticatedRoute roles={["USER"]} />}
+      >
+        <Route index element={<VerifyPayment />} />
       </Route>
 
       {/* TENANT Authenticated Routes */}
@@ -118,6 +127,16 @@ function App() {
           <Route index element={<CategoryArea />} />
         </Route>
       </Route>
+
+      <Route
+        path="order-list"
+        element={<AuthenticatedRoute roles={["TENANT"]} />}
+      >
+        <Route path="*" element={<DashboardSideBar />}>
+          <Route index element={<TenantOrderList />} />
+        </Route>
+      </Route>
+
 
       {/* Non-authenticated Routes */}
       <Route path="/login" element={<NonAuthenticatedRoute />}>

@@ -44,7 +44,7 @@ function NavigationItem({ item }) {
                 as="a"
                 className={classNames(
                   item.current ? "bg-gray-50" : "hover:bg-gray-50",
-                  isActiveLink(item.href) || pathname.includes("/category-area")
+                  isActiveLink(item.href) || pathname.includes("/")
                     ? "text-primary"
                     : "text-white bg-transparent",
                   "flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold text-primary"
@@ -54,7 +54,7 @@ function NavigationItem({ item }) {
                   className={classNames(
                     "h-6 w-6 shrink-0",
                     isActiveLink(item.href) ||
-                      pathname.includes("/category-area")
+                      pathname.includes("/")
                       ? "bg-gray-50 text-primary"
                       : "text-white"
                   )}

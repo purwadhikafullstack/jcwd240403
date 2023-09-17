@@ -63,6 +63,7 @@ const getThisRoom = async (req, res) => {
         {
           model: db.Room_status,
           attributes: ["id", "start_date", "end_date"],
+          required: false,
           where: {
             [Op.not]: [
               {
@@ -177,7 +178,8 @@ const uploadPaymentProof = async (req, res) => {
       const uploadProof = await db.Booking.update(
         {
           payment_proof: imageUrl,
-          book_status: "PROCESSING_PAYMENT",
+          booking_status: "PROCESSING_PAYMENT",
+          payment_date: new Date(),
         },
         {
           where: {
@@ -212,14 +214,88 @@ const uploadPaymentProof = async (req, res) => {
   }
 };
 
+const cancelBookingOrder = async (req, res) => {
+  try {
+    const token = req.user;
+    const user_id = token.id;
+    const { booking_code } = req.params;
+    const cancelThis = await db.Booking.update(
+      {
+        booking_status: "CANCELED",
+      },
+      {
+        where: {
+          booking_code: booking_code,
+          user_id: user_id,
+        },
+      }
+    );
+    return res.send({
+      status: true,
+      data: cancelThis,
+      message: "Order Has Been Canceled",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "fatal error on server",
+      error,
+    });
+  }
+};
+
 const getAllOrder = async (req, res) => {
   try {
     const token = req.user;
     const user_id = token.id;
-    const getList = await db.Booking.findAll({
+    const { date, booking_code = "", booking_status, sortBy = "" } = req.query;
+    let whereDate = {};
+    if (date) {
+      whereDate = {
+        [Op.or]: [
+          {
+            check_in_date: date,
+          },
+          {
+            check_out_date: date,
+          },
+        ],
+      };
+    }
+    let orderby = ["id", "asc"];
+    if (sortBy === "LowestPrice") {
+      orderby = ["total_invoice", "ASC"];
+      // orderby = [{ model: db.Booking }, "total_invoice", "ASC"];
+    }
+    if (sortBy === "HighestPrice") {
+      orderby = ["total_invoice", "DESC"];
+      // orderby = [{ model: db.Booking }, "total_invoice", "DESC"];
+    }
+    if (sortBy === "A-Z") {
+      orderby = [{ model: db.Room }, { model: db.Property }, "name", "ASC"];
+    }
+    if (sortBy === "Z-A") {
+      orderby = [{ model: db.Room }, { model: db.Property }, "name", "DESC"];
+    }
+    const pagination = {
+      page: Number(req.query.page) || 1,
+      perPage: Number(req.query.perPage) || 10,
+    };
+    const { count, rows: data } = await db.Booking.findAndCountAll({
       where: {
         user_id: user_id,
+        booking_code: {
+          [Op.like]: `%${booking_code}%`,
+        },
+        booking_status: {
+          [Op.like]: `%${booking_status}%`,
+        },
+        ...whereDate,
       },
+      limit: pagination.perPage,
+      offset: pagination.perPage * (pagination.page - 1),
+      distinct: true,
+      order: [orderby],
       include: [
         {
           model: db.Room,
@@ -237,11 +313,21 @@ const getAllOrder = async (req, res) => {
             },
           ],
         },
+        {
+          model: db.Review,
+        },
       ],
     });
+    const totalPage = Math.ceil(count / pagination.perPage);
     return res.send({
       status: true,
-      data: getList,
+      data: data,
+      pagination: {
+        page: pagination.page,
+        perPage: pagination.perPage,
+        totalData: count,
+        totalPage: totalPage,
+      },
     });
   } catch (error) {
     console.log(error);
@@ -277,6 +363,91 @@ const cancelOrder = async (req, res) => {
   }
 };
 
+const checkBooking = async (req, res) => {
+  try {
+    const { start_date, end_date } = req.body;
+    const { room_id } = req.params;
+    const checkBooked = await db.Booking.findOne({
+      where: {
+        room_id: room_id,
+        [Op.or]: [
+          {
+            check_in_date: start_date,
+          },
+          {
+            check_out_date: end_date,
+          },
+        ],
+        [Op.not]: [
+          {
+            booking_status: "CANCELED",
+          },
+        ],
+      },
+    });
+    if (checkBooked) {
+      return res.send({
+        status: false,
+        message: "Room Already Booked",
+      });
+    } else {
+      return res.send({
+        status: true,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "fatal error on server",
+      error,
+    });
+  }
+};
+
+const verifyPayment = async (req, res) => {
+  try {
+    const token = req.user;
+    const user_id = token.id;
+    const { booking_code } = req.params;
+    const userId = req.body.user_id;
+    if (userId == user_id) {
+      const verify = await db.Booking.update(
+        {
+          booking_status: "DONE",
+        },
+        {
+          where: {
+            user_id: user_id,
+            booking_code: booking_code,
+          },
+        }
+      );
+      if (verify) {
+        return res.send({
+          status: true,
+          message: "Payment Verified Successfully",
+        });
+      } else {
+        return res.send({
+          status: false,
+          message: "Payment Verify Failed",
+        });
+      }
+    } else {
+      return res.send({
+        status: false,
+        message: "User And Credential Does Not Match",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "fatal error on server",
+      error,
+    });
+  }
+};
+
 module.exports = {
   bookProperty,
   uploadPaymentProof,
@@ -284,4 +455,7 @@ module.exports = {
   cancelOrder,
   getThisRoom,
   bookPropertyDetail,
+  checkBooking,
+  cancelBookingOrder,
+  verifyPayment,
 };

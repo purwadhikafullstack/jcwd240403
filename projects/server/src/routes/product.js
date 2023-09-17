@@ -6,8 +6,8 @@ const { getAllProperty, getDetailProperty } = require("../controller/product");
 
 router.get(
   "/",
-  verifying.verifyAccessToken,
-  verifying.verifyUser,
+  // verifying.verifyAccessToken,
+  // verifying.verifyUser,
   getAllProperty
 );
 router.get(

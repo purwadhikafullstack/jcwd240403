@@ -74,21 +74,35 @@ const BookingProperty = () => {
 
     const bookingConfirm = async (e) => {
         e.preventDefault()
-        await axios.post(`${process.env.REACT_APP_API_BASE_URL}/transaction/book`, {
-            check_in_date: startDate,
-            check_out_date: endDate,
-            total_invoice: price,
-            room_id: searchParams.get("room")
+        await axios.post(`${process.env.REACT_APP_API_BASE_URL}/transaction/book/${room?.id}`, {
+            start_date: startDate,
+            end_date: endDate
         }, {
             headers: {
                 authorization: `Bearer ${localStorage.getItem("token")}`
             }
-        }).then(response => {
-            if (response.data.status) {
-                toast.success(response.data.message)
-                navigate(`/paymentproof/${response.data.data.booking_code}`)
+        }).then(async res => {
+            if (res.data.status) {
+                await axios.post(`${process.env.REACT_APP_API_BASE_URL}/transaction/book`, {
+                    check_in_date: startDate,
+                    check_out_date: endDate,
+                    total_invoice: price,
+                    room_id: searchParams.get("room")
+                }, {
+                    headers: {
+                        authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                }).then(response => {
+                    if (response.data.status) {
+                        toast.success(response.data.message)
+                        navigate(`/paymentproof/${response.data.data.booking_code}`)
+                    }
+                })
+            } else {
+                toast.error(res.data.message)
             }
         })
+
     }
     useEffect(() => {
         getThisRoom()
@@ -96,9 +110,9 @@ const BookingProperty = () => {
     return (
         <>
             <MainContainer>
-                <Column className="max-w-7xl mx-auto gap-10">
-                    <Row className="gap-10 ">
-                        <img className='w-1/2 aspect-video rounded-lg' src={`${process.env.REACT_APP_API_BASE_URL}${room?.room_img}`} alt="" />
+                <Column className="w-full max-w-7xl mx-auto gap-10">
+                    <Row className="w-full gap-10 ">
+                        <img className='min-w-[50%] aspect-video rounded-lg' src={`${process.env.REACT_APP_API_BASE_URL}${room?.room_img}`} alt="" />
                         <Column className="w-full gap-5">
                             <HeadLine label={room?.Property?.name} />
                             <SubTitle label={room?.Property?.Property_type?.name} />
@@ -129,7 +143,7 @@ const BookingProperty = () => {
                             <>
                                 <Row className="mx-auto gap-5">
                                     <Button className="mx-auto w-36 mb-60" label={"Confirm Booking"} type='button' onClick={bookingConfirm} />
-                                    <Button className="mx-auto w-36 mb-60 bg-red-600" label={"Cancel"} type='button' onClick={() => { setConfirm(false) }} />
+                                    <Button className="mx-auto w-36 mb-60 bg-red-950" label={"Cancel"} type='button' onClick={() => { setConfirm(false) }} />
 
                                 </Row>
 
