@@ -13,7 +13,12 @@ router.post(
   authController.register
 );
 
-router.post("/login", validation.validateLogin, authController.login);
+router.post(
+  "/login",
+  validation.validateLogin,
+  verifying.verifySocialToken,
+  authController.login
+);
 
 router.get(
   "/keep-login",

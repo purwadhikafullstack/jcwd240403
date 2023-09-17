@@ -101,6 +101,11 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
+    if (req.socialUSer) {
+      console.log("TRY", req.socialUSer);
+      return res.status(200).send({ message: "using sociaaaal" });
+    }
+
     const { email, password } = req.body;
 
     const user = await db.User.findOne({ where: { email } });
@@ -124,13 +129,13 @@ const login = async (req, res) => {
       return;
     } else {
       res.status(400).send({
-        message: "Login failed, incorect email or password",
+        message: "Login failed, incorrect email or password.",
       });
     }
   } catch (error) {
     console.log("err login", error);
     res.status(500).send({
-      message: "Something wrong on server",
+      message: "Something wrong on server.",
       error,
     });
   }
