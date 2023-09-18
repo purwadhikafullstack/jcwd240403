@@ -2,31 +2,15 @@ import React from "react";
 import ButtonWithLogo from "../buttons/ButtonWithLogo";
 import { useNavigate } from "react-router-dom";
 import { classNames } from "../../shared/utils";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from "../../firebase/firebase";
 
-const socialLogin = [
-  {
-    icon: "/assets/social/x.png",
-    name: "X",
-    className: "w-14 h-14",
-    type: "twitter",
-  },
-  {
-    icon: "/assets/social/facebook.png",
-    name: "Facebook",
-    className: "w-7 h-7",
-    type: "facebook",
-  },
-  {
-    icon: "/assets/social/google.png",
-    name: "Google",
-    className: "w-10 h-10",
-    type: "google",
-  },
-];
-
-function AuthLayout({ title, isUser, setIsUser, children, page }) {
+function AuthLayout({
+  title,
+  isUser,
+  setIsUser,
+  children,
+  page,
+  handleLoginSocial,
+}) {
   const navigate = useNavigate();
   const isNonRole =
     page === "otp" || page === "Forgot Password" || page === "Reset Password";
@@ -37,41 +21,6 @@ function AuthLayout({ title, isUser, setIsUser, children, page }) {
         return navigate(`/register?type=${isUser ? "user" : "tenant"}`);
       default:
         return navigate("/login");
-    }
-  };
-
-  const handleLoginSocial = (type) => {
-    switch (type) {
-      case "google":
-        signInWithPopup(auth, googleProvider)
-          .then((result) => {
-            // This gives you a Google Access Token. You can use it to access the Google API.
-            const credential = GoogleAuthProvider.credentialFromResult(result);
-            const token = credential.accessToken;
-            // The signed-in user info.
-            const user = result.user;
-            console.log("user", user);
-            console.log("token", token);
-          })
-          .catch((error) => {
-            // Handle Errors here.
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            // The email of the user's account used.
-            const email = error.email;
-            // The AuthCredential type that was used.
-            const credential = GoogleAuthProvider.credentialFromError(error);
-
-            // handle error
-            console.log("error", error);
-            console.log("errorCode", errorCode);
-            console.log("errorMessage", errorMessage);
-            console.log("email", email);
-            console.log("credential", credential);
-          });
-        break;
-      default:
-        break;
     }
   };
 
@@ -150,23 +99,20 @@ function AuthLayout({ title, isUser, setIsUser, children, page }) {
 
               <div
                 className={classNames(
-                  isUser ? "mt-5 grid grid-cols-3 gap-5" : "hidden"
+                  isUser ? "mt-5" : "hidden"
                 )}
               >
-                {socialLogin.map((item) => (
-                  <button
-                    key={item.name}
-                    href="#"
-                    onClick={() => handleLoginSocial(item.type)}
-                    className="flex w-full items-center justify-center gap-3 border rounded-md bg-[#FFF] px-3 py-1.5 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFF]"
-                  >
-                    <img
-                      src={item.icon}
-                      alt={item.name}
-                      className={item.className + "object-contain"}
-                    />
-                  </button>
-                ))}
+                <button
+                  onClick={handleLoginSocial}
+                  className="flex w-full flex-row items-center justify-center gap-3 border rounded-md bg-[#fff] px-3 py-1 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFF]"
+                >
+                  <img
+                    src={"/assets/social/google.png"}
+                    alt={"google"}
+                    className={"object-contain h-7 w-7"}
+                  />
+                  <p className="text-black text-md">Google</p>
+                </button>
               </div>
             </div>
             <p

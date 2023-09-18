@@ -26,26 +26,27 @@ const generateHashedPassword = async (password) => {
 const register = async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
-    const { role, name, email, phoneNumber, password, confirmPassword } =
+    const { role, name, email, phoneNumber, password, isRegisterBySocial } =
       req.body;
     let imageURL;
 
+    // Check if a file is uploaded and the role is "TENANT"
     if (req.file && role === "TENANT") {
       imageURL = setFromFileNameToDBValue(req.file.filename);
     }
 
-    const isExist = await db.User.findOne({
-      where: { email: email },
-    });
-
-    // SEARCH IS EMAIL ALREADY REGISTERED
+    // Check if the email is already registered
+    const isExist = await db.User.findOne({ where: { email: email } });
     if (isExist) {
-      return res.status(400).send({
-        message: "Email is unavailable.",
-      });
+      return res.status(400).send({ message: "Email is unavailable." });
     }
 
     const verifyToken = jwt.sign({ email: email }, secretKey);
+
+    // If isRegisterBySocial is true, ignore the password and phoneNumber
+    const hashedPassword = isRegisterBySocial
+      ? null
+      : await generateHashedPassword(password);
 
     const newUser = await db.User.create(
       {
@@ -55,7 +56,8 @@ const register = async (req, res) => {
         otp_created_time: moment().format("YYYY-MM-DD HH:mm:ss"),
         otp_counter: Number(0),
         email: email,
-        password: await generateHashedPassword(password),
+        password: hashedPassword,
+        isRegisterBySocial: isRegisterBySocial || false,
       },
       { transaction }
     );
@@ -64,13 +66,13 @@ const register = async (req, res) => {
       {
         user_id: newUser.id,
         full_name: name,
-        phone_number: phoneNumber,
+        phone_number: isRegisterBySocial ? null : phoneNumber,
         document_identity: imageURL,
       },
       { transaction }
     );
 
-    // EMAIL SENDING
+    // Email sending logic
     template.emailRegister(
       email,
       newProfile.full_name,
@@ -80,7 +82,7 @@ const register = async (req, res) => {
 
     await transaction.commit();
     res.status(201).send({
-      message: "Registration success and email verification already send.",
+      message: "Registration success and email verification already sent.",
       data: {
         role: newUser.role,
         email: newUser.email,
@@ -92,50 +94,81 @@ const register = async (req, res) => {
   } catch (error) {
     await transaction.rollback();
     console.log("REGISTER ERROR", error);
-    res.status(500).send({
-      message: "Something wrong in the server.",
-      errors: error,
-    });
+    res
+      .status(500)
+      .send({ message: "Something wrong in the server.", errors: error });
   }
 };
 
 const login = async (req, res) => {
   try {
-    if (req.socialUSer) {
-      console.log("TRY", req.socialUSer);
-      return res.status(200).send({ message: "using sociaaaal" });
-    }
-
-    const { email, password } = req.body;
-
+    const { email, password, isLoginBySocial } = req.body;
     const user = await db.User.findOne({ where: { email } });
 
-    const isValid = await bcrypt.compare(password, user.password);
+    if (isLoginBySocial) {
+      if (!user) {
+        return res.status(400).send({
+          message: "Email is not registered. Please register first.",
+        });
+      }
 
-    if (user && isValid) {
+      if (user.isRegisterBySocial === false) {
+        // Scenario 3: User registered by conventional method
+        return res.status(400).send({
+          message:
+            "You registered with a conventional method, please login without Google.",
+        });
+      }
+
+      await user.update({ isLoginBySocial: true });
+
+      // Scenario 4: User can login
       const accessToken = jwt.sign(
-        { id: user.id, role: user.role },
+        { id: user.id, role: user.role, email: user.email },
         secretKey,
         {
           expiresIn: "24hr",
         }
       );
-      res.status(200).send({
-        message: "Login success.",
-        role: user.role,
-        email: user.email,
-        accessToken: accessToken,
-      });
-      return;
+
+      return res
+        .status(200)
+        .send({ message: "Logged in using Google!", accessToken });
     } else {
-      res.status(400).send({
-        message: "Login failed, incorrect email or password.",
+      if (!user || !(await bcrypt.compare(password, user.password))) {
+        return res.status(400).send({
+          message: "Login failed, incorrect email or password.",
+        });
+      }
+    }
+
+    if (user.isRegisterBySocial) {
+      // Scenario 2: Registered via Google, trying to login with email/password
+      return res.status(400).send({
+        message:
+          "You registered via Google, please login using your Google account.",
       });
     }
+
+    // Scenario 1: User can login conventionally
+    const accessToken = jwt.sign(
+      { id: user.id, role: user.role, email: user.email },
+      secretKey,
+      {
+        expiresIn: "24hr",
+      }
+    );
+
+    res.status(200).send({
+      message: "Login success.",
+      role: user.role,
+      email: user.email,
+      accessToken: accessToken,
+    });
   } catch (error) {
     console.log("err login", error);
     res.status(500).send({
-      message: "Something wrong on server.",
+      message: "Something went wrong on the server.",
       error,
     });
   }

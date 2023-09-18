@@ -5,6 +5,7 @@ const validate = (validations) => {
     for (let validation of validations) {
       const result = await validation.run(req);
       console.log("val", result);
+      console.log("req.body", req.body);
       if (result.errors.length) break;
     }
 
@@ -30,27 +31,37 @@ module.exports = {
       .withMessage("Please enter with email format")
       .notEmpty()
       .withMessage("Email is required"),
-    body("phoneNumber").notEmpty().withMessage("Phone number is required"),
-    body("password")
-      .notEmpty()
-      .withMessage("Password is required")
-      .isLength({ min: 8 })
-      .withMessage("Minimum password length is 8 characters")
-      .isStrongPassword({
-        minSymbols: 0,
-      })
-      .withMessage(
-        "Password must contain minimum 1 uppercase, 1 lowercase and 1 numbers"
-      )
-      .custom((value, { req }) => {
+    body("phoneNumber").custom((value, { req }) => {
+      if (!req.body.isRegisterBySocial && !value) {
+        throw new Error("Phone number is required");
+      }
+      return true;
+    }),
+    body("password").custom((value, { req }) => {
+      if (!req.body.isRegisterBySocial) {
+        if (!value) {
+          throw new Error("Password is required");
+        }
+        if (value.length < 8) {
+          throw new Error("Minimum password length is 8 characters");
+        }
+        if (!value.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)) {
+          throw new Error(
+            "Password must contain minimum 1 uppercase, 1 lowercase, and 1 number"
+          );
+        }
         if (value !== req.body.confirmPassword) {
           throw new Error("Confirm password does not match with password");
         }
-        return true;
-      }),
-    body("confirmPassword")
-      .notEmpty()
-      .withMessage("Confirm password is required"),
+      }
+      return true;
+    }),
+    body("confirmPassword").custom((value, { req }) => {
+      if (!req.body.isRegisterBySocial && !value) {
+        throw new Error("Confirm password is required");
+      }
+      return true;
+    }),
     body("file")
       .if(body("role").equals("TENANT"))
       .custom((value, { req }) => {
@@ -62,7 +73,14 @@ module.exports = {
   validateLogin: validate([
     body("role").isIn(["USER", "TENANT"]).withMessage("Invalid user role"),
     body("email").notEmpty().withMessage("Please fill in email").isEmail(),
-    body("password").notEmpty().withMessage("Please fill in password"),
+    body("password").custom((value, { req }) => {
+      if (!req.body.isLoginBySocial) {
+        if (!value) {
+          throw new Error("Password is required");
+        }
+      }
+      return true;
+    }),
   ]),
 
   validateVerify: validate([

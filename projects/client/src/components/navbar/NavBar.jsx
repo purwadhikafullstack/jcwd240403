@@ -16,6 +16,7 @@ const NavBar = () => {
   useEffect(() => {
     if (token) {
       const decode = jwtDecode(token);
+      console.log("decode", decode)
       setEmail(decode.email);
     }
   }, [token]);

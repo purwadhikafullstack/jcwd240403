@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import AuthLayout from "../components/layouts/AuthLayout";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowSmallLeftIcon } from "@heroicons/react/24/solid";
@@ -9,11 +9,13 @@ import IdentityForm from "../components/forms/register/IdentityForm";
 import Button from "../components/buttons/Button";
 import api from "../shared/api";
 import AuthModal from "../components/modals/AuthModal";
+import { useLoginSocial } from "../shared/hooks/useLoginSocial";
 
 function Register() {
   const navigate = useNavigate();
   const { search } = useLocation();
   const type = new URLSearchParams(search).get("type");
+  const { handleLoginSocial, user, token, error } = useLoginSocial();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -99,12 +101,41 @@ function Register() {
     setIsModalOpen(false);
   };
 
+  const registerByGoogle = useCallback(async () => {
+    if (user && token) {
+      try {
+        await api.post("/auth/register", {
+          email: user.email,
+          name: user.displayName,
+          role: "USER",
+          isRegisterBySocial: true,
+        });
+
+        // Maybe open a modal or navigate the user to another page
+        setIsModalOpen(true);
+      } catch (err) {
+        console.log("Error in Google registration", err);
+        if (err.response) {
+          const { message, errors } = err.response.data;
+          setErrorMessage(message ? message : errors[0].msg);
+        }
+      }
+    }
+  }, [user, token]);
+
+  useEffect(() => {
+    if (user && token) {
+      registerByGoogle();
+    }
+  }, [registerByGoogle, user, token]);
+
   return (
     <AuthLayout
       page="register"
       isUser={isUser}
       setIsUser={setIsUser}
       title={`New ${isUser ? "User" : "Tenant"} Registration`}
+      handleLoginSocial={handleLoginSocial}
     >
       <AuthModal isOpen={isModalOpen} closeModal={closeModal} />
       <div className={isUser ? "hidden" : "block"}>
