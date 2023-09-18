@@ -43,7 +43,7 @@ function ReportByCalendar() {
                     listProperty.length ? listProperty.map((item, idx) => {
                         return (
                             <PropertyCard title={item.name} type={item.Property.Property_type.name}
-                                location={item.Property.Location.city} price={item.status}
+                                location={item.Property.name + ", " + item.Property.Location.city} price={item.status} image={`${process.env.REACT_APP_API_BASE_URL}${item?.room_img}`}
                                 priceColor={item.status == "Room Available" ? "text-green-700" : "text-rose-700"} showPriceLabel={false} />
                         )
                     }) :
