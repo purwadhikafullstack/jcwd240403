@@ -148,6 +148,14 @@ const getAllReportByDate = async (req, res) => {
             user_id: user_id,
             deletedAt: null,
           },
+          include: [
+            {
+              model: db.Property_type,
+            },
+            {
+              model: db.Location,
+            },
+          ],
         },
         {
           model: db.Room_status,

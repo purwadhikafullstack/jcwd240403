@@ -1,6 +1,6 @@
 import React from "react";
 
-function PropertyCard({ title, type, location, price, key, image, children }) {
+function PropertyCard({ title, type, location, price, key, image, children, priceColor = "text-rose-500", showPriceLabel = true }) {
   return (
     <div className="md:w-full md:max-h-52 min-h-[180px] flex flex-row bg-white border border-gray-300 rounded-lg" >
       <div className="flex shrink-0">
@@ -22,8 +22,8 @@ function PropertyCard({ title, type, location, price, key, image, children }) {
 
         {/* Price */}
         <div className="flex items-end flex-col border-t pt-3 gap-2">
-          <p className="md:text-lg font-bold text-rose-500">{price}</p>
-          <p className="text-[10px] md:text-xs">/night/room (tax included)</p>
+          <p className={`md:text-lg font-bold ${priceColor}`}>{price}</p>
+          {showPriceLabel && <p className="text-[10px] md:text-xs">/night/room (tax included)</p>}
           {children}
         </div>
       </div>
