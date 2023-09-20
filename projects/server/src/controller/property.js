@@ -208,65 +208,6 @@ const editProperty = async (req, res) => {
   }
 };
 
-const editPropPhotos = async (req, res) => {
-  try {
-    const propId = req.params.id;
-    const imageIds = req.body.imageIds.split(",").map((id) => Number(id));
-    console.log("EDITPHOTO", imageIds);
-
-    if (req.files.length !== imageIds.length) {
-      return res
-        .status(400)
-        .send({ message: "Number of images and image IDs mismatch." });
-    }
-
-    const updatedImages = [];
-
-    for (let i = 0; i < req.files.length; i++) {
-      const imageId = imageIds[i];
-      const imageRecord = await db.Picture.findOne({
-        where: {
-          id: imageId,
-          property_id: propId,
-        },
-      });
-      console.log("imageRecord", imageRecord);
-
-      if (!imageRecord) {
-        return res.status(400).send({
-          message: "Photo not found",
-        });
-      }
-
-      const oldImage = imageRecord.getDataValue("img");
-      // console.log("OLD IMAGE PATH", oldImage);
-      const oldImageFile = getFilenameFromDbValue(oldImage);
-      // console.log("OLD IMAGE", oldImageFile);
-      const coba = getAbsolutePathPublicFile(oldImageFile);
-      console.log("COBA", coba);
-      imageRecord.img = setFromFileNameToDBValue(req.files[i].filename);
-
-      if (imageRecord) {
-        fs.unlinkSync(getAbsolutePathPublicFile(oldImageFile));
-      }
-
-      await imageRecord.save();
-      updatedImages.push(imageRecord);
-    }
-
-    res.status(200).send({
-      message: `${updatedImages.length} images updated successfully.`,
-      data: updatedImages,
-    });
-  } catch (error) {
-    console.error("bulk-edit-images", error);
-    res.status(500).send({
-      message: "Something went wrong on the server.",
-      error,
-    });
-  }
-};
-
 const updatePhotos = async (req, res) => {
   try {
     const propId = req.params.id;
@@ -414,7 +355,6 @@ module.exports = {
   addProperty,
   addPropPhotos,
   editProperty,
-  editPropPhotos,
   updatePhotos,
   deleteProperty,
   availableProperty,

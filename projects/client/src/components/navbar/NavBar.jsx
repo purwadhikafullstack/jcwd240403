@@ -1,24 +1,18 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment } from "react";
 import ButtonWithLogo from "../buttons/ButtonWithLogo";
 import { KeyIcon, UserIcon } from "@heroicons/react/24/solid";
 import { Link, useNavigate } from "react-router-dom";
 import useToken from "../../shared/hooks/useToken";
 import { Menu, Transition } from "@headlessui/react";
 import { TbDoorExit } from "react-icons/tb";
-import jwtDecode from "jwt-decode";
 import { ClipboardIcon } from "@heroicons/react/20/solid";
+import { useSelector } from "react-redux";
 
 const NavBar = () => {
   const { token, removeToken } = useToken();
   const navigateTo = useNavigate();
-  const [email, setEmail] = useState("");
+  const { user } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    if (token) {
-      const decode = jwtDecode(token);
-      setEmail(decode.email);
-    }
-  }, [token]);
   return (
     <>
       <div className="sticky z-30 bg-white border-b mb-16 border-gray-300 max-w-7xl md:mx-auto top-0 w-full flex items-center justify-between flex-row px-10 py-3 md:px-5">
@@ -38,7 +32,7 @@ const NavBar = () => {
                 <Menu.Button className="inline-flex w-full justify-center rounded-md px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
                   <div className="flex flex-row items-center gap-3">
                     <div className="rounded-xl p-2 border border-primary text-primary">
-                      {email}
+                      {user?.email ?? ""}
                     </div>
                   </div>
                 </Menu.Button>
