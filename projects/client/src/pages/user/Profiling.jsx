@@ -14,6 +14,7 @@ function Profiling() {
     const [phone_number, setPhone_number] = useState("")
     const [email, setEmail] = useState("")
     const [foto, setFoto] = useState("")
+    const [updateFoto, setUpdateFoto] = useState(false)
     const [fototemp, setFototemp] = useState("https://tse1.mm.bing.net/th?id=OIP.yYUwl3GDU07Q5J5ttyW9fQHaHa&pid=Api&rs=1&c=1&qlt=95&h=180")
     const [editable, setEditable] = useState(true)
 
@@ -52,12 +53,13 @@ function Profiling() {
         const getData = response.data
         const { data } = getData
         setFull_name(data.full_name)
-        setBirth_date(data.birth_date.split("T")[0])
+        console.log(data.birth_date)
+        setBirth_date(data.birth_date != null ? data.birth_date.split("T")[0] : "")
         setGender(data.gender)
         setPhone_number(data.phone_number)
         setEmail(data.User.email)
-        setFoto(`${process.env.REACT_APP_API_BASE_URL}${data.profile_picture}`)
-        setFototemp(`${process.env.REACT_APP_API_BASE_URL}${data.profile_picture}`)
+        setFoto(data.profile_picture != null ? `${process.env.REACT_APP_API_BASE_URL}${data.profile_picture}` : null)
+        console.log(phone_number)
     }
 
 
@@ -96,6 +98,7 @@ function Profiling() {
             })
             const cekFileSchema = await fileSchema.validate({ file: e.target.files[0] })
             if (cekFileSchema) {
+                setUpdateFoto(true)
                 setFoto(e.target.files[0])
                 setFototemp(await URL.createObjectURL(e.target.files[0]))
             }
@@ -120,6 +123,7 @@ function Profiling() {
                 if (data.message) {
                     toast.success(data.message)
                     setFoto(null)
+                    setUpdateFoto(false)
 
                 }
 
@@ -148,7 +152,7 @@ function Profiling() {
                         <label htmlFor="foto" className="cursor-pointer">
                             <input id="foto" type="file" className="hidden" onChange={changeImage} />
                             <div className="">
-                                <img src={fototemp ?? foto} alt="profile" className="aspect-[1/1] max-w-[200px] rounded-full object-cover " />
+                                <img src={updateFoto ? fototemp : foto ?? fototemp} alt="profile" className="aspect-[1/1] max-w-[200px] rounded-full object-cover " />
                             </div>
                         </label>
                     </div>

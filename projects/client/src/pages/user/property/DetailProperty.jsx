@@ -19,6 +19,7 @@ import { useLocation, useNavigate, useParams, useSearchParams } from 'react-rout
 import { getMinimumPrice, getRange } from '../../../shared/utils';
 import Carousel from '../../../components/widget/Carousel'
 import Slider from 'react-slick';
+import Column from '../../../components/widget/Column';
 
 
 const DetailProperty = () => {
@@ -29,6 +30,9 @@ const DetailProperty = () => {
     const [property, setProperty] = useState(null)
     const [reviews, setReviews] = useState([])
     const [minPrice, setMinPrice] = useState(0)
+    const [minPriceTmp, setMinPriceTmp] = useState(0)
+    const [minSpecialPrice, setMinSpecialPrice] = useState(0)
+    const [dateSpecialPrice, setDateSpecialPrice] = useState([])
     let { id } = useParams()
     const today = new Date();
     const [selectedDays, setSelectedDays] = useState({
@@ -58,8 +62,27 @@ const DetailProperty = () => {
             setProperty(response.data.data)
             const prop = response.data.data
             let prices = prop?.Rooms.map(row => row.base_price)
-            setMinPrice(getMinimumPrice(prices))
+            let prices2 = []
+            let dateSpecialPriceTmp = []
+            prop?.Rooms.map(row => {
+                if (row.Special_prices.length) {
+                    row.Special_prices.map(row2 => {
+                        prices2.push(row2.price)
+                        dateSpecialPriceTmp.push({
+                            start: new Date(row2.start_date),
+                            end: new Date(row2.end_date),
+                        })
+                    })
+                } else {
+                    prices2.push(row.base_price)
+                }
 
+            })
+            console.log(dateSpecialPriceTmp)
+            setMinPrice(getMinimumPrice(prices))
+            setMinPriceTmp(getMinimumPrice(prices, false))
+            setMinSpecialPrice(getMinimumPrice(prices2, false))
+            setDateSpecialPrice(dateSpecialPriceTmp)
 
         })
     }
@@ -119,6 +142,7 @@ const DetailProperty = () => {
         getDetailProperty()
         getReview()
     }, [])
+
     return (
         <>
             <MainContainer >
@@ -135,6 +159,9 @@ const DetailProperty = () => {
                                     handleDayClick={handleDayClick}
                                     today={today}
                                     totalNight={countNights()}
+                                    price={minPriceTmp}
+                                    specialPrice={minSpecialPrice}
+                                    dateSpecialPrice={dateSpecialPrice}
                                 />
                             </div>
                             <div className="w-40 p-3 mt-auto">
@@ -148,13 +175,13 @@ const DetailProperty = () => {
                         <Slider  {...setting}>
                             {
                                 property?.Pictures.map((row, idx) => (
-                                    <>
-                                        <div key={idx} className={` w-full aspect-video flex-shrink-0`}>
-                                            <img className=' w-full aspect-video object-cover rounded-xl' src={`${process.env.REACT_APP_API_BASE_URL}${row?.img}`} />
-                                        </div >
+
+                                    <div key={idx} className={` w-full aspect-video flex-shrink-0`}>
+                                        <img className=' w-full aspect-video object-cover rounded-xl' src={`${process.env.REACT_APP_API_BASE_URL}${row?.img}`} />
+                                    </div >
 
 
-                                    </>
+
                                 ))
                             }
                         </Slider>
@@ -184,34 +211,34 @@ const DetailProperty = () => {
                             <HeadLine label="Rooms" />
                             {
                                 property?.Rooms.map(row => (
-                                    <>
-                                        <div key={row.id}>
-                                            <PropertyCard title={row.name}
-                                                price={
-                                                    getRange(
-                                                        row.Special_prices ?
-                                                            (
-                                                                row.Special_prices.find(srow => (srow.start_date == startDate && srow.end_date == endDate) || (srow.start_date == startDate && srow.end_date >= endDate) || (srow.start_date <= startDate && srow.end_date == endDate)) ?
-                                                                    [row.Special_prices.find(srow => (srow.start_date == startDate && srow.end_date == endDate) || (srow.start_date == startDate && srow.end_date >= endDate) || (srow.start_date <= startDate && srow.end_date == endDate)).price] :
-                                                                    [...row.Special_prices?.map(srow => srow.price), ...[row.base_price]]
-                                                            )
-                                                            : [row.base_price]
-                                                        // [...row.Special_prices?.map(srow => srow.price), ...[row.base_price]]
-                                                        // row.Special_prices.length ? [...row.Special_prices?.map(srow => srow.price)]/ : [...row.Special_prices?.map(srow => srow.price), ...[row.base_price]]
-                                                    )
-                                                }
-                                                location=""
-                                                children={
-                                                    <div className='w-1/3 ml-auto'>
-                                                        <Button type='button' className="w-28 ml-auto " label="Book Now" onClick={() => {
-                                                            navigate(`/booking?start_date=${startDate}&end_date=${endDate}&room=${row.id}`)
-                                                        }} />
-                                                    </div>
-                                                }
-                                                image={`${process.env.REACT_APP_API_BASE_URL}${row?.room_img}`} />
-                                        </div>
 
-                                    </>
+                                    <div key={row.id}>
+                                        <PropertyCard title={row.name}
+                                            price={
+                                                getRange(
+                                                    row.Special_prices ?
+                                                        (
+                                                            row.Special_prices.find(srow => (srow.start_date == startDate && srow.end_date == endDate) || (srow.start_date == startDate && srow.end_date >= endDate) || (srow.start_date <= startDate && srow.end_date == endDate)) ?
+                                                                [row.Special_prices.find(srow => (srow.start_date == startDate && srow.end_date == endDate) || (srow.start_date == startDate && srow.end_date >= endDate) || (srow.start_date <= startDate && srow.end_date == endDate)).price] :
+                                                                [...row.Special_prices?.map(srow => srow.price), ...[row.base_price]]
+                                                        )
+                                                        : [row.base_price]
+                                                    // [...row.Special_prices?.map(srow => srow.price), ...[row.base_price]]
+                                                    // row.Special_prices.length ? [...row.Special_prices?.map(srow => srow.price)]/ : [...row.Special_prices?.map(srow => srow.price), ...[row.base_price]]
+                                                )
+                                            }
+                                            location=""
+                                            children={
+                                                <div className='w-1/3 ml-auto'>
+                                                    <Button type='button' className="w-28 ml-auto " label="Book Now" onClick={() => {
+                                                        navigate(`/booking?start_date=${startDate}&end_date=${endDate}&room=${row.id}`)
+                                                    }} />
+                                                </div>
+                                            }
+                                            image={`${process.env.REACT_APP_API_BASE_URL}${row?.room_img}`} />
+                                    </div>
+
+
                                 ))
                             }
                         </div>
@@ -222,10 +249,10 @@ const DetailProperty = () => {
                                     <>
                                         {
                                             reviews.map(row => (
-                                                <>
+                                                <Column key={row.id}>
                                                     <Caption label={row.Booking?.User?.Profile?.full_name} />
                                                     <Title className={"font"} label={row.comment} />
-                                                </>
+                                                </Column>
                                             ))
                                         }
                                     </>
