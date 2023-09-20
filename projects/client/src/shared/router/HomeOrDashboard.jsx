@@ -7,8 +7,6 @@ const HomeOrDashboard = () => {
   const { token } = useToken();
   const { user } = useSelector((state) => state.auth);
 
-  console.log("user", user);
-
   // If not authenticated, show Home to guests.
   if (!token) return <Home />;
 

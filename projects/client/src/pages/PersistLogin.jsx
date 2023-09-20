@@ -37,15 +37,11 @@ const PersistLogin = () => {
   }, [isAuthenticated, persist, login]);
 
   useEffect(() => {
-    console.log(`isLoading: ${isLoading}`);
-    console.log(`isAuthenticated: ${isAuthenticated}`);
     // get user data
     if (isAuthenticated) {
-      console.log("user is authenticated");
       api
         .get("/auth/keep-login")
         .then((res) => {
-          console.log(res.data);
           dispatch(addUser(res.data.data));
         })
         .catch((err) => {

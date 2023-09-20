@@ -1,10 +1,14 @@
+import moment from "moment";
 import React from "react";
 import { Link } from "react-router-dom";
 
 function TopCityCard({ image, cityName, link }) {
+  // date in yyyy-mm-dd format
+  const today = moment().format("YYYY-MM-DD");
+  const tomorrow = moment().add(1, "days").format("YYYY-MM-DD");
   return (
     <Link
-      to={link}
+      to={link + `&start_date=${today}&end_date=${tomorrow}`}
       className="h-[180px] md:h-[480px] shadow border border-slate-300 w-full rounded-xl relative group cursor-pointer"
     >
       <img

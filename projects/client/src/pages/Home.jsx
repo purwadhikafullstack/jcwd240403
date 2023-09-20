@@ -1,30 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { isBefore } from "date-fns";
 import MainContainer from "../components/layouts/MainContainer";
 import HeroCard from "../components/cards/HeroCard";
 import TopCityCard from "../components/cards/TopCityCard";
-import api from "../shared/api";
 import { StarIcon } from "@heroicons/react/24/solid";
 import { formatToIDR } from "../shared/utils";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 
 const topCity = [
   {
     cityName: "Jakarta",
-    link: "/search?city=jakarta",
+    link: "/property?location=jakarta",
     image:
       "https://cdn.britannica.com/88/132688-050-E9739DD9/Skyline-Jakarta-Indonesia.jpg",
   },
   {
     cityName: "Bandung",
-    link: "/search?city=bandung",
+    link: "/property?location=bandung",
     image: "https://www.nativeindonesia.com/foto/2018/09/Jalan-Braga-1.jpg",
   },
   {
     cityName: "Bali",
-    link: "/search?city=bali",
+    link: "/property?location=bali",
     image:
       "https://www.affordableluxurytravel.co.uk/blog/wp-content/uploads/2021/11/AdobeStock_103587221-1140x570.jpeg",
   },

@@ -62,7 +62,7 @@ function App() {
         </Route>
         <Route
           path="/property/:id"
-          element={<AuthenticatedRoute roles={["USER"]} />}
+          element={<AuthenticatedRoute roles={["USER"]} />} // will be removed
         >
           <Route index element={<DetailProperty />} />
         </Route>
