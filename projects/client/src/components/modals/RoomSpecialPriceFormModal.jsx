@@ -49,6 +49,9 @@ const RoomSpecialPriceFormModal = ({
     };
 
     fetchAllData();
+  }, [propertyId]);
+
+  useEffect(() => {
     if (selectedRoomAvailability) {
       const { roomId, isActive, start_date, end_date, price } =
         selectedRoomAvailability;
@@ -61,7 +64,7 @@ const RoomSpecialPriceFormModal = ({
         price,
       });
     }
-  }, [selectedRoomAvailability, propertyId, rooms]);
+  }, [selectedRoomAvailability, rooms]);
 
   return (
     <Formik

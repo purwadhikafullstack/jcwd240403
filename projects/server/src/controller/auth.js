@@ -26,8 +26,15 @@ const generateHashedPassword = async (password) => {
 const register = async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
-    const { role, name, email, phoneNumber, password, isRegisterBySocial } =
-      req.body;
+    const {
+      role,
+      name,
+      email,
+      phoneNumber,
+      password,
+      isRegisterBySocial,
+      photoURL,
+    } = req.body;
     let imageURL;
 
     // Check if a file is uploaded and the role is "TENANT"
@@ -68,6 +75,7 @@ const register = async (req, res) => {
         full_name: name,
         phone_number: isRegisterBySocial ? null : phoneNumber,
         document_identity: imageURL,
+        profile_picture: photoURL || null,
       },
       { transaction }
     );
@@ -112,13 +120,13 @@ const login = async (req, res) => {
         });
       }
 
-      if (user.isRegisterBySocial === false) {
-        // Scenario 3: User registered by conventional method
-        return res.status(400).send({
-          message:
-            "You registered with a conventional method, please login without Google.",
-        });
-      }
+      // if (user.isRegisterBySocial === false) {
+      //   // Scenario 3: User registered by conventional method
+      //   return res.status(400).send({
+      //     message:
+      //       "You registered with a conventional method, please login without Google.",
+      //   });
+      // }
 
       await user.update({ isLoginBySocial: true });
 
@@ -131,23 +139,24 @@ const login = async (req, res) => {
         }
       );
 
-      return res
-        .status(200)
-        .send({ message: "Logged in using Google!", accessToken });
+      return res.status(200).send({
+        message: "Logged in using Google!",
+        accessToken,
+        role: user.role,
+      });
     } else {
+      if (user.isRegisterBySocial) {
+        // Scenario 2: Registered via Google, trying to login with email/password
+        return res.status(400).send({
+          message:
+            "You registered via Google, please login using your Google account.",
+        });
+      }
       if (!user || !(await bcrypt.compare(password, user.password))) {
         return res.status(400).send({
           message: "Login failed, incorrect email or password.",
         });
       }
-    }
-
-    if (user.isRegisterBySocial) {
-      // Scenario 2: Registered via Google, trying to login with email/password
-      return res.status(400).send({
-        message:
-          "You registered via Google, please login using your Google account.",
-      });
     }
 
     // Scenario 1: User can login conventionally

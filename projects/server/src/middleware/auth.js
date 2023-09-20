@@ -73,7 +73,7 @@ module.exports = {
         const decodedToken = await admin.auth().verifyIdToken(accessToken);
         req.socialUser = decodedToken;
       } catch (error) {
-        console.log("verifi social token", error);
+        console.log("verify social token", error);
         return res.status(401).send({ message: "Unauthorized." });
       }
     }

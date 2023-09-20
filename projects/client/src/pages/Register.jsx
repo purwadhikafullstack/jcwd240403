@@ -109,6 +109,7 @@ function Register() {
           name: user.displayName,
           role: "USER",
           isRegisterBySocial: true,
+          photoURL: user.photoURL,
         });
 
         // Maybe open a modal or navigate the user to another page

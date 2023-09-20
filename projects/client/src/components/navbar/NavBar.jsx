@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import ButtonWithLogo from "../buttons/ButtonWithLogo";
-import { KeyIcon, UserIcon, } from "@heroicons/react/24/solid";
+import { KeyIcon, UserIcon } from "@heroicons/react/24/solid";
 import { Link, useNavigate } from "react-router-dom";
 import useToken from "../../shared/hooks/useToken";
 import { Menu, Transition } from "@headlessui/react";
@@ -16,7 +16,6 @@ const NavBar = () => {
   useEffect(() => {
     if (token) {
       const decode = jwtDecode(token);
-      console.log("decode", decode)
       setEmail(decode.email);
     }
   }, [token]);

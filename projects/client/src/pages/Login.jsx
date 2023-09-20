@@ -20,6 +20,7 @@ function Login() {
     async (values) => {
       try {
         const { data } = await api.post("/auth/login", values);
+        console.log("data", data);
         if (data.role === (isUser ? "USER" : "TENANT")) {
           dispatch(addUser(data));
           saveToken(data.accessToken);
@@ -45,6 +46,7 @@ function Login() {
 
   const loginByGoogle = useCallback(async () => {
     if (user && token) {
+      console.log("user", user);
       processLogin({
         email: user.email,
         role: "USER",

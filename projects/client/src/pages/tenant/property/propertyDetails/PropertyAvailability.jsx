@@ -33,6 +33,7 @@ const PropertyAvailability = () => {
   const fetchRoomAvailability = useCallback(async () => {
     try {
       const { data } = await api.get(`/room-status/all/${propertyId}`);
+
       const sortedData = sortAvailabilityByUpdatedAt(data.data);
       const mappedData = sortedData.length
         ? sortedData.map(mapRoomAvailabilityData)
