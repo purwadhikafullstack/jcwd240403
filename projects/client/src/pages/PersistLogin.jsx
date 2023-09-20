@@ -1,14 +1,17 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../shared/context/AuthContext";
 import api from "../shared/api";
 import { useDispatch } from "react-redux";
-import { addUser } from "../store/auth/authSlice";
+import { addUser, logout } from "../store/auth/authSlice";
+import useToken from "../shared/hooks/useToken";
 
 const PersistLogin = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const { isAuthenticated, login, persist } = useAuth();
+  const { removeToken } = useToken();
 
   useEffect(() => {
     let isMounted = true;
@@ -45,7 +48,10 @@ const PersistLogin = () => {
           dispatch(addUser(res.data.data));
         })
         .catch((err) => {
-          console.log(err);
+          console.log("keep login err", err);
+          dispatch(logout());
+          removeToken();
+          navigate("/login");
         });
     }
   }, [isLoading, isAuthenticated, dispatch]);
