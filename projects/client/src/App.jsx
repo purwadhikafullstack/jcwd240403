@@ -34,6 +34,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import TenantOrderList from "./pages/tenant/TenantOrderList";
 import VerifyPayment from "./pages/user/userTransaction/VerifyPayment";
+import TenantTabelReport from "./pages/tenant/TenantTabelReport";
+import ReportByCalendar from "./pages/tenant/ReportByCalendar";
 
 
 function App() {
@@ -134,6 +136,22 @@ function App() {
       >
         <Route path="*" element={<DashboardSideBar />}>
           <Route index element={<TenantOrderList />} />
+        </Route>
+      </Route>
+      <Route
+        path="report-tabel"
+        element={<AuthenticatedRoute roles={["TENANT"]} />}
+      >
+        <Route path="*" element={<DashboardSideBar />}>
+          <Route index element={<TenantTabelReport />} />
+        </Route>
+      </Route>
+      <Route
+        path="reportbyCalendar"
+        element={<AuthenticatedRoute roles={["TENANT"]} />}
+      >
+        <Route path="*" element={<DashboardSideBar />}>
+          <Route index element={<ReportByCalendar />} />
         </Route>
       </Route>
 

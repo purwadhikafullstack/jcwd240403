@@ -22,7 +22,16 @@ const navigation = [
     current: true,
     children: [{ name: "Order List", href: "/order-list" }],
   },
-  { name: "Reports", href: "#", icon: ChartPieIcon, current: false },
+  {
+    name: "Reports",
+    href: "#",
+    icon: ChartPieIcon,
+    current: true,
+    children: [
+      { name: "Report Tabel", href: "/report-tabel" },
+      { name: "Report By Calendar", href: "/reportbycalendar" },
+    ],
+  },
 ];
 
 export default navigation;

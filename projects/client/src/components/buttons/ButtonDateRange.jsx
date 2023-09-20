@@ -5,7 +5,7 @@ import DatePicker from "../datepicker/DatePicker";
 import moment from "moment";
 
 
-function ButtonDateRange({ selectedDays, handleDayClick, today, totalNight, className }) {
+function ButtonDateRange({ selectedDays, handleDayClick, today, totalNight, className, asreport = false }) {
   return (
     <Popover className={`relative ${className}`} >
       {({ close }) => (
@@ -42,6 +42,7 @@ function ButtonDateRange({ selectedDays, handleDayClick, today, totalNight, clas
                   selectedDays={selectedDays}
                   handleDayClick={handleDayClick}
                   today={today}
+                  asreport={asreport}
                 />
                 <div className="flex justify-end mt-3">
                   <button

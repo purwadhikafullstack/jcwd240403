@@ -10,6 +10,8 @@ export default function TableWithSortHeader({
   onEdit,
   onDelete,
   onDetail,
+  subheaderwidget
+
 }) {
   const dataTable = data ? data?.map(({ id, ...rest }) => rest) : [];
   const headers = dataTable.length > 0 ? Object.keys(dataTable[0]) : null;
@@ -36,6 +38,13 @@ export default function TableWithSortHeader({
           }
         </div>
       </div>
+      {
+        subheaderwidget && <div className="mt-8">
+          {
+            subheaderwidget
+          }
+        </div>
+      }
       {dataTable.length !== 0 ? (
         <>
           <div className="mt-8 mb-4 flow-root">
