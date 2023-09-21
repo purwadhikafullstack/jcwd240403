@@ -76,10 +76,8 @@ const AvailableProperty = () => {
     if (location && startDate && endDate) {
       await axios
         .get(
-          `${process.env.REACT_APP_API_BASE_URL}/product?location=${
-            location.id
-          }&start_date=${startDate}&end_date=${endDate}&page=${currentPage}&perPage=${limitPage}&sortBy=${sortBy}&name=${
-            nameFilter ?? ""
+          `${process.env.REACT_APP_API_BASE_URL}/product?location=${location.id
+          }&start_date=${startDate}&end_date=${endDate}&page=${currentPage}&perPage=${limitPage}&sortBy=${sortBy}&name=${nameFilter ?? ""
           }&typeRoom=${typeFilter?.id ?? ""}`,
           {
             headers: {
@@ -206,9 +204,9 @@ const AvailableProperty = () => {
     <>
       <MainContainer>
         <div className="w-full max-w-7xl flex flex-col mx-auto gap-5">
-          <div className="flex justify-between py-4 px-2 bg-white rounded-md border ">
-            <div className="flex w-full ">
-              <div className="w-1/3 p-3">
+          <div className="flex flex-col md:flex-row justify-between py-4 px-4 gap-y-5 rounded-md border ">
+            <div className="flex flex-col md:flex-row  w-full gap-y-5 gap-x-5">
+              <div className="w-full md:w-1/3 ">
                 {locations && (
                   <Dropdown
                     items={locations}
@@ -219,7 +217,7 @@ const AvailableProperty = () => {
                   />
                 )}
               </div>
-              <div className="w-1/3 p-3">
+              <div className="w-full md:w-1/3 ">
                 <label htmlFor="" className="text-slate-600">
                   Date
                 </label>
@@ -232,7 +230,7 @@ const AvailableProperty = () => {
                 />
               </div>
             </div>
-            <div className="w-40 p-3 mt-auto ">
+            <div className="w-40 mt-auto ml-auto ">
               <Button
                 className="py-3"
                 label={"Search"}
@@ -241,8 +239,8 @@ const AvailableProperty = () => {
               />
             </div>
           </div>
-          <div className="flex flex-row gap-8 ">
-            <div className="flex w-full max-w-sm flex-col gap-5  ">
+          <div className="flex flex-col md:flex-row gap-5 px-4 md:px-0">
+            <div className="flex w-full md:max-w-[25%] lg:max-w-sm flex-col gap-5 order-2 mb-16 md:order-1 ">
               <div className="w-full h-auto flex flex-col bg-white p-4 rounded-md justify-start gap-5 border">
                 <h6>sort by</h6>
                 <div className="flex gap-2 ">
@@ -324,7 +322,7 @@ const AvailableProperty = () => {
                 </div>
               </div>
             </div>
-            <div className="flex w-full flex-col gap-y-5">
+            <div className="flex w-full flex-col gap-y-5 md:order-2">
               {properties != null ? (
                 <>
                   {properties.length ? (
@@ -375,7 +373,9 @@ const AvailableProperty = () => {
                 <></>
               )}
               {properties != null && (
-                <Pagination totalPage={totalPage} onChangePage={onChangePage} />
+                <div className="mt-10">
+                  <Pagination totalPage={totalPage} onChangePage={onChangePage} />
+                </div>
               )}
             </div>
           </div>
