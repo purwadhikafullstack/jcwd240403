@@ -1,10 +1,11 @@
 import { Outlet, Navigate } from "react-router-dom";
 import useToken from "../hooks/useToken";
-import { useSelector } from "react-redux";
+import jwtDecode from "jwt-decode";
 
 export const AuthenticatedRoute = ({ roles }) => {
+  console.log("load");
   const { token } = useToken();
-  const { user } = useSelector((state) => state.auth);
+  const user = jwtDecode(token);
 
   // Special condition for TENANT accessing the homepage
   if (window.location.pathname === "/" && token && user?.role === "TENANT") {
@@ -13,6 +14,8 @@ export const AuthenticatedRoute = ({ roles }) => {
 
   if (token && roles.includes(user?.role)) {
     return <Outlet />;
+  } else {
+    console.log("not work", roles.includes(user?.role));
   }
 
   return <Navigate to="/login" />;

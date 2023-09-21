@@ -45,6 +45,7 @@ const PersistLogin = () => {
       api
         .get("/auth/keep-login")
         .then((res) => {
+          console.log("add user");
           dispatch(addUser(res.data.data));
         })
         .catch((err) => {
@@ -54,7 +55,7 @@ const PersistLogin = () => {
           navigate("/login");
         });
     }
-  }, [isLoading, isAuthenticated, dispatch]);
+  }, [isLoading, isAuthenticated, dispatch, navigate, removeToken]);
 
   return (
     <>{!persist ? <Outlet /> : isLoading ? <p>Loading...</p> : <Outlet />}</>
