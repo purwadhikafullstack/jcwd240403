@@ -1,7 +1,7 @@
 const multerMiddleware = require("../middleware/multer");
 const router = require("express").Router();
 const verifying = require("../middleware/auth");
-const validation = require("../middleware/validation");
+const validation = require("../middleware/validationAuth");
 const {
   getUser,
   updateProfile,

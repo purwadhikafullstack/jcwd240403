@@ -1,6 +1,6 @@
 const multerMiddleware = require("../middleware/multer");
 const { auth: authController } = require("../controller");
-const validation = require("../middleware/validation");
+const validation = require("../middleware/validationAuth");
 const router = require("express").Router();
 const verifying = require("../middleware/auth");
 
