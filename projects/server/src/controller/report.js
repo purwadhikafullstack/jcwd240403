@@ -99,6 +99,101 @@ const getAllReport = async (req, res) => {
 
 const getAllReportByDate = async (req, res) => {
   try {
+    const token = req.user;
+    const user_id = token.id;
+    const { date } = req.params;
+    let whereDateBooking = {
+      [Op.and]: [
+        {
+          check_in_date: {
+            [Op.lte]: new Date(date),
+          },
+        },
+        {
+          check_out_date: {
+            [Op.gte]: new Date(date),
+          },
+        },
+      ],
+    };
+    let whereDateStatus = {
+      [Op.and]: [
+        {
+          start_date: {
+            [Op.lte]: new Date(date),
+          },
+        },
+        {
+          end_date: {
+            [Op.gte]: new Date(date),
+          },
+        },
+      ],
+    };
+    const pagination = {
+      page: Number(req.query.page) || 1,
+      perPage: Number(req.query.perPage) || 10,
+    };
+    const { count, rows: tmpdata } = await db.Room.findAndCountAll({
+      where: {
+        deletedAt: null,
+      },
+      limit: pagination.perPage,
+      offset: pagination.perPage * (pagination.page - 1),
+      distinct: true,
+      include: [
+        {
+          model: db.Property,
+          where: {
+            user_id: user_id,
+            deletedAt: null,
+          },
+          include: [
+            {
+              model: db.Property_type,
+            },
+            {
+              model: db.Location,
+            },
+          ],
+        },
+        {
+          model: db.Room_status,
+          where: {
+            ...whereDateStatus,
+          },
+          required: false,
+        },
+        {
+          model: db.Booking,
+          where: {
+            ...whereDateBooking,
+          },
+          required: false,
+        },
+      ],
+    });
+    const data = tmpdata.map((row) => {
+      let status = "Room Available";
+      if (row.Room_statuses?.length) {
+        status = "Room Cant be Used";
+      }
+      if (row.Bookings.find((rb) => rb.booking_status == "DONE")) {
+        status = "Already Used";
+      }
+      return { ...row.toJSON(), status: status };
+    });
+    const totalPage = Math.ceil(count / pagination.perPage);
+    return res.send({
+      status: true,
+      data: data,
+      pagination: {
+        page: pagination.page,
+        perPage: pagination.perPage,
+        totalData: count,
+        totalPage: totalPage,
+      },
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send({

@@ -113,23 +113,24 @@ function TenantOrderList() {
         <>
 
 
-            <Row className="w-full gap-4">
-                <Column className="w-1/3">
-                    <Dropdown labelField='city' className="w-full" label={`Location`} selected={locationBy} items={locationFilter} onItemChange={(e) => setLocationBy(e)} />
-                </Column>
-                <Column className="w-1/3">
-                    <Dropdown labelField='name' className="w-full" label={`Property Type`} selected={typeBy} items={typeFilter} onItemChange={(e) => setTypeBy(e)} />
-                </Column >
-                <Column className="w-1/3">
-                    <Dropdown labelField='value' className="w-full" label={`Status`} selected={statusBy} items={statusFilter} onItemChange={(e) => setStatusBy(e)} />
 
-                </Column>
-            </Row>
             <TableWithSortHeader
                 title={"Order List"}
                 description={"List All Orders By Customers"}
                 data={orderData}
                 onDetail={onSelectHandler}
+                subheaderwidget={<Row className="w-full gap-4">
+                    <Column className="w-1/3">
+                        <Dropdown labelField='city' className="w-full" label={`Location`} selected={locationBy} items={locationFilter} onItemChange={(e) => setLocationBy(e)} />
+                    </Column>
+                    <Column className="w-1/3">
+                        <Dropdown labelField='name' className="w-full" label={`Property Type`} selected={typeBy} items={typeFilter} onItemChange={(e) => setTypeBy(e)} />
+                    </Column >
+                    <Column className="w-1/3">
+                        <Dropdown labelField='value' className="w-full" label={`Status`} selected={statusBy} items={statusFilter} onItemChange={(e) => setStatusBy(e)} />
+
+                    </Column>
+                </Row>}
 
             />
             {

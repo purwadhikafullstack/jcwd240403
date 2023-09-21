@@ -31,10 +31,9 @@ const DetailProperty = () => {
     const [minPrice, setMinPrice] = useState(0)
     let { id } = useParams()
     const today = new Date();
-    const tomorrow = new Date(today);
     const [selectedDays, setSelectedDays] = useState({
-        from: startDate,
-        to: endDate,
+        from: new Date(startDate),
+        to: new Date(endDate),
     });
     const setting = {
         dots: true,
@@ -45,6 +44,10 @@ const DetailProperty = () => {
         autoplay: true,
         autoplaySpeed: 3000,
 
+    }
+    const changeDate = () => {
+        navigate(`/property/${id}?start_date=${startDate}&end_date=${endDate}`)
+        toast.success("Change Date Success")
     }
     const getDetailProperty = async (e) => {
         await axios.get(`${process.env.REACT_APP_API_BASE_URL}/product/${id.split("-")[1]}?start_date=${startDate}&end_date=${endDate}`, {
@@ -97,6 +100,22 @@ const DetailProperty = () => {
     }
 
     useEffect(() => {
+        const konversiStartDate = moment(new Date(selectedDays.from)).format("YYYY-MM-DD")
+        const konversiEndate = moment(new Date(selectedDays.to)).format("YYYY-MM-DD")
+        if (selectedDays.from) {
+            setStartDate(konversiStartDate)
+        } else {
+            setStartDate(null)
+        }
+        if (selectedDays.to) {
+            setEndDate(konversiEndate)
+
+        } else {
+            setEndDate(null)
+        }
+    }, [selectedDays])
+
+    useEffect(() => {
         getDetailProperty()
         getReview()
     }, [])
@@ -119,7 +138,7 @@ const DetailProperty = () => {
                                 />
                             </div>
                             <div className="w-40 p-3 mt-auto">
-                                <Button className="py-3" type="button" label={'Ubah'} />
+                                <Button className="py-3" type="button" label={'Apply Changes'} onClick={changeDate} />
                             </div>
                         </div>
                     </div>
@@ -171,7 +190,11 @@ const DetailProperty = () => {
                                                 price={
                                                     getRange(
                                                         row.Special_prices ?
-                                                            (row.Special_prices.find(srow => srow.start_date == startDate && srow.end_date == endDate) ? [row.Special_prices.find(srow => srow.start_date == startDate && srow.end_date == endDate).price] : [...row.Special_prices?.map(srow => srow.price), ...[row.base_price]])
+                                                            (
+                                                                row.Special_prices.find(srow => (srow.start_date == startDate && srow.end_date == endDate) || (srow.start_date == startDate && srow.end_date >= endDate) || (srow.start_date <= startDate && srow.end_date == endDate)) ?
+                                                                    [row.Special_prices.find(srow => (srow.start_date == startDate && srow.end_date == endDate) || (srow.start_date == startDate && srow.end_date >= endDate) || (srow.start_date <= startDate && srow.end_date == endDate)).price] :
+                                                                    [...row.Special_prices?.map(srow => srow.price), ...[row.base_price]]
+                                                            )
                                                             : [row.base_price]
                                                         // [...row.Special_prices?.map(srow => srow.price), ...[row.base_price]]
                                                         // row.Special_prices.length ? [...row.Special_prices?.map(srow => srow.price)]/ : [...row.Special_prices?.map(srow => srow.price), ...[row.base_price]]

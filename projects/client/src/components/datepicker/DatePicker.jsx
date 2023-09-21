@@ -2,7 +2,7 @@ import React from "react";
 import { DayPicker } from "react-day-picker";
 import useCheckMobileScreen from "../../shared/hooks/useCheckIsMobile";
 
-function DatePicker({ selectedDays, handleDayClick, today }) {
+function DatePicker({ selectedDays, handleDayClick, today, asreport = false }) {
   const isMobile = useCheckMobileScreen();
   return (
     <DayPicker
@@ -10,7 +10,7 @@ function DatePicker({ selectedDays, handleDayClick, today }) {
       mode="range"
       selected={selectedDays}
       onDayClick={handleDayClick}
-      disabled={{ before: today }}
+      disabled={asreport ? null : { before: today }}
       classNames={{
 
         vhidden: "sr-only",
