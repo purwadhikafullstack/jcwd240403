@@ -21,9 +21,9 @@ function getRange(prices) {
   }
 }
 
-function getMinimumPrice(prices) {
+function getMinimumPrice(prices, useFormat = true) {
   let minValue = Math.min(...prices);
-  return new Intl.NumberFormat().format(minValue);
+  return useFormat ? new Intl.NumberFormat().format(minValue) : minValue;
 }
 function getMaximumPrice(prices) {
   let maxValue = Math.max(...prices);

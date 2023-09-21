@@ -14,6 +14,7 @@ import TableWithSortHeader from '../../components/tables/TableWithSortHeader'
 
 function TenantTabelReport() {
     const [listReport, setListReport] = useState([])
+    const [selectDate, setSelectDate] = useState(false)
     const [filter, setFilter] = useState("CHECKINLATEST")
     const today = new Date();
     const yesterday = new Date(today);
@@ -46,14 +47,15 @@ function TenantTabelReport() {
             console.log(selectedDays.from)
         }
         setSelectedDays({ from: selectedDays.from, to: day });
+        setSelectDate(true)
     };
     const countNights = () => {
         const daysDifference = differenceInDays(selectedDays.to, selectedDays.from);
 
         return daysDifference;
     };
-    const getReport = async (start, end) => {
-        const { data } = await api.get(`/report?start_date=${startDate}&end_date=${endDate}&sortBy=${filter}`);
+    const getReport = async () => {
+        const { data } = await api.get(!selectDate ? `/report?sortBy=${filter}` : `/report?start_date=${startDate}&end_date=${endDate}&sortBy=${filter}`);
         const response =
             data && data.data && data.data.length
                 ? data.data.map((item) => ({
