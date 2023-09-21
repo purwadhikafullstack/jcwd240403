@@ -7,15 +7,13 @@ import { Link, useLocation } from "react-router-dom";
 function NavigationItem({ item }) {
   const { pathname } = useLocation();
 
-  // Helper function to check if the pathname includes the item's href.
   const isActiveLink = (href) => {
-    // For root path, also highlight if pathname starts with "/property/"
-    // Check if the pathname includes the item's href
-
-    if (href === "/")
+    if (href === "/") {
       return pathname === "/" || pathname.startsWith("/my-property/");
+    }
     return pathname.includes(href);
   };
+
   return (
     <li key={item.name}>
       {!item.children ? (
@@ -44,7 +42,7 @@ function NavigationItem({ item }) {
                 as="a"
                 className={classNames(
                   item.current ? "bg-gray-50" : "hover:bg-gray-50",
-                  isActiveLink(item.href) || pathname.includes("/")
+                  isActiveLink(item.href)
                     ? "text-primary"
                     : "text-white bg-transparent",
                   "flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold text-primary"
@@ -53,8 +51,7 @@ function NavigationItem({ item }) {
                 <item.icon
                   className={classNames(
                     "h-6 w-6 shrink-0",
-                    isActiveLink(item.href) ||
-                      pathname.includes("/")
+                    isActiveLink(item.href)
                       ? "bg-gray-50 text-primary"
                       : "text-white"
                   )}
@@ -64,7 +61,10 @@ function NavigationItem({ item }) {
                 <ChevronRightIcon
                   className={classNames(
                     open ? "rotate-90 text-gray-500" : "text-gray-400",
-                    "ml-auto h-5 w-5 shrink-0"
+                    "ml-auto h-5 w-5 shrink-0",
+                    isActiveLink(item.href)
+                      ? "bg-gray-50 text-primary"
+                      : "text-white"
                   )}
                   aria-hidden="true"
                 />

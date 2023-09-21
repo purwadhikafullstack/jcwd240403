@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 // import Dashboard from "./pages/tenant/Dashboard";
@@ -6,10 +6,6 @@ import Profiling from "./pages/user/Profiling";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import VerifyOTP from "./pages/VerifyOTP";
-import useToken from "./shared/hooks/useToken";
-import { useDispatch } from "react-redux";
-import { addUser } from "./store/auth/authSlice";
-import jwt from "jwt-decode";
 import {
   AuthenticatedRoute,
   NonAuthenticatedRoute,
@@ -34,108 +30,103 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import TenantOrderList from "./pages/tenant/TenantOrderList";
 import VerifyPayment from "./pages/user/userTransaction/VerifyPayment";
+import PersistLogin from "./pages/PersistLogin";
 import TenantTabelReport from "./pages/tenant/TenantTabelReport";
 import ReportByCalendar from "./pages/tenant/ReportByCalendar";
 
-
 function App() {
-  const { token } = useToken();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (token) {
-      const decode = jwt(token);
-      dispatch(addUser(decode));
-    }
-  }, [token, dispatch]);
-
   return (
     <Routes>
       {/* Route for the base path to decide between Home and Dashboard */}
-      <Route path="/" element={<DashboardSideBar />}>
-        <Route index element={<HomeOrDashboard />} />
-      </Route>
+      <Route element={<PersistLogin />}>
+        <Route path="/" element={<DashboardSideBar />}>
+          <Route index element={<HomeOrDashboard />} />
+        </Route>
 
-      {/* USER Authenticated Routes */}
-      <Route path="profile" element={<AuthenticatedRoute roles={["USER"]} />}>
-        <Route index element={<Profiling />} />
-      </Route>
-      <Route
-        path="change-password"
-        element={<AuthenticatedRoute roles={["USER"]} />}
-      >
-        <Route index element={<ChangePassword />} />
-      </Route>
-      <Route
-        path="/verify-email/:otp/:email"
-        element={<AuthenticatedRoute roles={["USER"]} />}
-      >
-        <Route index element={<VerifyEmail />} />
-      </Route>
-      <Route path="/property">
-        <Route index element={<AvailableProperty />} />
-      </Route>
-      <Route
-        path="/property/:id"
-        element={<AuthenticatedRoute roles={["USER"]} />}
-      >
-        <Route index element={<DetailProperty />} />
-      </Route>
-      <Route path="/booking" element={<AuthenticatedRoute roles={["USER"]} />}>
-        <Route index element={<BookingProperty />} />
-      </Route>
-      <Route
-        path="/paymentproof/:booking_code"
-        element={<AuthenticatedRoute roles={["USER"]} />}
-      >
-        <Route index element={<PaymentProof />} />
-      </Route>
-      <Route
-        path="/orderlist"
-        element={<AuthenticatedRoute roles={["USER"]} />}
-      >
-        <Route index element={<OrderList />} />
-      </Route>
-      <Route
-        path="/verify-payment/:verify_code"
-        element={<AuthenticatedRoute roles={["USER"]} />}
-      >
-        <Route index element={<VerifyPayment />} />
-      </Route>
+        {/* USER Authenticated Routes */}
+        <Route path="profile" element={<AuthenticatedRoute roles={["USER"]} />}>
+          <Route index element={<Profiling />} />
+        </Route>
+        <Route
+          path="change-password"
+          element={<AuthenticatedRoute roles={["USER"]} />}
+        >
+          <Route index element={<ChangePassword />} />
+        </Route>
+        <Route
+          path="/verify-email/:otp/:email"
+          element={<AuthenticatedRoute roles={["USER"]} />}
+        >
+          <Route index element={<VerifyEmail />} />
+        </Route>
+        <Route path="/property">
+          <Route index element={<AvailableProperty />} />
+        </Route>
+        <Route
+          path="/property/:id"
+          element={<AuthenticatedRoute roles={["USER"]} />} // will be removed
+        >
+          <Route index element={<DetailProperty />} />
+        </Route>
+        <Route
+          path="/booking"
+          element={<AuthenticatedRoute roles={["USER"]} />}
+        >
+          <Route index element={<BookingProperty />} />
+        </Route>
+        <Route
+          path="/paymentproof/:booking_code"
+          element={<AuthenticatedRoute roles={["USER"]} />}
+        >
+          <Route index element={<PaymentProof />} />
+        </Route>
+        <Route
+          path="/orderlist"
+          element={<AuthenticatedRoute roles={["USER"]} />}
+        >
+          <Route index element={<OrderList />} />
+        </Route>
+        <Route
+          path="/verify-payment/:verify_code"
+          element={<AuthenticatedRoute roles={["USER"]} />}
+        >
+          <Route index element={<VerifyPayment />} />
+        </Route>
 
-      {/* TENANT Authenticated Routes */}
-      <Route
-        path="/my-property"
-        element={<AuthenticatedRoute roles={["TENANT"]} />}
-      >
-        <Route path=":propertyId" element={<DashboardSideBar />}>
-          <Route element={<PropertyLayout />}>
-            <Route index element={<PropertyEdit />} />
-            <Route path="rooms" element={<PropertyRooms />} />
-            <Route path="availability" element={<PropertyAvailability />} />
-            <Route path="special-price" element={<PropertySpecialPrice />} />
+        {/* TENANT Authenticated Routes */}
+        <Route
+          path="/my-property"
+          element={<AuthenticatedRoute roles={["TENANT"]} />}
+        >
+          <Route path=":propertyId" element={<DashboardSideBar />}>
+            <Route element={<PropertyLayout />}>
+              <Route index element={<PropertyEdit />} />
+              <Route path="rooms" element={<PropertyRooms />} />
+              <Route path="availability" element={<PropertyAvailability />} />
+              <Route path="special-price" element={<PropertySpecialPrice />} />
+            </Route>
+          </Route>
+          <Route path="add" element={<DashboardSideBar />}>
+            <Route index element={<PropertyAdd />} />
           </Route>
         </Route>
-        <Route path="add" element={<DashboardSideBar />}>
-          <Route index element={<PropertyAdd />} />
-        </Route>
-      </Route>
 
-      <Route
-        path="category-area"
-        element={<AuthenticatedRoute roles={["TENANT"]} />}
-      >
-        <Route path="*" element={<DashboardSideBar />}>
-          <Route index element={<CategoryArea />} />
+        <Route
+          path="category-area"
+          element={<AuthenticatedRoute roles={["TENANT"]} />}
+        >
+          <Route path="*" element={<DashboardSideBar />}>
+            <Route index element={<CategoryArea />} />
+          </Route>
         </Route>
-      </Route>
 
-      <Route
-        path="order-list"
-        element={<AuthenticatedRoute roles={["TENANT"]} />}
-      >
-        <Route path="*" element={<DashboardSideBar />}>
-          <Route index element={<TenantOrderList />} />
+        <Route
+          path="order-list"
+          element={<AuthenticatedRoute roles={["TENANT"]} />}
+        >
+          <Route path="*" element={<DashboardSideBar />}>
+            <Route index element={<TenantOrderList />} />
+          </Route>
         </Route>
       </Route>
       <Route
@@ -154,7 +145,6 @@ function App() {
           <Route index element={<ReportByCalendar />} />
         </Route>
       </Route>
-
 
       {/* Non-authenticated Routes */}
       <Route path="/login" element={<NonAuthenticatedRoute />}>
