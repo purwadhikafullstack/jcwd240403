@@ -64,19 +64,4 @@ module.exports = {
       });
     }
   },
-
-  async verifySocialToken(req, res, next) {
-    const accessToken = req.headers.authorization;
-
-    if (accessToken) {
-      try {
-        const decodedToken = await admin.auth().verifyIdToken(accessToken);
-        req.socialUser = decodedToken;
-      } catch (error) {
-        console.log("verify social token", error);
-        return res.status(401).send({ message: "Unauthorized." });
-      }
-    }
-    next();
-  },
 };

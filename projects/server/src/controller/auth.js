@@ -109,6 +109,7 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const { email, password, isLoginBySocial } = req.body;
     const user = await db.User.findOne({ where: { email } });
@@ -120,15 +121,7 @@ const login = async (req, res) => {
         });
       }
 
-      // if (user.isRegisterBySocial === false) {
-      //   // Scenario 3: User registered by conventional method
-      //   return res.status(400).send({
-      //     message:
-      //       "You registered with a conventional method, please login without Google.",
-      //   });
-      // }
-
-      await user.update({ isLoginBySocial: true });
+      await user.update({ isLoginBySocial: true }, { transaction });
 
       // Scenario 4: User can login
       const accessToken = jwt.sign(
@@ -141,15 +134,16 @@ const login = async (req, res) => {
 
       return res.status(200).send({
         message: "Logged in using Google!",
-        accessToken,
         role: user.role,
+        email: user.email,
+        accessToken,
       });
     } else {
       if (user.isRegisterBySocial) {
         // Scenario 2: Registered via Google, trying to login with email/password
         return res.status(400).send({
           message:
-            "You registered via Google, please login using your Google account.",
+            "You registered via Google, please login via Google account.",
         });
       }
       if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -187,7 +181,14 @@ const keepLogin = async (req, res) => {
   try {
     const user = await db.User.findOne({
       where: { id: req.user.id },
-      attributes: ["id", "role", "email"],
+      attributes: [
+        "id",
+        "role",
+        "email",
+        "is_verified",
+        "isLoginBySocial",
+        "isRegisterBySocial",
+      ],
       include: [
         {
           model: db.Profile,
