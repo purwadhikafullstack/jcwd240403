@@ -10,6 +10,7 @@ router.get(
   // verifying.verifyUser,
   getAllProperty
 );
+
 router.get(
   "/:id",
   verifying.verifyAccessToken,

@@ -197,22 +197,6 @@ const getDetailProperty = async (req, res) => {
           where: {
             status: "AVAILABLE",
             deletedAt: null,
-            // [Op.or]: [
-            //   {
-            //     id: {
-            //       [Op.notIn]: db.Sequelize.literal(`
-            //     SELECT DISTINCT r.id
-            //     FROM Rooms AS r
-            //     LEFT JOIN Room_statuses AS rs ON r.id = rs.room_id
-            //     WHERE (
-            //       (rs.start_date <= '${end_date} 23:59:59' AND rs.end_date >= '${start_date} 00:00:00')
-            //       OR
-            //       (rs.start_date <= '${start_date} 00:00:00' AND rs.end_date >= '${end_date} 23:59:59')
-            //     )
-            //   `),
-            //     },
-            //   },
-            // ],
           },
           required: false,
           include: [
@@ -348,7 +332,19 @@ const getDetailProperty = async (req, res) => {
   }
 };
 
+const getPrice = async (req, res) => {
+  try {
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "fatal error on server",
+      error,
+    });
+  }
+};
+
 module.exports = {
   getAllProperty,
   getDetailProperty,
+  getPrice,
 };
