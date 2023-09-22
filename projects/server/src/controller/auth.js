@@ -111,8 +111,14 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
-    const { email, password, isLoginBySocial } = req.body;
+    const { role, email, password, isLoginBySocial } = req.body;
     const user = await db.User.findOne({ where: { email } });
+
+    if (user.role !== role) {
+      return res.status(400).send({
+        message: "Login failed, please make sure your role.",
+      });
+    }
 
     if (isLoginBySocial) {
       if (!user) {
@@ -132,6 +138,7 @@ const login = async (req, res) => {
         }
       );
 
+      await transaction.commit();
       return res.status(200).send({
         message: "Logged in using Google!",
         role: user.role,
@@ -169,6 +176,7 @@ const login = async (req, res) => {
       accessToken: accessToken,
     });
   } catch (error) {
+    await transaction.rollback();
     console.log("err login", error);
     res.status(500).send({
       message: "Something went wrong on the server.",

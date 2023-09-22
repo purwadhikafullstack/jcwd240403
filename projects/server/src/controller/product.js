@@ -348,7 +348,23 @@ const getDetailProperty = async (req, res) => {
   }
 };
 
+const getTopProperty = async (req, res) => {
+  try {
+    const properties = db.Booking.findAll({
+      where: { booking_status: "DONE" },
+    });
+
+    res.status(200).send({
+      message: "Get top properties success.",
+      data: properties,
+    });
+  } catch (error) {
+    console.log("TOP PROPERTY", error);
+    error;
+  }
+};
 module.exports = {
   getAllProperty,
   getDetailProperty,
+  getTopProperty,
 };
