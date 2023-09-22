@@ -8,12 +8,14 @@ import { toast } from "react-hot-toast"
 import * as Yup from "yup";
 import Column from "../../components/widget/Column";
 import Title from "../../components/texts/Title";
+import { auth } from "../../firebase/firebase"
 import Row from "../../components/widget/Row";
 
 function Profiling() {
+    const currentUser = auth.currentUser
     const [full_name, setFull_name] = useState("")
     const [birth_date, setBirth_date] = useState("")
-    const [gender, setGender] = useState("")
+    const [gender, setGender] = useState("-")
     const [phone_number, setPhone_number] = useState("")
     const [email, setEmail] = useState("")
     const [foto, setFoto] = useState("")
@@ -55,14 +57,14 @@ function Profiling() {
         // untuk memasukan data user yang mau dirubah
         const getData = response.data
         const { data } = getData
-        setFull_name(data.full_name)
-        console.log(data.birth_date)
-        setBirth_date(data.birth_date != null ? data.birth_date.split("T")[0] : "")
-        setGender(data.gender)
-        setPhone_number(data.phone_number)
-        setEmail(data.User.email)
-        setFoto(data.profile_picture != null ? `${process.env.REACT_APP_API_BASE_URL}${data.profile_picture}` : null)
-        console.log(phone_number)
+        if (data) {
+            setFull_name(data.full_name)
+            setBirth_date(data.birth_date != null ? data.birth_date.split("T")[0] : "")
+            setGender(data.gender)
+            setPhone_number(data.phone_number)
+            setEmail(data.User.email)
+            setFoto(data.profile_picture != null ? `${process.env.REACT_APP_API_BASE_URL}${data.profile_picture}` : null)
+        }
     }
 
 
@@ -142,6 +144,7 @@ function Profiling() {
 
     useEffect(function () {
         getUserData()
+        console.log(currentUser)
     }, [])
     return (
         <>
@@ -151,14 +154,14 @@ function Profiling() {
                     <form onSubmit={updateImage} action="" method="post" encType="multipart/form-data">
                         <div className="flex justify-center">
                             <label htmlFor="foto" className="cursor-pointer">
-                                <input id="foto" type="file" className="hidden" onChange={changeImage} />
+                                <input id="foto" type="file" className="hidden" onChange={changeImage} disabled={currentUser ? true : false} />
                                 <div className="">
-                                    <img src={updateFoto ? fototemp : foto ?? fototemp} alt="profile" className="aspect-[1/1] max-w-[200px] rounded-full object-cover " />
+                                    <img src={currentUser != null ? currentUser.photoURL : updateFoto ? fototemp : foto ?? fototemp} alt="profile" className="aspect-[1/1]  min-w-[200px] max-w-[200px] rounded-full object-cover " />
                                 </div>
                             </label>
                         </div>
-                        <div className="flex justify-center">
-                            <div className="p-4">
+                        <div className={`flex justify-center  ${currentUser ? "mb-5" : "block"}`}>
+                            <div className={`p-4  ${currentUser ? "hidden" : "block"}`}>
                                 <Button label={'Update Photo Profile'}></Button>
                             </div>
                         </div>
@@ -168,11 +171,11 @@ function Profiling() {
 
                         <div className="flex justify-center mb-6 ">
                             <Column className={"justify-center md:items-center md:flex-row w-full md:w-[80%]"}>
-                                <label className="md:w-[20%] block text-gray-500 font-bold pr-4" for="inline-full-name">
+                                <label className="md:w-[20%] block text-gray-500 font-bold pr-4" htmlFor="inline-full-name">
                                     Name
                                 </label>
                                 <div className={"md:w-[70%]"}>
-                                    <TextInput placeholder={'Full Name'} value={full_name} onChange={(e) => {
+                                    <TextInput placeholder={'Full Name'} value={currentUser?.displayName ?? full_name} onChange={(e) => {
                                         setFull_name(e.target.value)
                                     }} required={true} disabled={editable} />
                                 </div>
@@ -181,7 +184,7 @@ function Profiling() {
                         </div>
                         <div className="flex justify-center mb-6 ">
                             <Column className={"justify-center md:items-center md:flex-row w-full md:w-[80%]"}>
-                                <label className="md:w-[20%] block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="inline-full-name">
+                                <label className="md:w-[20%] block text-gray-500 font-bold mb-1 md:mb-0 pr-4" htmlFor="inline-full-name">
                                     Gender
                                 </label>
                                 <div className={"md:w-[70%]"}>
@@ -197,7 +200,7 @@ function Profiling() {
                         </div>
                         <div className="flex justify-center mb-6 ">
                             <Column className={"justify-center md:items-center md:flex-row w-full md:w-[80%]"}>
-                                <label className="md:w-[20%] block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="inline-full-name">
+                                <label className="md:w-[20%] block text-gray-500 font-bold mb-1 md:mb-0 pr-4" htmlFor="inline-full-name">
                                     Birth Date
                                 </label>
                                 <div className={"md:w-[70%]"}>
@@ -209,11 +212,11 @@ function Profiling() {
                         </div>
                         <div className="flex justify-center mb-6 ">
                             <Column className={"justify-center md:items-center md:flex-row w-full md:w-[80%]"}>
-                                <label className="md:w-[20%] block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="inline-full-name">
+                                <label className="md:w-[20%] block text-gray-500 font-bold mb-1 md:mb-0 pr-4" htmlFor="inline-full-name">
                                     Phone
                                 </label>
                                 <div className={"md:w-[70%]"}>
-                                    <TextInput placeholder={'Phone Number'} value={phone_number} onChange={(e) => {
+                                    <TextInput placeholder={'Phone Number'} value={currentUser?.phoneNumber ?? phone_number} onChange={(e) => {
                                         setPhone_number(e.target.value)
                                     }} required={true} disabled={editable} />
                                 </div>
@@ -221,11 +224,11 @@ function Profiling() {
                         </div>
                         <div className="flex justify-center mb-6 ">
                             <Column className={"justify-center md:items-center md:flex-row w-full md:w-[80%]"}>
-                                <label className="md:w-[20%] block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="inline-full-name">
+                                <label className="md:w-[20%] block text-gray-500 font-bold mb-1 md:mb-0 pr-4" htmlFor="inline-full-name">
                                     Email
                                 </label>
                                 <div className={"md:w-[70%]"}>
-                                    <TextInput placeholder={'Email'} value={email} onChange={(e) => {
+                                    <TextInput placeholder={'Email'} value={currentUser?.email ?? email} onChange={(e) => {
                                         setEmail(e.target.value)
                                     }} required={true} disabled={editable} />
                                 </div>
@@ -233,7 +236,7 @@ function Profiling() {
                         </div>
 
                         <div className="flex justify-center w-full mb-16 mt-10 ">
-                            <div className="flex w-full justify-center">
+                            <div className={`flex w-full justify-center ${currentUser ? "hidden" : "block"}`}>
                                 {
                                     editable
                                         ?
@@ -242,7 +245,7 @@ function Profiling() {
                                         </>
                                         :
                                         <>
-                                            <Button label={'Save Changes'}></Button>
+                                            <Button className={"w-full sm:w-fit  sm:min-w-[10rem] h-10 items-center "} label={'Save Changes'}></Button>
                                         </>
                                 }
                             </div>

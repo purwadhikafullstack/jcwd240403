@@ -38,7 +38,7 @@ function DatePicker({ selectedDays, handleDayClick, today, asreport = false, pri
         {
           ((isAfter(props.date, from) && isBefore(props.date, to)) ||
             (isSameDay(props.date, from) || isSameDay(props.date, to))) &&
-          <p className={`text-xs ${from != null && to != null ? (isAfter(props.date, from) && isBefore(props.date, to)) ||
+          <p className={`text-[0.5rem] md:text-xs ${from != null && to != null ? (isAfter(props.date, from) && isBefore(props.date, to)) ||
             (isSameDay(props.date, from) || isSameDay(props.date, to)) ? 'text-white' : "text-green-700" : "text-green-700"} `}>{getPriceFormat(price, props.date)}</p>
         }
 
@@ -71,7 +71,7 @@ function DatePicker({ selectedDays, handleDayClick, today, asreport = false, pri
         table: "border-collapse border-spacing-0 z-50",
         head_cell: "w-10 h-10 uppercase align-middle text-center text-xs",
         cell: "w-10 h-10 align-middle text-center border-0 px-0",
-        day: `rounded-full ${price != null ? "w-16 h-16" : "w-10 h-10"} transition-colors hover:bg-primary/80 focus:outline-none focus-visible:ring focus-visible:ring-sky-300 focus-visible:ring-opacity-50 active:bg-sky-600 active:text-white`,
+        day: `rounded-full ${price != null ? "md:w-16 w-12 h-16" : "w-10 h-10"} transition-colors hover:bg-primary/80 focus:outline-none focus-visible:ring focus-visible:ring-sky-300 focus-visible:ring-opacity-50 active:bg-sky-600 active:text-white`,
         day_selected: "text-white bg-primary hover:bg-primary/80 text-white",
         day_today: "font-bold",
         day_disabled:
