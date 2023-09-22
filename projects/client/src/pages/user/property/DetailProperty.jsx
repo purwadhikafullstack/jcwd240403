@@ -16,10 +16,12 @@ import SubTitle from '../../../components/texts/SubTitle';
 import Caption from '../../../components/texts/Caption';
 import Title from '../../../components/texts/Title';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { getMinimumPrice, getRange } from '../../../shared/utils';
+import { formatToIDR, getMinimumPrice, getRange } from '../../../shared/utils';
 import Carousel from '../../../components/widget/Carousel'
 import Slider from 'react-slick';
 import Column from '../../../components/widget/Column';
+import Body from '../../../components/texts/Body';
+import Pagination from '../../../components/pagination/Pagination';
 
 
 const DetailProperty = () => {
@@ -33,6 +35,9 @@ const DetailProperty = () => {
     const [minPriceTmp, setMinPriceTmp] = useState(0)
     const [minSpecialPrice, setMinSpecialPrice] = useState(0)
     const [dateSpecialPrice, setDateSpecialPrice] = useState([])
+    const [totalPage, setTotalPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [limitPage, setLimitPage] = useState(4);
     let { id } = useParams()
     const today = new Date();
     const [selectedDays, setSelectedDays] = useState({
@@ -53,8 +58,8 @@ const DetailProperty = () => {
         navigate(`/property/${id}?start_date=${startDate}&end_date=${endDate}`)
         toast.success("Change Date Success")
     }
-    const getDetailProperty = async (e) => {
-        await axios.get(`${process.env.REACT_APP_API_BASE_URL}/product/${id.split("-")[1]}?start_date=${startDate}&end_date=${endDate}`, {
+    const getDetailProperty = async (end) => {
+        await axios.get(`${process.env.REACT_APP_API_BASE_URL}/product/${id.split("-")[1]}?start_date=${startDate}&end_date=${end ?? endDate}`, {
             headers: {
                 authorization: `Bearer ${localStorage.getItem("token")}`
             }
@@ -113,14 +118,19 @@ const DetailProperty = () => {
     };
 
     const getReview = async () => {
-        await axios.get(`${process.env.REACT_APP_API_BASE_URL}/transaction/review/property/${id.split("-")[1]}`, {
+        await axios.get(`${process.env.REACT_APP_API_BASE_URL}/transaction/review/property/${id.split("-")[1]}?page=${currentPage}&perPage=${limitPage}`, {
             headers: {
                 authorization: `Bearer ${localStorage.getItem("token")}`
             }
         }).then(response => {
             setReviews(response.data.data)
+            setTotalPage(response.data.pagination.totalPage);
         })
     }
+
+    const onChangePage = (page) => {
+        setCurrentPage(page);
+    };
 
     useEffect(() => {
         const konversiStartDate = moment(new Date(selectedDays.from)).format("YYYY-MM-DD")
@@ -136,12 +146,15 @@ const DetailProperty = () => {
         } else {
             setEndDate(null)
         }
+        if (selectedDays.from && selectedDays.to) {
+            getDetailProperty(konversiEndate)
+        }
     }, [selectedDays])
 
     useEffect(() => {
         getDetailProperty()
         getReview()
-    }, [])
+    }, [currentPage])
 
     return (
         <>
@@ -199,7 +212,7 @@ const DetailProperty = () => {
                                 <div className="flex flex-col gap-2 mt-auto">
 
                                     <Caption label="Start Form" />
-                                    <Title label={minPrice} />
+                                    <Title label={formatToIDR(minSpecialPrice != 0 ? minSpecialPrice : minPrice)} />
                                 </div>
                             </div>
                         </div>
@@ -249,17 +262,25 @@ const DetailProperty = () => {
                                     <>
                                         {
                                             reviews.map(row => (
-                                                <Column key={row.id}>
-                                                    <Caption label={row.Booking?.User?.Profile?.full_name} />
-                                                    <Title className={"font"} label={row.comment} />
-                                                </Column>
+                                                <div key={row.id} className='px-4 py-3 bg-white rounded-md border border-gray-500 shadow-md '>
+                                                    <Column className={"gap-2"} >
+                                                        <Body className={"font-semibold capitalize"} label={row.Booking?.User?.Profile?.full_name} />
+                                                        <Body className={"font"} label={row.comment} />
+                                                    </Column>
+                                                </div>
                                             ))
                                         }
                                     </>
                                     :
                                     <></>
                             }
+                            {reviews != null && (
+                                <div className='mt-5'>
+                                    <Pagination totalPage={totalPage} onChangePage={onChangePage} />
+                                </div>
+                            )}
                         </div>
+
                     </div>
                 </div>
 

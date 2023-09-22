@@ -6,6 +6,9 @@ import { useEffect } from "react";
 import MainContainer from "../../components/layouts/MainContainer";
 import { toast } from "react-hot-toast"
 import * as Yup from "yup";
+import Column from "../../components/widget/Column";
+import Title from "../../components/texts/Title";
+import Row from "../../components/widget/Row";
 
 function Profiling() {
     const [full_name, setFull_name] = useState("")
@@ -142,109 +145,110 @@ function Profiling() {
     }, [])
     return (
         <>
-            <MainContainer>
-                <div className="flex">
-                    <div className="pt-3 pl-5 block text-gray-500 font-bold">My Profile</div>
-                </div>
-
-                <form onSubmit={updateImage} action="" method="post" encType="multipart/form-data">
-                    <div className="flex justify-center">
-                        <label htmlFor="foto" className="cursor-pointer">
-                            <input id="foto" type="file" className="hidden" onChange={changeImage} />
-                            <div className="">
-                                <img src={updateFoto ? fototemp : foto ?? fototemp} alt="profile" className="aspect-[1/1] max-w-[200px] rounded-full object-cover " />
+            <MainContainer >
+                <Column className={"px-4"}>
+                    <Title className={"mb-8"} label={"My Profile"} />
+                    <form onSubmit={updateImage} action="" method="post" encType="multipart/form-data">
+                        <div className="flex justify-center">
+                            <label htmlFor="foto" className="cursor-pointer">
+                                <input id="foto" type="file" className="hidden" onChange={changeImage} />
+                                <div className="">
+                                    <img src={updateFoto ? fototemp : foto ?? fototemp} alt="profile" className="aspect-[1/1] max-w-[200px] rounded-full object-cover " />
+                                </div>
+                            </label>
+                        </div>
+                        <div className="flex justify-center">
+                            <div className="p-4">
+                                <Button label={'Update Photo Profile'}></Button>
                             </div>
-                        </label>
-                    </div>
-                    <div className="flex justify-center">
-                        <div className="p-4">
-                            <Button label={'Update Photo Profile'}></Button>
                         </div>
-                    </div>
-                </form>
+                    </form>
 
-                <form onSubmit={updateProfile} action="" method="post">
+                    <form onSubmit={updateProfile} action="" method="post">
 
-                    <div className="md:flex md:items-center mb-6">
-                        <div className="md:w-1/3">
-                            <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
-                                Name
-                            </label>
+                        <div className="flex justify-center mb-6 ">
+                            <Column className={"justify-center md:items-center md:flex-row w-full md:w-[80%]"}>
+                                <label className="md:w-[20%] block text-gray-500 font-bold pr-4" for="inline-full-name">
+                                    Name
+                                </label>
+                                <div className={"md:w-[70%]"}>
+                                    <TextInput placeholder={'Full Name'} value={full_name} onChange={(e) => {
+                                        setFull_name(e.target.value)
+                                    }} required={true} disabled={editable} />
+                                </div>
+                            </Column>
+
                         </div>
-                        <div className="md:w-1/3">
-                            <TextInput placeholder={'Full Name'} value={full_name} onChange={(e) => {
-                                setFull_name(e.target.value)
-                            }} required={true} disabled={editable} />
+                        <div className="flex justify-center mb-6 ">
+                            <Column className={"justify-center md:items-center md:flex-row w-full md:w-[80%]"}>
+                                <label className="md:w-[20%] block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="inline-full-name">
+                                    Gender
+                                </label>
+                                <div className={"md:w-[70%]"}>
+                                    <select defaultValue={gender} disabled={editable} name="gender" id="gender" required={true} onChange={(e) => {
+                                        setGender(e.target.value)
+                                    }}>
+                                        <option value="">GENDER</option>
+                                        <option value="MALE" selected={(gender == "MALE")}>Male</option>
+                                        <option value="FEMALE" selected={(gender == "FEMALE")}>Female</option>
+                                    </select>
+                                </div>
+                            </Column>
                         </div>
-                    </div>
-                    <div className="md:flex md:items-center mb-6">
-                        <div className="md:w-1/3">
-                            <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
-                                Gender
-                            </label>
+                        <div className="flex justify-center mb-6 ">
+                            <Column className={"justify-center md:items-center md:flex-row w-full md:w-[80%]"}>
+                                <label className="md:w-[20%] block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="inline-full-name">
+                                    Birth Date
+                                </label>
+                                <div className={"md:w-[70%]"}>
+                                    <TextInput placeholder={'Birth Date '} value={birth_date} type={"date"} onChange={(e) => {
+                                        setBirth_date(e.target.value)
+                                    }} required={true} disabled={editable} />
+                                </div>
+                            </Column>
                         </div>
-                        <div className="md:w-1/3">
-                            <select defaultValue={gender} disabled={editable} name="gender" id="gender" required={true} onChange={(e) => {
-                                setGender(e.target.value)
-                            }}>
-                                <option value="">GENDER</option>
-                                <option value="MALE" selected={(gender == "MALE")}>Male</option>
-                                <option value="FEMALE" selected={(gender == "FEMALE")}>Female</option>
-                            </select>
+                        <div className="flex justify-center mb-6 ">
+                            <Column className={"justify-center md:items-center md:flex-row w-full md:w-[80%]"}>
+                                <label className="md:w-[20%] block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="inline-full-name">
+                                    Phone
+                                </label>
+                                <div className={"md:w-[70%]"}>
+                                    <TextInput placeholder={'Phone Number'} value={phone_number} onChange={(e) => {
+                                        setPhone_number(e.target.value)
+                                    }} required={true} disabled={editable} />
+                                </div>
+                            </Column>
                         </div>
-                    </div>
-                    <div className="md:flex md:items-center mb-6">
-                        <div className="md:w-1/3">
-                            <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
-                                Birth Date
-                            </label>
+                        <div className="flex justify-center mb-6 ">
+                            <Column className={"justify-center md:items-center md:flex-row w-full md:w-[80%]"}>
+                                <label className="md:w-[20%] block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="inline-full-name">
+                                    Email
+                                </label>
+                                <div className={"md:w-[70%]"}>
+                                    <TextInput placeholder={'Email'} value={email} onChange={(e) => {
+                                        setEmail(e.target.value)
+                                    }} required={true} disabled={editable} />
+                                </div>
+                            </Column>
                         </div>
-                        <div className="md:w-1/3">
-                            <TextInput placeholder={'Birth Date '} value={birth_date} type={"date"} onChange={(e) => {
-                                setBirth_date(e.target.value)
-                            }} required={true} disabled={editable} />
+
+                        <div className="flex justify-center w-full mb-16 mt-10 ">
+                            <div className="flex w-full justify-center">
+                                {
+                                    editable
+                                        ?
+                                        <>
+                                            <Button className={"w-full sm:w-fit  sm:min-w-[10rem] h-10 items-center "} type="button" label={'Edit'} onClick={switchEdit}> </Button>
+                                        </>
+                                        :
+                                        <>
+                                            <Button label={'Save Changes'}></Button>
+                                        </>
+                                }
+                            </div>
                         </div>
-                    </div>
-                    <div className="md:flex md:items-center mb-6">
-                        <div className="md:w-1/3">
-                            <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
-                                Phone
-                            </label>
-                        </div>
-                        <div className="md:w-1/3">
-                            <TextInput placeholder={'Phone Number'} value={phone_number} onChange={(e) => {
-                                setPhone_number(e.target.value)
-                            }} required={true} disabled={editable} />
-                        </div>
-                    </div>
-                    <div className="md:flex md:items-center mb-6">
-                        <div className="md:w-1/3">
-                            <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
-                                Email
-                            </label>
-                        </div>
-                        <div className="md:w-1/3">
-                            <TextInput placeholder={'Email'} value={email} onChange={(e) => {
-                                setEmail(e.target.value)
-                            }} required={true} disabled={editable} />
-                        </div>
-                    </div>
-                    <div className="flex justify-center">
-                        <div className="p-4">
-                            {
-                                editable
-                                    ?
-                                    <>
-                                        <Button type="button" label={'Edit'} onClick={switchEdit}> </Button>
-                                    </>
-                                    :
-                                    <>
-                                        <Button label={'Save Changes'}></Button>
-                                    </>
-                            }
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </Column>
 
             </MainContainer>
 

@@ -70,7 +70,14 @@ const review = async (req, res) => {
 const getReview = async (req, res) => {
   try {
     const { property_id } = req.params;
-    const reviews = await db.Review.findAll({
+    const pagination = {
+      page: Number(req.query.page) || 1,
+      perPage: Number(req.query.perPage) || 4,
+    };
+    const { count, rows: data } = await db.Review.findAndCountAll({
+      limit: pagination.perPage,
+      offset: pagination.perPage * (pagination.page - 1),
+      distinct: true,
       include: [
         {
           model: db.Booking,
@@ -98,9 +105,16 @@ const getReview = async (req, res) => {
         },
       ],
     });
+    const totalPage = Math.ceil(count / pagination.perPage);
     return res.send({
       status: true,
-      data: reviews,
+      data: data,
+      pagination: {
+        page: pagination.page,
+        perPage: pagination.perPage,
+        totalData: count,
+        totalPage: totalPage,
+      },
     });
   } catch (error) {
     console.log(error);
