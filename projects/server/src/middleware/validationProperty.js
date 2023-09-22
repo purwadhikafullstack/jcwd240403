@@ -21,5 +21,20 @@ const validate = (validations) => {
 module.exports = {
   validateAddProperty: validate([
     body("name".notEmpty().withMessage("Name is required")),
+    body("locationId".notEmpty().withMessage("Location id is required")),
+    body("propTypeId".notEmpty().withMessage("Property type id is required")),
+    body("catAreaId".notEmpty().withMessage("Category area id is required")),
+    body("description".notEmpty().withMessage("Description is required")),
+  ]),
+
+  validateAddRoom: validate([
+    body("propId".notEmpty().withMessage("Property id is required")),
+    body("name".notEmpty().withMessage("Name is required")),
+    body("description".notEmpty().withMessage("Description is required")),
+    body("price".notEmpty().withMessage("Price is required")),
+    body("file").custom((value, { req }) => {
+      if (!req.file) throw new Error("Room picture is required");
+      return true;
+    }),
   ]),
 };

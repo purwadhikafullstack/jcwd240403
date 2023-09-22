@@ -72,7 +72,11 @@ module.exports = {
 
   validateLogin: validate([
     body("role").isIn(["USER", "TENANT"]).withMessage("Invalid user role"),
-    body("email").notEmpty().withMessage("Please fill in email").isEmail(),
+    body("email")
+      .notEmpty()
+      .withMessage("Please fill in email")
+      .isEmail()
+      .withMessage("Please enter with email format"),
     body("password").custom((value, { req }) => {
       if (!req.body.isLoginBySocial) {
         if (!value) {

@@ -12,7 +12,7 @@ const getAllMyProp = async (req, res) => {
     const userId = req.user.id;
     const pagination = {
       page: Number(req.query.page) || 1,
-      perPage: Number(req.query.perPage) || 5,
+      perPage: Number(req.query.perPage) || 10,
     };
 
     const result = await db.Property.findAll({
