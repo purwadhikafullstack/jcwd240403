@@ -110,6 +110,10 @@ function OrderList() {
                 } else {
                     toast.error(response.data.message)
                 }
+            }).catch(error => {
+                error?.response?.data?.errors.forEach(row => {
+                    toast.error(row.msg)
+                })
             })
         }
     }

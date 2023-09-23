@@ -33,6 +33,20 @@ const getUnavailable = async (start_date, end_date) => {
           [Op.and]: [
             {
               start_date: {
+                [Op.lte]: new Date(`${start_date} 00:00:00`),
+              },
+            },
+            {
+              end_date: {
+                [Op.lte]: new Date(`${end_date} 23:59:59`),
+              },
+            },
+          ],
+        },
+        {
+          [Op.and]: [
+            {
+              start_date: {
                 [Op.between]: [
                   new Date(`${start_date} 00:00:00`),
                   new Date(`${end_date} 23:59:59`),
@@ -52,6 +66,7 @@ const getUnavailable = async (start_date, end_date) => {
       ],
     },
   });
+  console.log(getStatus);
   return getStatus.map((row) => row.room_id);
 };
 
