@@ -2,11 +2,13 @@ const db = require("../models");
 const moment = require("moment-timezone");
 
 const addSpecialPrice = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const { roomId, specialPrice, startDate, endDate } = req.body;
     const isExist = await db.Room.findOne({
       where: { id: roomId },
     });
+
     if (!isExist) {
       return res.status(400).send({
         message: "Room not found",
@@ -14,15 +16,20 @@ const addSpecialPrice = async (req, res) => {
     }
 
     if (isExist) {
-      const result = await db.Special_price.create({
-        room_id: roomId,
-        price: specialPrice,
-        start_date: moment(startDate)
-          .startOf("day")
-          .format("YYYY-MM-DD HH:mm:ss"),
-        end_date: moment(endDate).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
-        is_active: true,
-      });
+      const result = await db.Special_price.create(
+        {
+          room_id: roomId,
+          price: specialPrice,
+          start_date: moment(startDate)
+            .startOf("day")
+            .format("YYYY-MM-DD HH:mm:ss"),
+          end_date: moment(endDate).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
+          is_active: true,
+        },
+        { transaction }
+      );
+
+      await transaction.commit();
       res.status(201).send({
         message: "Success add special price",
         ceking: isExist,
@@ -30,6 +37,7 @@ const addSpecialPrice = async (req, res) => {
       });
     }
   } catch (error) {
+    await transaction.rollback();
     console.log("add special price", error);
     res.status(500).send({
       message: "something wrong on server",
@@ -109,6 +117,7 @@ const getOneSpecialPrice = async (req, res) => {
 };
 
 const editSpecialPrice = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const id = req.params.id;
     const { specialPrice, startDate, endDate, isActive } = req.body;
@@ -131,18 +140,20 @@ const editSpecialPrice = async (req, res) => {
         end_date: moment(endDate).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
         is_active: isActive,
       },
-      { where: { id: id } }
+      { where: { id: id }, transaction }
     );
 
     const updated = await db.Special_price.findOne({
       where: { id: id },
     });
 
+    await transaction.commit();
     res.status(201).send({
       message: "Success edit special price",
       data: updated,
     });
   } catch (error) {
+    await transaction.rollback();
     console.log("edit special price", error);
     res.status(500).send({
       message: "Something wrong on server",

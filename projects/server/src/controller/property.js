@@ -108,26 +108,31 @@ const getOneMyProp = async (req, res) => {
 };
 
 const addProperty = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const userId = req.user.id;
-    console.log(userId);
     const { name, locationId, propTypeId, catAreaId, description } = req.body;
 
-    const newProperty = await db.Property.create({
-      user_id: userId,
-      property_type_id: Number(propTypeId),
-      location_id: Number(locationId),
-      category_area_id: Number(catAreaId),
-      name: name,
-      description: description,
-      is_active: true,
-    });
+    const newProperty = await db.Property.create(
+      {
+        user_id: userId,
+        property_type_id: Number(propTypeId),
+        location_id: Number(locationId),
+        category_area_id: Number(catAreaId),
+        name: name,
+        description: description,
+        is_active: true,
+      },
+      { transaction }
+    );
 
+    await transaction.commit();
     res.status(200).send({
       message: "Success creating property",
       data: newProperty,
     });
   } catch (error) {
+    await transaction.rollback();
     console.log("addprop", error);
     res.status(500).send({
       message: "Something wrong on server",

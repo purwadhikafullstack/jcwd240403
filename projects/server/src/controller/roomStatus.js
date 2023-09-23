@@ -2,6 +2,7 @@ const db = require("../models");
 const moment = require("moment-timezone");
 
 const addRoomStatus = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const { roomId, customStatus, startDate, endDate } = req.body;
 
@@ -17,20 +18,26 @@ const addRoomStatus = async (req, res) => {
       });
     }
 
-    const result = await db.Room_status.create({
-      room_id: roomId,
-      custom_status: customStatus,
-      start_date: moment(startDate)
-        .startOf("day")
-        .format("YYYY-MM-DD HH:mm:ss"),
-      end_date: moment(endDate).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
-      is_active: true,
-    });
+    const result = await db.Room_status.create(
+      {
+        room_id: roomId,
+        custom_status: customStatus,
+        start_date: moment(startDate)
+          .startOf("day")
+          .format("YYYY-MM-DD HH:mm:ss"),
+        end_date: moment(endDate).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
+        is_active: true,
+      },
+      { transaction }
+    );
+
+    await transaction.commit();
     res.status(201).send({
       message: "Success add room status",
       data: result,
     });
   } catch (error) {
+    await transaction.rollback();
     console.log("addRommStatus", error);
     res.status(500).send({
       message: "Something wrong on server",
@@ -110,6 +117,7 @@ const getOneRoomStatus = async (req, res) => {
 };
 
 const editRoomStatus = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const id = req.params.id;
     const { customStatus, startDate, endDate, isActive } = req.body;
@@ -132,18 +140,21 @@ const editRoomStatus = async (req, res) => {
         end_date: moment(endDate).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
         is_active: isActive,
       },
-      { where: { id: id } }
+      { where: { id: id } },
+      { transaction }
     );
 
     const updated = await db.Room_status.findOne({
       where: { id: id },
     });
 
+    await transaction.commit();
     res.status(201).send({
       message: "Success edit room status",
       data: updated,
     });
   } catch (error) {
+    await transaction.rollback();
     console.log("edit room status", error);
     res.status(500).send({
       message: "Something wrong on server",

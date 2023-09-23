@@ -23,49 +23,50 @@ module.exports = {
     body("role").isIn(["USER", "TENANT"]).withMessage("Invalid role"),
     body("name")
       .notEmpty()
-      .withMessage("Name is required")
+      .withMessage("Name is required.")
       .isLength({ max: 50 })
-      .withMessage("Maximum character is 50"),
+      .withMessage("Maximum character is 50."),
     body("email")
-      .isEmail()
-      .withMessage("Please enter with email format")
       .notEmpty()
-      .withMessage("Email is required"),
-    body("phoneNumber").custom((value, { req }) => {
-      if (!req.body.isRegisterBySocial && !value) {
-        throw new Error("Phone number is required");
-      }
-      return true;
-    }),
-    body("password").custom((value, { req }) => {
-      if (!req.body.isRegisterBySocial) {
-        if (!value) {
-          throw new Error("Password is required");
+      .withMessage("Email is required.")
+      .isEmail()
+      .withMessage("Please enter with email format."),
+    body("phoneNumber")
+      .if(body("isRegisterBySocial").equals("false"))
+      .notEmpty()
+      .withMessage("Phone number is required."),
+    body("password")
+      .if(body("isRegisterBySocial").equals("false"))
+      .notEmpty()
+      .withMessage("Password is required.")
+      .isLength({ min: 8 })
+      .withMessage("Minimum password length is 8 characters.")
+      .isStrongPassword({
+        minSymbols: 0,
+      })
+      .withMessage(
+        "Password must contain minimum 1 uppercase, 1 lowercase and 1 number."
+      ),
+    body("confirmPassword")
+      .if(body("isRegisterBySocial").equals("false"))
+      .notEmpty()
+      .withMessage("Confirm password is required.")
+      .custom((value, { req }) => {
+        if (value !== req.body.password) {
+          throw new Error("Confirm password does not match with password.");
         }
-        if (value.length < 8) {
-          throw new Error("Minimum password length is 8 characters");
-        }
-        if (!value.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)) {
-          throw new Error(
-            "Password must contain minimum 1 uppercase, 1 lowercase, and 1 number"
-          );
-        }
-        if (value !== req.body.confirmPassword) {
-          throw new Error("Confirm password does not match with password");
-        }
-      }
-      return true;
-    }),
-    body("confirmPassword").custom((value, { req }) => {
-      if (!req.body.isRegisterBySocial && !value) {
-        throw new Error("Confirm password is required");
-      }
-      return true;
-    }),
+        return true;
+      }),
     body("file")
       .if(body("role").equals("TENANT"))
       .custom((value, { req }) => {
         if (!req.file) throw new Error("ID card is required for TENANT role");
+        return true;
+      }),
+    body("isRegisterBySocial")
+      .if(body("role").equals("TENANT"))
+      .custom((value, { req }) => {
+        if (value) throw new Error("You can't register by Google as TENANT.");
         return true;
       }),
   ]),
@@ -109,16 +110,17 @@ module.exports = {
       })
       .withMessage(
         "Password must contain minimum 1 uppercase, 1 lowercase and 1 number."
-      )
+      ),
+    body("confirmPass")
+      .notEmpty()
+      .withMessage("Please fill in password confirmation.")
       .custom((value, { req }) => {
-        if (value !== req.body.confirmPass) {
+        if (value !== req.body.newPass) {
           throw new Error("Confirm password does not match with new password.");
         }
         return true;
       }),
-    body("confirmPass")
-      .notEmpty()
-      .withMessage("Please fill in password confirmation."),
+    ,
   ]),
 
   validateForgotPassword: validate([

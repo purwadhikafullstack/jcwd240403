@@ -48,10 +48,12 @@ const register = async (req, res) => {
       return res.status(400).send({ message: "Email is unavailable." });
     }
 
+    console.log("IS REGISTER BY SOCIAL", typeof isRegisterBySocial);
+
     const verifyToken = jwt.sign({ email: email }, secretKey);
 
     // If isRegisterBySocial is true, ignore the password and phoneNumber
-    const hashedPassword = isRegisterBySocial
+    const hashedPassword = JSON.parse(isRegisterBySocial)
       ? null
       : await generateHashedPassword(password);
 
@@ -64,7 +66,7 @@ const register = async (req, res) => {
         otp_counter: Number(0),
         email: email,
         password: hashedPassword,
-        isRegisterBySocial: isRegisterBySocial || false,
+        isRegisterBySocial: JSON.parse(isRegisterBySocial) || false,
       },
       { transaction }
     );
@@ -143,7 +145,7 @@ const login = async (req, res) => {
         message: "Logged in using Google!",
         role: user.role,
         email: user.email,
-        accessToken,
+        accessToken: accessToken,
       });
     } else {
       if (user.isRegisterBySocial) {
@@ -168,9 +170,11 @@ const login = async (req, res) => {
         expiresIn: "24hr",
       }
     );
+    await user.update({ isLoginBySocial: false }, { transaction });
 
+    await transaction.commit();
     res.status(200).send({
-      message: "Login success.",
+      message: "Logged in using email!",
       role: user.role,
       email: user.email,
       accessToken: accessToken,
