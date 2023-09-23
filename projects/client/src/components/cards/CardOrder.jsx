@@ -34,30 +34,32 @@ function Cardorder({ title, type, check_in, check_out, status, image, header = n
             <div className="px-4 py-2 border-b bg-slate-100">
                 {header}
             </div>
-            <Row className="w-full min-h-[180px] ">
+            <Column className="w-full lg:flex-row ">
 
-                <div className="flex shrink-0">
+                <div className="flex w-full lg:w-[60%]">
                     <img
                         src={image}
                         alt="hotel"
-                        className={`object-cover object-center h-full w-[180px] md:w-[350px] ${header !== null ? "rounded-bl-lg" : "rounded-l-lg"} `}
+                        className={`object-cover object-center aspect-video w-full  ${header !== null ? "lg:rounded-bl-lg" : "rounded-l-lg"} `}
                     />
                 </div>
-                <div className="flex flex-col justify-between w-full p-3 md:px-5 py-4">
+                <div className="flex flex-col justify-between w-full px-4 py-4 gap-3">
                     {/* Property Info */}
                     <div className="flex flex-col">
-                        <div className="flex flex-col justify-between items-start">
-                            <p className="capitalize font-bold text-xl mb-2">{title}</p>
-                            <p className="capitalize font-medium text-sm mb-3 hidden md:block">{type}</p>
-                            <Row className="w-fit gap-5 ">
+                        <div className="flex flex-col justify-between items-start gap-4">
+                            <Column className={"gap-1"}>
+                                <p className="capitalize font-bold text-xl ">{title}</p>
+                                <p className="capitalize font-medium text-sm ">{type}</p>
+                            </Column>
+                            <Row className="w-full justify-between gap-5 ">
                                 <Column className="gap-1">
-                                    <Caption label={"Check In"} />
-                                    <Body label={check_in} />
+                                    <Caption className={"text-blue-700"} label={"Check In"} />
+                                    <Body className={"font-semibold"} label={check_in} />
                                 </Column>
                                 <TbArrowRight className='h-5 w-5 my-auto' />
                                 <Column className="gap-1">
-                                    <Caption label={"Check Out"} />
-                                    <Body label={check_out} />
+                                    <Caption className={"text-orange-700"} label={"Check Out"} />
+                                    <Body className={"font-semibold"} label={check_out} />
                                 </Column>
                             </Row>
 
@@ -66,7 +68,7 @@ function Cardorder({ title, type, check_in, check_out, status, image, header = n
                     </div>
 
                     {/* Price */}
-                    <div className="flex items-end flex-col border-t pt-3 gap-2">
+                    <div className="flex items-end flex-col border-t gap-2 pt-3">
                         {
                             status === "WAITING_FOR_PAYMENT" ?
                                 <>
@@ -118,7 +120,7 @@ function Cardorder({ title, type, check_in, check_out, status, image, header = n
                         }
                     </div>
                 </div>
-            </Row >
+            </Column >
         </div >
     );
 }

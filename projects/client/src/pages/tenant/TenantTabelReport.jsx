@@ -99,9 +99,9 @@ function TenantTabelReport() {
     return (
         <>
             <Column>
-                <Row className={"justify-center w-full"}>
+                <Column className={"justify-center w-full md:max-w-[70%] md:mx-auto md:flex-row px-4 py-4 gap-y-4 gap-x-3"}>
 
-                    <div className="w-1/3 p-3">
+                    <div className="w-full ">
                         <label htmlFor="" className='text-slate-600'>Date</label>
                         <ButtonDateRange
                             className="border rounded-md"
@@ -112,25 +112,26 @@ function TenantTabelReport() {
                             asreport={true}
                         />
                     </div>
-                    <div className="w-40 p-3 mt-auto ">
+                    <div className="w-40 mt-auto ml-auto ">
                         <Button className="py-3" label={"Search"} type='button' onClick={getReport} />
                     </div>
-                </Row>
+                </Column>
                 <TableWithSortHeader
                     title={"Report"}
                     description={"List All Reports"}
                     data={listReport}
-                    subheaderwidget={<Row className={"gap-x-5"}>
+                    subheaderwidget={<div className={"grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6"}>
                         <label className='gap-2'>< input type='radio' id='1' name='filter' onChange={onchangeFilter} value={"TOTALHIGHEST"} /> Higest Invoice</label>
                         <label className='gap-2'>< input type='radio' id='2' name='filter' onChange={onchangeFilter} value={"TOTALLOWEST"} /> Lowest Invoice</label>
                         <label className='gap-2'>< input type='radio' id='3' name='filter' onChange={onchangeFilter} value={"CHECKINOLDEST"} /> Check in Oldest</label>
                         <label className='gap-2'>< input type='radio' id='4' name='filter' checked={filter == "CHECKINLATEST" ? true : false} onChange={onchangeFilter} value={"CHECKINLATEST"} /> Check In Latest</label>
                         <label className='gap-2'>< input type='radio' id='4' name='filter' onChange={onchangeFilter} value={"CHECKOUTOLDEST"} /> Check Out Oldest</label>
                         <label className='gap-2'>< input type='radio' id='4' name='filter' onChange={onchangeFilter} value={"CHECKOUTLATEST"} /> Check Out Latest</label>
-                    </Row>}
+                    </div>}
                 />
 
             </Column>
+
 
         </>
     )

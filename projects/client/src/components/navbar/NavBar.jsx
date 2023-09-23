@@ -7,15 +7,24 @@ import { Menu, Transition } from "@headlessui/react";
 import { TbDoorExit } from "react-icons/tb";
 import { ClipboardIcon } from "@heroicons/react/20/solid";
 import { useSelector } from "react-redux";
+import { auth } from "../../firebase/firebase"
 
 const NavBar = () => {
+  const currentUser = auth.currentUser
   const { token, removeToken } = useToken();
   const navigateTo = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  const logout = async () => {
+    if (currentUser) {
+      await auth.signOut()
+    }
+    removeToken();
+    navigateTo("/login");
+  }
 
   return (
     <>
-      <div className="sticky z-30 bg-white border-b mb-16 border-gray-300 max-w-7xl md:mx-auto top-0 w-full flex items-center justify-between flex-row px-10 py-3 md:px-5">
+      <div className="sticky z-30 bg-white border-b border-gray-300 max-w-7xl md:mx-auto top-0 w-full flex items-center justify-between flex-row px-10 py-3 md:px-5">
         <ButtonWithLogo
           onClick={() => {
             navigateTo("/");
@@ -105,10 +114,7 @@ const NavBar = () => {
                   <div className="px-1 py-1 ">
                     <Menu.Item>
                       <button
-                        onClick={() => {
-                          removeToken();
-                          navigateTo("/login");
-                        }}
+                        onClick={logout}
                         className={`group flex w-full items-center rounded-md px-2 py-2 text-sm `}
                       >
                         <TbDoorExit
