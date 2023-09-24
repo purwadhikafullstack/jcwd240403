@@ -15,8 +15,30 @@ const getAllMyProp = async (req, res) => {
       perPage: Number(req.query.perPage) || 10,
     };
 
+    const { sortBy, filter } = req.query;
+
+    let order = [];
+    let whereFilter = {};
+
+    if (filter) {
+      whereFilter = { location_id: filter };
+    }
+
+    switch (sortBy) {
+      case "nameDesc":
+        order = [["name", "DESC"]];
+        break;
+      case "nameAsc":
+        order = [["name", "ASC"]];
+        break;
+      default:
+        order = [["createdAt", "DESC"]];
+        break;
+    }
+
     const result = await db.Property.findAll({
-      where: { user_id: userId, deletedAt: null },
+      where: { user_id: userId, deletedAt: null, ...whereFilter },
+      order,
       include: [
         {
           model: db.Location,
@@ -41,11 +63,13 @@ const getAllMyProp = async (req, res) => {
 
     if (result.length === 0) {
       return res.status(200).send({
-        message: "You dont list any property yet",
+        message: "You haven't list any property yet.",
       });
     }
 
-    const countData = await db.Property.count({ where: { user_id: userId } });
+    const countData = await db.Property.count({
+      where: { user_id: userId, deletedAt: null, ...whereFilter },
+    });
     pagination.totalData = countData;
     const totalPage = Math.ceil(pagination.totalData / pagination.perPage);
     pagination.totalPage = totalPage;

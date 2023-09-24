@@ -184,8 +184,7 @@ const changePassword = async (req, res) => {
 
       const changePassword = await db.User.update(
         { password: hashPassword },
-        { where: { id: id } },
-        { transaction }
+        { where: { id: id }, transaction }
       );
 
       const updated = await db.User.findOne({

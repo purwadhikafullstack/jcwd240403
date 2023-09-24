@@ -72,20 +72,28 @@ module.exports = {
   ]),
 
   validateLogin: validate([
-    body("role").isIn(["USER", "TENANT"]).withMessage("Invalid user role"),
+    body("role").isIn(["USER", "TENANT"]).withMessage("Invalid user role."),
     body("email")
-      .notEmpty()
-      .withMessage("Please fill in email")
       .isEmail()
-      .withMessage("Please enter with email format"),
+      .withMessage("Please enter with email format.")
+      .notEmpty()
+      .withMessage("Please fill in email."),
     body("password").custom((value, { req }) => {
       if (!req.body.isLoginBySocial) {
         if (!value) {
-          throw new Error("Password is required");
+          throw new Error("Password is required.");
         }
       }
       return true;
     }),
+  ]),
+
+  validateResendOtp: validate([
+    body("email")
+      .isEmail()
+      .withMessage("Please enter with email format.")
+      .notEmpty()
+      .withMessage("Please fill in email."),
   ]),
 
   validateVerify: validate([
@@ -120,7 +128,6 @@ module.exports = {
         }
         return true;
       }),
-    ,
   ]),
 
   validateForgotPassword: validate([
