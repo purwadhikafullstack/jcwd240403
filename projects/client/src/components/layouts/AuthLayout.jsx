@@ -26,11 +26,17 @@ function AuthLayout({
 
   return (
     <div className="p-3 h-screen md:flex md:justify-center">
-      <div className="w-full h-full items-center justify-start md:justify-center bg-gradient-to-br from-primary to-[#ccc] shadow-md md:shadow-lg max-w-[1920px] rounded-2xl p-5 flex md:flex-row flex-col relative md:px-20">
+      <div
+        className={classNames(
+          "w-full h-full items-center justify-start md:justify-center bg-gradient-to-br to-[#ccc] shadow-md md:shadow-lg max-w-[1920px] rounded-2xl p-5 flex md:flex-row flex-col relative md:px-20",
+          isNonRole ? "from-primary" : "",
+          isUser ? "from-primary" : "from-accent"
+        )}
+      >
         <div
           className={classNames(
             page === "login"
-              ? "mb-5 pt-14 md:pt-0 md:mb-0 md:flex md:flex-1 md:justify-center"
+              ? "mb-20 pt-9 md:pt-0 md:mb-0 md:flex md:flex-1 md:justify-center"
               : "absolute left-5 top-2 md:top-5 md:left-5"
           )}
         >
@@ -43,32 +49,33 @@ function AuthLayout({
           />
         </div>
 
-        <div
-          className={classNames(
-            isNonRole
-              ? "hidden"
-              : "absolute top-2 right-1 md:top-3 md:right-3 flex flex-row gap-2 items-center scale-90"
-          )}
-        >
-          <span className="text-xs text-white">switch as</span>
-          <button
-            onClick={() => setIsUser(!isUser)}
-            className="text-white bg-blue-700/60 shadow-lg w-fit px-2 py-1 rounded text-sm font-bold"
-          >
-            {isUser ? "Tenant" : "User"}
-          </button>
-        </div>
-
         {/* FORM */}
         <div
           className={classNames(
-            "md:flex md:flex-col md:justify-center md:shrink-0 w-full md:flex-1 md:items-center justify-center"
+            "md:flex md:flex-col md:justify-center md:shrink-0 w-full md:flex-1 md:items-center justify-center relative",
+            page === "login" ? "" : "mt-40 md:mt-0"
           )}
         >
           <div
             className={classNames(
+              isNonRole
+                ? "hidden"
+                : "absolute md:static -top-10 right-0 flex flex-row gap-2 md:w-full md:mb-3 items-center md:justify-end",
+              page === "login" ? "max-w-[350px]" : "max-w-[450px]"
+            )}
+          >
+            <span className="text-xs text-white">switch as</span>
+            <button
+              onClick={() => setIsUser(!isUser)}
+              className="text-white bg-primary border border-black/20 shadow-lg w-fit px-5 py-1 rounded text-sm font-bold"
+            >
+              {isUser ? "Tenant" : "User"}
+            </button>
+          </div>
+          <div
+            className={classNames(
               "bg-white p-4 shadow-2xl rounded-lg w-full overflow-hidden overflow-y-auto max-h-[700px]",
-              page === "login" ? "max-w-[350px]" : "mt-16 max-w-[450px]"
+              page === "login" ? "max-w-[350px]" : "max-w-[450px]"
             )}
           >
             <p className="text-black text-lg font-semibold mb-5">{title}</p>
@@ -97,11 +104,7 @@ function AuthLayout({
                 </div>
               </div>
 
-              <div
-                className={classNames(
-                  isUser ? "mt-5" : "hidden"
-                )}
-              >
+              <div className={classNames(isUser ? "mt-5" : "hidden")}>
                 <button
                   onClick={handleLoginSocial}
                   className="flex w-full flex-row items-center justify-center gap-3 border rounded-md bg-[#fff] px-3 py-1 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFF]"
