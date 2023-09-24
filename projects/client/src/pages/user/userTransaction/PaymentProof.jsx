@@ -136,30 +136,32 @@ function PaymentProof() {
     return (
         <>
             <MainContainer>
-                <Column className="max-w-7xl mx-auto gap-10">
-                    <div className='gap-10' />
-                    <CardView className="mx-auto min-w-[10rem]">
-                        <SubTitle className="text-center" label={`${hour} Hours : ${minute} Minutes : ${second} Seconds Remaining`} />
+                <Column className="w-full max-w-7xl md:max-w-2xl mx-auto gap-5 mt-8 px-4 md:px-0">
+                    <CardView className="w-full mx-auto min-w-[10rem]">
+                        <SubTitle className="text-center" label={`Complete Payment In`} />
+                        <Title className="text-center font-semibold" label={`${hour.toString().padStart(2, "0")} : ${minute.toString().padStart(2, "0")}  : ${second.toString().padStart(2, "0")}`} />
                     </CardView>
-                    <Column>
-                        <Title label={"Amount "} />
-                        <SubTitle label={new Intl.NumberFormat().format(booking?.total_invoice ?? 0)} />
-                    </Column>
-                    <Column>
-                        <Title label={"Booking Code"} />
-                        <SubTitle label={booking?.booking_code} />
-                    </Column>
+                    <CardView className={"w-full divide-y bg-blue-50"}>
+                        <Row className={"w-full justify-between pb-2"}>
+                            <SubTitle label={"Booking Code"} />
+                            <SubTitle label={booking?.booking_code} />
+                        </Row>
+                        <Row className={"w-full justify-between pt-2"}>
+                            <SubTitle label={"Amount"} />
+                            <SubTitle label={new Intl.NumberFormat().format(booking?.total_invoice ?? 0)} />
+                        </Row>
+                    </CardView>
                     <Column className="gap-2">
                         <Title label={"Upload Payment Proof"} />
                         <Column className="gap-8">
                             <Column>
 
-                                <label htmlFor="Payment_Proof" className="flex  flex-col gap-3 cursor-pointer border p-6 bg-slate-50 rounded-md min-w-[10rem] aspect-square mx-auto h-52">
+                                <label htmlFor="Payment_Proof" className="flex  flex-col gap-3 cursor-pointer border p-6 bg-slate-50 rounded-md w-full aspect-video mx-auto">
                                     <input onChange={changeImage} id="Payment_Proof" type="file" className="hidden" />
                                     {
                                         tmpPhoto ?
                                             <>
-                                                <img src={tmpPhoto} alt="Payment Proof" className='w-full aspect-square object-cover mx-auto' />
+                                                <img src={tmpPhoto} alt="Payment Proof" className='w-1/2 aspect-square mx-auto' />
                                             </>
                                             : <>
                                                 <div className="my-auto">
@@ -172,9 +174,9 @@ function PaymentProof() {
                                 </label>
                             </Column>
 
-                            <Row className="justify-between w-1/2 mx-auto gap-10">
-                                <Button className="w-fit px-6 bg-red-950" label={"Cancle Booking"} type='button' onClick={cancelOrder} />
-                                <Button label={"Submit"} type='button' onClick={uploadPaymentProof} />
+                            <Row className="justify-between w-full mx-auto gap-5">
+                                <Button className="w-fit px-6 bg-red-700 py-3 hover:bg-red-700/80" label={"Cancle Booking"} type='button' onClick={cancelOrder} />
+                                <Button className={"py-3"} label={"Submit"} type='button' onClick={uploadPaymentProof} />
 
                             </Row>
                             <div className='gap-10' />

@@ -159,13 +159,11 @@ const DetailProperty = () => {
     return (
         <>
             <MainContainer >
-                <div className='flex flex-col gap-10'>
-                    <div className="flex flex-col gap-12 w-full max-w-7xl mx-auto">
-
-                        <div className="flex justify-center py-4 px-2 border">
-
-                            <div className="w-1/3 p-3">
-                                <label htmlFor="" className='text-slate-600'>Date</label>
+                <div className=' w-full flex flex-col max-w-7xl md:max-w-4xl mx-auto gap-8 md:gap-10 px-4'>
+                    <div className="flex flex-col w-full justify-center  py-4 px-4 border gap-y-4 mt-8  rounded-xl">
+                        <div className="flex flex-col w-full md:flex-row justify-center md:items-center md:max-w-[70%] mx-auto gap-2 md:gap-3 ">
+                            <label htmlFor="" className='text-slate-600'>Date</label>
+                            <div className="w-full">
                                 <ButtonDateRange
                                     className={"border-2 rounded-md"}
                                     selectedDays={selectedDays}
@@ -177,7 +175,7 @@ const DetailProperty = () => {
                                     dateSpecialPrice={dateSpecialPrice}
                                 />
                             </div>
-                            <div className="w-40 p-3 mt-auto">
+                            <div className="w-32 md:w-40 mt-2 md:mt-0 ml-auto ">
                                 <Button className="py-3" type="button" label={'Apply Changes'} onClick={changeDate} />
                             </div>
                         </div>
@@ -189,7 +187,7 @@ const DetailProperty = () => {
                             {
                                 property?.Pictures.map((row, idx) => (
 
-                                    <div key={idx} className={` w-full aspect-video flex-shrink-0`}>
+                                    <div key={idx} className={` w-full aspect-video flex-shrink-0  rounded-xl`}>
                                         <img className=' w-full aspect-video object-cover rounded-xl' src={`${process.env.REACT_APP_API_BASE_URL}${row?.img}`} />
                                     </div >
 
@@ -201,26 +199,25 @@ const DetailProperty = () => {
                     </div>
 
                     <div className="flex flex-col gap-12 w-full max-w-7xl mx-auto">
-                        <div className="flex flex-col gap-4">
-                            <HeadLine label={property?.name} />
-                            <div className="flex justify-between ">
-                                <div className="flex flex-col gap-4">
-
+                        <div className='flex flex-col md:flex-row md:justify-between md:items-center gap-y-5'>
+                            <div className="flex flex-col gap-2">
+                                <HeadLine label={property?.name} />
+                                <div className="flex flex-row gap-2 items-center">
                                     <SubTitle className="whitespace-pre-line" label={property?.Property_type.name} />
+                                    <div className='h-1 w-1 rounded-full bg-gray-300'></div>
                                     <SubTitle label={property?.Location.city} />
                                 </div>
-                                <div className="flex flex-col gap-2 mt-auto">
-
-                                    <Caption label="Start Form" />
-                                    <Title label={formatToIDR(minSpecialPrice != 0 ? minSpecialPrice : minPrice)} />
-                                </div>
+                            </div>
+                            <div className="flex flex-col gap-2 px-4 py-3 rounded-lg border border-green-300 bg-green-50">
+                                <Caption className={"text-green-700"} label="Start Form" />
+                                <Title label={formatToIDR(minSpecialPrice != 0 ? minSpecialPrice : minPrice)} />
                             </div>
                         </div>
-                        <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-2">
                             <HeadLine label="About Property" />
                             <SubTitle label={property?.description} />
                         </div>
-                        <div className="flex flex-col gap-4 mb-32">
+                        <div className="flex flex-col gap-4">
                             <HeadLine label="Rooms" />
                             {
                                 property?.Rooms.map(row => (
@@ -255,7 +252,7 @@ const DetailProperty = () => {
                                 ))
                             }
                         </div>
-                        <div className="flex flex-col gap-4 mb-32">
+                        <div className="flex flex-col gap-4 mb-16">
                             <HeadLine label="Reviews" />
                             {
                                 reviews.length ?

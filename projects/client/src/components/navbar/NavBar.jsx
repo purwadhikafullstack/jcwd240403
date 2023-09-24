@@ -6,6 +6,7 @@ import useToken from "../../shared/hooks/useToken";
 import { Menu, Transition } from "@headlessui/react";
 import { TbDoorExit } from "react-icons/tb";
 import { useSelector } from "react-redux";
+import { auth } from "../../firebase/firebase";
 
 const MenuItem = ({ onClick, icon, label }) => (
   <Menu.Item>
@@ -20,15 +21,19 @@ const MenuItem = ({ onClick, icon, label }) => (
 );
 
 const NavBar = () => {
+  const currentUser = auth.currentUser;
   const { token, removeToken } = useToken();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  const logout = async () => {
+    if (currentUser) {
+      await auth.signOut();
+    }
+    removeToken();
+    navigateTo("/login");
+  };
 
   const navigateTo = (route) => () => navigate(route);
-  const logout = () => {
-    removeToken();
-    navigate("/login");
-  };
 
   return (
     <div className="sticky z-30 bg-white border-b mb-16 border-gray-300 max-w-7xl md:mx-auto top-0 w-full flex items-center justify-between flex-row px-5 py-3 md:px-5">
