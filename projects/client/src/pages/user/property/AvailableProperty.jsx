@@ -1,19 +1,16 @@
 import MainContainer from "../../../components/layouts/MainContainer";
 import axios from "axios";
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { toast } from "react-hot-toast";
-import * as Yup from "yup";
 import Dropdown from "../../../components/dropdown/Dropdown";
 import ButtonDateRange from "../../../components/buttons/ButtonDateRange";
-import { isBefore, differenceInDays, set } from "date-fns";
+import { isBefore, differenceInDays } from "date-fns";
 import moment from "moment";
 import Button from "../../../components/buttons/Button";
 import PropertyCard from "../../../components/cards/PropertyCard";
 import {
-  Link,
   useLocation,
   useNavigate,
-  useSearchParams,
 } from "react-router-dom";
 import TextInput from "../../../components/textInputs/TextInput";
 import { getRange } from "../../../shared/utils";
@@ -72,12 +69,14 @@ const AvailableProperty = () => {
 
     return daysDifference;
   };
-  const availableData = useCallback(async () => {
+  const availableData = async () => {
     if (location && startDate && endDate) {
       await axios
         .get(
-          `${process.env.REACT_APP_API_BASE_URL}/product?location=${location.id
-          }&start_date=${startDate}&end_date=${endDate}&page=${currentPage}&perPage=${limitPage}&sortBy=${sortBy}&name=${nameFilter ?? ""
+          `${process.env.REACT_APP_API_BASE_URL}/product?location=${
+            location.id
+          }&start_date=${startDate}&end_date=${endDate}&page=${currentPage}&perPage=${limitPage}&sortBy=${sortBy}&name=${
+            nameFilter ?? ""
           }&typeRoom=${typeFilter?.id ?? ""}`,
           {
             headers: {
@@ -98,16 +97,7 @@ const AvailableProperty = () => {
           }
         });
     }
-  }, [
-    currentPage,
-    limitPage,
-    location,
-    startDate,
-    endDate,
-    sortBy,
-    nameFilter,
-    typeFilter,
-  ]);
+  };
 
   const locationQuery = query.get("location");
   const startDateQuery = query.get("start_date");
@@ -374,7 +364,10 @@ const AvailableProperty = () => {
               )}
               {properties != null && (
                 <div className="mt-10">
-                  <Pagination totalPage={totalPage} onChangePage={onChangePage} />
+                  <Pagination
+                    totalPage={totalPage}
+                    onChangePage={onChangePage}
+                  />
                 </div>
               )}
             </div>

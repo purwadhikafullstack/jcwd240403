@@ -24,8 +24,6 @@ const NavBar = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
 
-  console.log("user", user);
-
   const navigateTo = (route) => () => navigate(route);
   const logout = () => {
     removeToken();
