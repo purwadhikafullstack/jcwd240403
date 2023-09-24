@@ -28,17 +28,22 @@ const addCatArea = async (req, res) => {
     const { categoryArea } = req.body;
 
     const [result, created] = await db.Category_area.findOrCreate({
-      where: { name: categoryArea.toLowerCase() },
+      where: { name: categoryArea },
       defaults: { user_id: userId, is_deleted: false },
+      transaction,
     });
 
-    // If it's not newly created, check if it was previously deleted.
+    // If it's not newly created, check if it was previously deleted. if it was previously deleted then update it.
     if (!created && result.is_deleted) {
-      await result.update({
-        user_id: userId,
-        is_deleted: false,
-      });
+      await result.update(
+        {
+          user_id: userId,
+          is_deleted: false,
+        },
+        { transaction }
+      );
 
+      await transaction.commit();
       return res.status(200).send({
         message: "Successfully created category.",
         data: result,
@@ -46,7 +51,7 @@ const addCatArea = async (req, res) => {
       });
     }
 
-    // If it's not newly created and not deleted, then it's a regular existing entry.
+    // If it's not newly created and not deleted, then it's an existing entry.
     if (!created) {
       return res.status(200).send({
         message: "The category area already exists.",
@@ -56,14 +61,19 @@ const addCatArea = async (req, res) => {
     }
 
     // If it was newly created.
+    await transaction.commit();
     return res.status(201).send({
       message: "Success add new category area.",
       data: result,
       condition: created,
     });
   } catch (error) {
+    await transaction.rollback();
     console.log("errAddCatArea", error);
-    res.status(500).send({ message: "Something wrong on server.", error });
+    res.status(500).send({
+      message: "Something wrong on server.",
+      error,
+    });
   }
 };
 
@@ -138,9 +148,11 @@ const editMyCatArea = async (req, res) => {
     }
 
     await db.Category_area.update(
-      { name: newName.toLowerCase() },
-      { where: { id: id } }
+      { name: newName },
+      { where: { id: id }, transaction }
     );
+
+    await transaction.commit();
 
     const updatedCatArea = await db.Category_area.findOne({
       where: { id: id, user_id: userId },
@@ -148,10 +160,11 @@ const editMyCatArea = async (req, res) => {
     });
 
     res.status(201).send({
-      message: "Success update property type name",
+      message: "Success update category area.",
       data: updatedCatArea,
     });
   } catch (error) {
+    await transaction.rollback();
     console.log("editcatarea", error);
     res.status(500).send({
       message: "Something wrong on server",
@@ -161,12 +174,13 @@ const editMyCatArea = async (req, res) => {
 };
 
 const deleteMyPropertyType = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const id = Number(req.params.id);
     const userId = req.user.id;
 
     const catArea = await db.Category_area.findOne({
-      where: { id: id, user_id: userId },
+      where: { id: id, user_id: userId, is_deleted: false },
     });
 
     if (!catArea) {
@@ -176,12 +190,14 @@ const deleteMyPropertyType = async (req, res) => {
     }
 
     catArea.is_deleted = true;
-    await catArea.save();
+    await catArea.save({ transaction });
 
+    await transaction.commit();
     return res.status(200).send({
       message: "Category area successfuly deleted.",
     });
   } catch (error) {
+    await transaction.rollback();
     console.log("deletecatarea", error);
     res.status(500).send({
       message: "Something wrong on server.",

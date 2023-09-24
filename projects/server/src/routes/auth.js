@@ -29,7 +29,11 @@ router.patch(
 
 router.patch("/verify-email/:otp/:email", authController.verify_email);
 
-router.post("/resend-otp", authController.resendOTP);
+router.post(
+  "/resend-otp",
+  validation.validateResendOtp,
+  authController.resendOTP
+);
 
 router.post(
   "/forgot-password",
