@@ -13,12 +13,16 @@ function PropertyList() {
   const [locationList, setLocationList] = React.useState([]);
   const [selectedLocation, setSelectedLocation] = React.useState(null);
   const [pagination, setPagination] = React.useState(null);
+  const [propertyTypes, setPropertyTypes] = React.useState([]);
+  const [selectedPropertyType, setSelectedPropertyType] = React.useState(null);
 
-  function fetchProperties(filter, sort, page, perpage) {
+  function fetchProperties(filter, sort, page, perpage, filterType) {
     const query = [];
     if (filter) query.push(`filter=${filter}`);
     if (page) query.push(`page=${page}`);
     if (perpage) query.push(`perPage=${perpage}`);
+    if (filterType) query.push(`filterType=${filterType}`);
+
     query.push(`sortBy=${sort ? sort : "nameAsc"}`);
     const queryString = query.length ? `?${query.join("&")}` : "";
     return api.get(`/property/mine${queryString}`);
@@ -42,6 +46,7 @@ function PropertyList() {
   useEffect(() => {
     handlePaginationChange(1); // Initial call to populate data
     getAllLocation();
+    getPropertyTypes();
   }, []);
 
   const getAllLocation = () => {
@@ -50,6 +55,18 @@ function PropertyList() {
       .then((res) => {
         setLocationList([{ id: 0, city: "All" }, ...res.data.data]);
         setSelectedLocation({ id: 0, city: "All" });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const getPropertyTypes = () => {
+    api
+      .get("/property-type/all")
+      .then((res) => {
+        setPropertyTypes([{ id: 0, name: "All" }, ...res.data.data]);
+        setSelectedPropertyType({ id: 0, name: "All" });
       })
       .catch((err) => {
         console.log(err);
@@ -95,7 +112,7 @@ function PropertyList() {
 
   const renderFilter = () => {
     return (
-      <div className="w-[200px]">
+      <div className=" flex flex-row space-x-5">
         <Dropdown
           selected={selectedLocation}
           labelField="city"
@@ -103,6 +120,14 @@ function PropertyList() {
           label={`Location`}
           items={locationList}
           onItemChange={handleCityFilter}
+        />
+        <Dropdown
+          selected={selectedPropertyType}
+          labelField="name"
+          className="w-full"
+          label={`Property Type`}
+          items={propertyTypes}
+          onItemChange={handlePropertyTypeFilter}
         />
       </div>
     );
@@ -140,6 +165,28 @@ function PropertyList() {
         setTableData(response);
       })
       .catch(handleError);
+  };
+
+  const handlePropertyTypeFilter = async (propertyType) => {
+    setSelectedPropertyType(propertyType);
+    if (propertyType.id === 0) {
+      return handlePaginationChange(1);
+    } else {
+      return fetchProperties(undefined, undefined, 1, 7, propertyType.id)
+        .then(({ data }) => {
+          const response = data.data?.map((property) => {
+            return {
+              id: property.id,
+              name: property.name,
+              location: property.Location.city,
+              type: property.Property_type.name,
+            };
+          });
+          setPagination(data.pagination);
+          setTableData(response);
+        })
+        .catch(handleError);
+    }
   };
 
   const handleSort = async (sortBy) => {
