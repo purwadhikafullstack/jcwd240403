@@ -121,23 +121,7 @@ const login = async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
     const { role, email, password, isLoginBySocial } = req.body;
-    const user = await db.User.findOne({
-      where: { email },
-      attributes: [
-        "id",
-        "role",
-        "email",
-        "is_verified",
-        "isLoginBySocial",
-        "isRegisterBySocial",
-      ],
-      include: [
-        {
-          model: db.Profile,
-          attributes: { exclude: ["createdAt", "updatedAt"] },
-        },
-      ],
-    });
+    const user = await db.User.findOne({ where: { email } });
 
     if (user.role !== role) {
       return res.status(400).send({
@@ -164,10 +148,29 @@ const login = async (req, res) => {
       );
 
       await transaction.commit();
+
+      const result = await db.User.findOne({
+        where: { email },
+        attributes: [
+          "id",
+          "role",
+          "email",
+          "is_verified",
+          "isLoginBySocial",
+          "isRegisterBySocial",
+        ],
+        include: [
+          {
+            model: db.Profile,
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+          },
+        ],
+      });
+
       return res.status(200).send({
         message: "Logged in using Google!",
         accessToken: accessToken,
-        data: user,
+        data: result,
       });
     } else {
       if (user.isRegisterBySocial) {
@@ -195,10 +198,29 @@ const login = async (req, res) => {
     await user.update({ isLoginBySocial: false }, { transaction });
 
     await transaction.commit();
+
+    const result = await db.User.findOne({
+      where: { email },
+      attributes: [
+        "id",
+        "role",
+        "email",
+        "is_verified",
+        "isLoginBySocial",
+        "isRegisterBySocial",
+      ],
+      include: [
+        {
+          model: db.Profile,
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+        },
+      ],
+    });
+
     res.status(200).send({
       message: "Logged in using email!",
       accessToken: accessToken,
-      data: user,
+      data: result,
     });
   } catch (error) {
     await transaction.rollback();
