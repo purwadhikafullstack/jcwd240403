@@ -23,42 +23,47 @@ module.exports = {
     body("role").isIn(["USER", "TENANT"]).withMessage("Invalid role"),
     body("name")
       .notEmpty()
-      .withMessage("Name is required")
+      .withMessage("Name is required.")
       .isLength({ max: 50 })
-      .withMessage("Maximum character is 50"),
+      .withMessage("Maximum character is 50."),
     body("email")
-      .isEmail()
-      .withMessage("Please enter with email format")
       .notEmpty()
-      .withMessage("Email is required"),
+      .withMessage("Email is required.")
+      .isEmail()
+      .withMessage("Please enter with email format."),
     body("phoneNumber").custom((value, { req }) => {
-      if (!req.body.isRegisterBySocial && !value) {
-        throw new Error("Phone number is required");
+      const { isRegisterBySocial, role } = req.body;
+      if ((isRegisterBySocial === "0" || role === "TENANT") && !value) {
+        throw new Error("Phone number is required.");
       }
       return true;
     }),
     body("password").custom((value, { req }) => {
-      if (!req.body.isRegisterBySocial) {
-        if (!value) {
-          throw new Error("Password is required");
-        }
-        if (value.length < 8) {
-          throw new Error("Minimum password length is 8 characters");
-        }
-        if (!value.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)) {
-          throw new Error(
-            "Password must contain minimum 1 uppercase, 1 lowercase, and 1 number"
-          );
-        }
-        if (value !== req.body.confirmPassword) {
-          throw new Error("Confirm password does not match with password");
-        }
+      const { isRegisterBySocial, role } = req.body;
+      if ((isRegisterBySocial === "0" || role === "TENANT") && !value) {
+        throw new Error("Password is required.");
+      }
+      if (value.length < 8) {
+        throw new Error("Minimum password length is 8 characters.");
+      }
+      const hasUpperCase = /[A-Z]/.test(value);
+      const hasLowerCase = /[a-z]/.test(value);
+      const hasNumber = /[0-9]/.test(value);
+
+      if (!(hasUpperCase && hasLowerCase && hasNumber)) {
+        throw new Error(
+          "Password must contain minimum 1 uppercase, 1 lowercase, and 1 number."
+        );
       }
       return true;
     }),
     body("confirmPassword").custom((value, { req }) => {
-      if (!req.body.isRegisterBySocial && !value) {
-        throw new Error("Confirm password is required");
+      const { isRegisterBySocial, role } = req.body;
+      if ((isRegisterBySocial === "0" || role === "TENANT") && !value) {
+        throw new Error("Confirm password is required.");
+      }
+      if (value !== req.body.password) {
+        throw new Error("Confirm password does not match with password.");
       }
       return true;
     }),
@@ -68,23 +73,37 @@ module.exports = {
         if (!req.file) throw new Error("ID card is required for TENANT role");
         return true;
       }),
+    body("isRegisterBySocial")
+      .if(body("role").equals("TENANT"))
+      .custom((value, { req }) => {
+        if (value) throw new Error("You can't register by Google as TENANT.");
+        return true;
+      }),
   ]),
 
   validateLogin: validate([
-    body("role").isIn(["USER", "TENANT"]).withMessage("Invalid user role"),
+    body("role").isIn(["USER", "TENANT"]).withMessage("Invalid user role."),
     body("email")
-      .notEmpty()
-      .withMessage("Please fill in email")
       .isEmail()
-      .withMessage("Please enter with email format"),
+      .withMessage("Please enter with email format.")
+      .notEmpty()
+      .withMessage("Please fill in email."),
     body("password").custom((value, { req }) => {
       if (!req.body.isLoginBySocial) {
         if (!value) {
-          throw new Error("Password is required");
+          throw new Error("Password is required.");
         }
       }
       return true;
     }),
+  ]),
+
+  validateResendOtp: validate([
+    body("email")
+      .isEmail()
+      .withMessage("Please enter with email format.")
+      .notEmpty()
+      .withMessage("Please fill in email."),
   ]),
 
   validateVerify: validate([
@@ -109,16 +128,16 @@ module.exports = {
       })
       .withMessage(
         "Password must contain minimum 1 uppercase, 1 lowercase and 1 number."
-      )
+      ),
+    body("confirmPass")
+      .notEmpty()
+      .withMessage("Please fill in password confirmation.")
       .custom((value, { req }) => {
-        if (value !== req.body.confirmPass) {
+        if (value !== req.body.newPass) {
           throw new Error("Confirm password does not match with new password.");
         }
         return true;
       }),
-    body("confirmPass")
-      .notEmpty()
-      .withMessage("Please fill in password confirmation."),
   ]),
 
   validateForgotPassword: validate([

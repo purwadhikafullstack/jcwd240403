@@ -1,11 +1,13 @@
 const router = require("express").Router();
 const { specialPrice: priceController } = require("../controller");
 const authMiddleware = require("../middleware/auth");
+const validation = require("../middleware/validationProperty");
 
 router.post(
   "/create",
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyTenant,
+  validation.validateCreateSpecialPrice,
   priceController.addSpecialPrice
 );
 

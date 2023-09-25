@@ -116,9 +116,11 @@ function Register() {
         setIsModalOpen(true);
       } catch (err) {
         console.log("Error in Google registration", err);
-        if (err.response) {
+        if (err.response.data) {
           const { message, errors } = err.response.data;
           setErrorMessage(message ? message : errors[0].msg);
+        } else {
+          console.log("err", err);
         }
       }
     }

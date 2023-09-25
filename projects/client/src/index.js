@@ -8,16 +8,21 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 import { AuthProvider } from "./shared/context/AuthContext";
 import { Toaster } from "react-hot-toast";
+import { ModalProvider } from "./shared/context/ModalContext";
+import GlobalModal from "./shared/components/GlobalModal";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
       <AuthProvider>
-        <BrowserRouter>
-          <Toaster />
-          <App />
-        </BrowserRouter>
+        <ModalProvider>
+          <BrowserRouter>
+            <Toaster />
+            <GlobalModal />
+            <App />
+          </BrowserRouter>
+        </ModalProvider>
       </AuthProvider>
     </Provider>
   </React.StrictMode>

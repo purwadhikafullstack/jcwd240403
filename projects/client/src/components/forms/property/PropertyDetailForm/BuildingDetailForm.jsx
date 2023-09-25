@@ -16,6 +16,10 @@ const BuildingDetailForm = ({
 }) => (
   <div className="space-y-2">
     <label className="text-base font-bold text-gray-700">Building Detail</label>
+    <p className="text-sm text-gray-700 pb-5 max-w-[700px]">
+      Update essential details about your property in this section. From basic
+      information to pricing, make all necessary modifications here.
+    </p>
     <FormSection>
       <Field
         name="name"

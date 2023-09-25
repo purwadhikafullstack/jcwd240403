@@ -2,38 +2,53 @@ const db = require("../models");
 const moment = require("moment-timezone");
 
 const addRoomStatus = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   try {
+    const userId = req.user.id;
     const { roomId, customStatus, startDate, endDate } = req.body;
 
     const searchRoom = await db.Room.findOne({
       where: {
         id: roomId,
+        deletedAt: null,
       },
+      include: [
+        {
+          model: db.Property,
+          where: { user_id: userId, deletedAt: null },
+        },
+      ],
     });
 
     if (!searchRoom) {
       return res.status(400).send({
-        message: "Room not found",
+        message: "Room not found.",
       });
     }
 
-    const result = await db.Room_status.create({
-      room_id: roomId,
-      custom_status: customStatus,
-      start_date: moment(startDate)
-        .startOf("day")
-        .format("YYYY-MM-DD HH:mm:ss"),
-      end_date: moment(endDate).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
-      is_active: true,
-    });
+    const result = await db.Room_status.create(
+      {
+        room_id: roomId,
+        custom_status: customStatus,
+        start_date: moment(startDate)
+          .startOf("day")
+          .format("YYYY-MM-DD HH:mm:ss"),
+        end_date: moment(endDate).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
+        is_active: true,
+      },
+      { transaction }
+    );
+
+    await transaction.commit();
     res.status(201).send({
-      message: "Success add room status",
+      message: "Success add room status.",
       data: result,
     });
   } catch (error) {
+    await transaction.rollback();
     console.log("addRommStatus", error);
     res.status(500).send({
-      message: "Something wrong on server",
+      message: "Something wrong on server.",
       error,
     });
   }
@@ -45,7 +60,7 @@ const getAllRoomStatus = async (req, res) => {
     const id = req.params.id;
 
     const property = await db.Property.findOne({
-      where: { id: id, user_id: userId },
+      where: { id: id, user_id: userId, deletedAt: null },
       include: [
         {
           model: db.Room,
@@ -61,23 +76,22 @@ const getAllRoomStatus = async (req, res) => {
 
     if (!property) {
       return res.status(400).send({
-        message: "Property not found",
+        message: "Data not found.",
       });
     }
 
-    const roomsWithPrices = property.Rooms.map((room) => ({
+    const roomsWithStatus = property.Rooms.map((room) => ({
       ...room.get(),
     }));
-    console.log("TEST ROOM STATUS", property.Rooms);
 
     res.status(200).send({
-      message: "Success get data",
-      data: roomsWithPrices,
+      message: "Success get data.",
+      data: roomsWithStatus,
     });
   } catch (error) {
     console.log("on get all special price", error);
     res.status(500).send({
-      message: "Something wrong on server",
+      message: "Something wrong on server.",
       error,
     });
   }
@@ -86,44 +100,66 @@ const getAllRoomStatus = async (req, res) => {
 const getOneRoomStatus = async (req, res) => {
   try {
     const id = req.params.id;
+    const userId = req.user.id;
+
+    const isMine = await db.Property.findOne({
+      where: { user_id: userId, deletedAt: null },
+    });
     const result = await db.Room_status.findOne({
       where: { id: id },
-      include: [{ model: db.Room }],
+      include: [
+        {
+          model: db.Room,
+          where: { deletedAt: null },
+        },
+      ],
     });
-    if (!result) {
+    if (!isMine || !result) {
       return res.status(400).send({
-        message: "No room status data found",
+        message: "No room status data found.",
       });
     }
-
     res.status(200).send({
-      message: "Success get one room status data",
+      message: "Success get one room status data.",
       data: result,
     });
   } catch (error) {
     console.log("get one room status", error);
     res.status(500).send({
-      message: "Something wrong on server",
+      message: "Something wrong on server.",
       error,
     });
   }
 };
 
 const editRoomStatus = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const id = req.params.id;
+    const userId = req.user.id;
     const { customStatus, startDate, endDate, isActive } = req.body;
+
+    const isMine = await db.Property.findOne({
+      where: { user_id: userId, deletedAt: null },
+    });
 
     const isExist = await db.Room_status.findOne({
       where: { id: id },
+      include: [
+        {
+          model: db.Room,
+          where: { deletedAt: null },
+        },
+      ],
     });
-    if (!isExist) {
+
+    if (!isMine || !isExist) {
       return res.status(400).send({
-        message: "Room status data not found",
+        message: "Room status data not found.",
       });
     }
 
-    const updatePrice = await db.Room_status.update(
+    const updateStatus = await db.Room_status.update(
       {
         custom_status: customStatus,
         start_date: moment(startDate)
@@ -132,8 +168,10 @@ const editRoomStatus = async (req, res) => {
         end_date: moment(endDate).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
         is_active: isActive,
       },
-      { where: { id: id } }
+      { where: { id: id }, transaction }
     );
+
+    await transaction.commit();
 
     const updated = await db.Room_status.findOne({
       where: { id: id },
@@ -144,6 +182,7 @@ const editRoomStatus = async (req, res) => {
       data: updated,
     });
   } catch (error) {
+    await transaction.rollback();
     console.log("edit room status", error);
     res.status(500).send({
       message: "Something wrong on server",

@@ -15,8 +15,35 @@ const getAllMyProp = async (req, res) => {
       perPage: Number(req.query.perPage) || 10,
     };
 
+    const { sortBy, filter, filterType } = req.query;
+
+    let order = [];
+    let whereFilter = {};
+    let whereType = {};
+
+    if (filter) {
+      whereFilter = { location_id: filter };
+    }
+
+    if (filterType) {
+      whereType = { property_type_id: filterType };
+    }
+
+    switch (sortBy) {
+      case "nameDesc":
+        order = [["name", "DESC"]];
+        break;
+      case "nameAsc":
+        order = [["name", "ASC"]];
+        break;
+      default:
+        order = [["createdAt", "DESC"]];
+        break;
+    }
+
     const result = await db.Property.findAll({
-      where: { user_id: userId, deletedAt: null },
+      where: { user_id: userId, deletedAt: null, ...whereFilter, ...whereType },
+      order,
       include: [
         {
           model: db.Location,
@@ -41,11 +68,13 @@ const getAllMyProp = async (req, res) => {
 
     if (result.length === 0) {
       return res.status(200).send({
-        message: "You dont list any property yet",
+        message: "You haven't list any property yet.",
       });
     }
 
-    const countData = await db.Property.count({ where: { user_id: userId } });
+    const countData = await db.Property.count({
+      where: { user_id: userId, deletedAt: null, ...whereFilter, ...whereType },
+    });
     pagination.totalData = countData;
     const totalPage = Math.ceil(pagination.totalData / pagination.perPage);
     pagination.totalPage = totalPage;
@@ -63,7 +92,8 @@ const getAllMyProp = async (req, res) => {
   } catch (error) {
     console.log("getall", error);
     res.status(500).send({
-      message: "Something wrong on server",
+      message: "Something wrong on server.",
+      error,
     });
   }
 };
@@ -97,40 +127,51 @@ const getOneMyProp = async (req, res) => {
 
     if (!result) {
       return res.status(200).send({
-        message: "Property not found",
+        message: "Property not found.",
       });
     }
     res.status(200).send({
-      message: "Success get your property",
+      message: "Success get your property.",
       data: result,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log("GET ONE PROPERTY", error);
+    res.status(500).send({
+      message: "Something wrong on server.",
+      error,
+    });
+  }
 };
 
 const addProperty = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const userId = req.user.id;
-    console.log(userId);
     const { name, locationId, propTypeId, catAreaId, description } = req.body;
 
-    const newProperty = await db.Property.create({
-      user_id: userId,
-      property_type_id: Number(propTypeId),
-      location_id: Number(locationId),
-      category_area_id: Number(catAreaId),
-      name: name,
-      description: description,
-      is_active: true,
-    });
+    const newProperty = await db.Property.create(
+      {
+        user_id: userId,
+        property_type_id: Number(propTypeId),
+        location_id: Number(locationId),
+        category_area_id: Number(catAreaId),
+        name: name,
+        description: description,
+        is_active: true,
+      },
+      { transaction }
+    );
 
+    await transaction.commit();
     res.status(200).send({
-      message: "Success creating property",
+      message: "Success creating property.",
       data: newProperty,
     });
   } catch (error) {
+    await transaction.rollback();
     console.log("addprop", error);
     res.status(500).send({
-      message: "Something wrong on server",
+      message: "Something wrong on server.",
       error,
     });
   }
@@ -168,6 +209,7 @@ const addPropPhotos = async (req, res) => {
 };
 
 const editProperty = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const userId = req.user.id;
     const id = Number(req.params.id);
@@ -177,7 +219,7 @@ const editProperty = async (req, res) => {
       where: { user_id: userId, id: id },
     });
     if (!result) {
-      return res.status(400).send({ message: "Property doesnt exist" });
+      return res.status(400).send({ message: "Property doesn't exist." });
     }
 
     const editProp = await db.Property.update(
@@ -188,8 +230,10 @@ const editProperty = async (req, res) => {
         category_area_id: catAreaId,
         description: description,
       },
-      { where: { user_id: userId, id: id } }
+      { where: { user_id: userId, id: id }, transaction }
     );
+
+    await transaction.commit();
 
     const edited = await db.Property.findOne({
       where: { id: id, user_id: userId },
@@ -200,6 +244,7 @@ const editProperty = async (req, res) => {
       data: edited,
     });
   } catch (error) {
+    await transaction.rollback();
     console.log("editprop", error);
     res.status(500).send({
       message: "Something wrong on server",
@@ -209,6 +254,7 @@ const editProperty = async (req, res) => {
 };
 
 const updatePhotos = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const propId = req.params.id;
     let imageIds;
@@ -219,8 +265,8 @@ const updatePhotos = async (req, res) => {
         img: setFromFileNameToDBValue(file.filename),
         property_id: propId,
       }));
+      const result = await db.Picture.bulkCreate(images, { transaction });
     }
-    const result = await db.Picture.bulkCreate(images);
 
     if (req.body.ids) {
       imageIds = req.body.ids.split(",").map((id) => Number(id));
@@ -232,11 +278,13 @@ const updatePhotos = async (req, res) => {
             id: imageId,
             property_id: propId,
           },
+          transaction,
         });
 
         if (!deleteImg) {
+          await transaction.rollback();
           return res.status(400).send({
-            message: "Photo not found",
+            message: "Photo not found.",
           });
         }
 
@@ -250,17 +298,23 @@ const updatePhotos = async (req, res) => {
 
         if (deleteImg) {
           fs.unlinkSync(getAbsolutePathPublicFile(oldImageFile));
+          await deleteImg.destroy({ transaction });
         }
-
-        await deleteImg.destroy();
       }
     }
 
+    await transaction.commit();
+
+    const pictures = await db.Picture.findAll({
+      where: { property_id: propId },
+    });
+
     res.status(200).send({
       message: "Success update photos",
-      data: result,
+      data: pictures,
     });
   } catch (error) {
+    await transaction.rollback();
     console.log("updatephotos", error);
     res.status(500).send({
       message: "Something wrong on serever",
@@ -270,6 +324,7 @@ const updatePhotos = async (req, res) => {
 };
 
 const deleteProperty = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const id = Number(req.params.id);
     const userId = req.user.id;
@@ -279,23 +334,28 @@ const deleteProperty = async (req, res) => {
 
     if (!property) {
       return res.status(200).send({
-        message: "Property not found",
+        message: "Property not found.",
       });
     }
 
     const deleteNow = await db.Property.destroy({
       where: { id: id, user_id: userId },
+      transaction,
     });
 
     await db.Room.destroy({
       where: { property_id: id },
+      transaction,
     });
+
+    await transaction.commit();
 
     res.status(200).send({
       message: "Success delete property",
       deleted: property,
     });
   } catch (error) {
+    await transaction.rollback();
     console.log("deleteprop", error);
     res.status(500).send({
       message: "Something wrong on server",
