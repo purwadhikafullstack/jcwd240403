@@ -57,8 +57,6 @@ const register = async (req, res) => {
       return res.status(400).send({ message: "Email is unavailable." });
     }
 
-    console.log("IS REGISTER BY SOCIAL", typeof isRegisterBySocial);
-
     const verifyToken = jwt.sign({ email: email }, secretKey);
 
     // If isRegisterBySocial is true, ignore the password and phoneNumber

@@ -43,7 +43,6 @@ const PersistLogin = () => {
     const fetchUserData = async () => {
       try {
         const res = await api.get("/auth/keep-login");
-        console.log("add user");
         dispatch(addUser(res.data.data));
       } catch (err) {
         console.log("keep login err", err);

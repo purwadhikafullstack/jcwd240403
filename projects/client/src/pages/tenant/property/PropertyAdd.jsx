@@ -173,7 +173,7 @@ function PropertyAdd() {
         </div>
       </div>
 
-      <div className="my-4 flow-root space-y-4">
+      <div className="mb-4 mt-12 flow-root space-y-4">
         {/* Form input */}
         <PropertyAddForm
           ref={propertyDetailRef}

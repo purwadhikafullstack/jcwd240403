@@ -33,6 +33,7 @@ import VerifyPayment from "./pages/user/userTransaction/VerifyPayment";
 import PersistLogin from "./pages/PersistLogin";
 import TenantTabelReport from "./pages/tenant/TenantTabelReport";
 import ReportByCalendar from "./pages/tenant/ReportByCalendar";
+import Debug from "./pages/Debug";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
         <Route path="/" element={<DashboardSideBar />}>
           <Route index element={<HomeOrDashboard />} />
         </Route>
+        <Route path="/debug" element={<Debug />} />
 
         {/* USER Authenticated Routes */}
         <Route path="profile" element={<AuthenticatedRoute roles={["USER"]} />}>
@@ -62,9 +64,7 @@ function App() {
         <Route path="/property">
           <Route index element={<AvailableProperty />} />
         </Route>
-        <Route
-          path="/property/:id"
-        >
+        <Route path="/property/:id">
           <Route index element={<DetailProperty />} />
         </Route>
         <Route
