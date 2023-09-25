@@ -21,7 +21,8 @@ function Login() {
     async (values) => {
       try {
         const { data } = await api.post("/auth/login", values);
-        if (data.role === (isUser ? "USER" : "TENANT")) {
+        if (data.data.role === (isUser ? "USER" : "TENANT")) {
+          console.log("data", data);
           dispatch(addUser(data.data));
           saveToken(data.accessToken);
           if (searchParams.get("redirect")) {
