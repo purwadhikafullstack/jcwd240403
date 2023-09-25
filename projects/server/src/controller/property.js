@@ -15,13 +15,18 @@ const getAllMyProp = async (req, res) => {
       perPage: Number(req.query.perPage) || 10,
     };
 
-    const { sortBy, filter } = req.query;
+    const { sortBy, filter, filterType } = req.query;
 
     let order = [];
     let whereFilter = {};
+    let whereType = {};
 
     if (filter) {
       whereFilter = { location_id: filter };
+    }
+
+    if (filterType) {
+      whereType = { property_type_id: filterType };
     }
 
     switch (sortBy) {
@@ -37,7 +42,7 @@ const getAllMyProp = async (req, res) => {
     }
 
     const result = await db.Property.findAll({
-      where: { user_id: userId, deletedAt: null, ...whereFilter },
+      where: { user_id: userId, deletedAt: null, ...whereFilter, ...whereType },
       order,
       include: [
         {
@@ -68,7 +73,7 @@ const getAllMyProp = async (req, res) => {
     }
 
     const countData = await db.Property.count({
-      where: { user_id: userId, deletedAt: null, ...whereFilter },
+      where: { user_id: userId, deletedAt: null, ...whereFilter, ...whereType },
     });
     pagination.totalData = countData;
     const totalPage = Math.ceil(pagination.totalData / pagination.perPage);

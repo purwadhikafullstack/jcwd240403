@@ -56,6 +56,7 @@ const getTopProperty = async (req, res) => {
     const propertyIds = topRooms.map((room) => room.property_id);
 
     const topProperties = await db.Property.findAll({
+      attributes: ["id", "name"],
       where: {
         id: {
           [db.Sequelize.Op.in]: propertyIds,
@@ -64,28 +65,50 @@ const getTopProperty = async (req, res) => {
       include: [
         {
           model: db.Location,
-          attributes: ["id", "city"],
+          attributes: ["city"],
         },
         {
           model: db.Category_area,
-          attributes: ["id", "name"],
+          attributes: ["name"],
         },
         {
           model: db.Property_type,
-          attributes: ["id", "name"],
+          attributes: ["name"],
         },
         {
           model: db.Picture,
-          attributes: ["id", "property_id", "img"],
+          attributes: ["img"],
+          limit: 1,
         },
         {
           model: db.Room,
+          attributes: ["base_price"],
           where: { deletedAt: null },
         },
       ],
     });
 
-    const topFiveProperties = topProperties.slice(0, 5);
+    const parseTopProperties = (properties) => {
+      return properties.map((property) => {
+        const lowestBasePrice = Math.min(
+          ...property.Rooms.map((room) => room.base_price)
+        );
+
+        const firstImage = property.Pictures[0]?.img || "";
+
+        return {
+          id: property.id,
+          name: property.name,
+          city: property.Location?.city || "",
+          categoryName: property.Category_area?.name || "",
+          propertyTypeName: property.Property_type?.name || "",
+          lowestBasePrice,
+          firstImage,
+        };
+      });
+    };
+
+    const topFiveProperties = parseTopProperties(topProperties).slice(0, 5);
 
     res.status(200).send({
       message: "Get top properties success.",
@@ -96,7 +119,8 @@ const getTopProperty = async (req, res) => {
   } catch (error) {
     console.log("TOP PROPERTY", error);
     res.status(500).send({
-      message: "Something wrong on server",
+      message: "Something wrong on server.",
+      error,
     });
     error;
   }
