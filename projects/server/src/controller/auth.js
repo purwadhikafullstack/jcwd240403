@@ -23,6 +23,15 @@ const generateHashedPassword = async (password) => {
   }
 };
 
+const parseJSONSafely = (value) => {
+  try {
+    return JSON.parse(value);
+  } catch (e) {
+    console.error("Failed to parse JSON:", e);
+    return null;
+  }
+};
+
 const register = async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
@@ -53,7 +62,7 @@ const register = async (req, res) => {
     const verifyToken = jwt.sign({ email: email }, secretKey);
 
     // If isRegisterBySocial is true, ignore the password and phoneNumber
-    const hashedPassword = JSON.parse(isRegisterBySocial)
+    const hashedPassword = parseJSONSafely(isRegisterBySocial)
       ? null
       : await generateHashedPassword(password);
 
@@ -66,7 +75,7 @@ const register = async (req, res) => {
         otp_counter: Number(0),
         email: email,
         password: hashedPassword,
-        isRegisterBySocial: JSON.parse(isRegisterBySocial) || false,
+        isRegisterBySocial: parseJSONSafely(isRegisterBySocial) || false,
       },
       { transaction }
     );
@@ -75,7 +84,7 @@ const register = async (req, res) => {
       {
         user_id: newUser.id,
         full_name: name,
-        phone_number: isRegisterBySocial ? null : phoneNumber,
+        phone_number: parseJSONSafely(isRegisterBySocial) ? null : phoneNumber,
         document_identity: imageURL,
         profile_picture: photoURL || null,
       },
@@ -114,7 +123,23 @@ const login = async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
     const { role, email, password, isLoginBySocial } = req.body;
-    const user = await db.User.findOne({ where: { email } });
+    const user = await db.User.findOne({
+      where: { email },
+      attributes: [
+        "id",
+        "role",
+        "email",
+        "is_verified",
+        "isLoginBySocial",
+        "isRegisterBySocial",
+      ],
+      include: [
+        {
+          model: db.Profile,
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+        },
+      ],
+    });
 
     if (user.role !== role) {
       return res.status(400).send({
@@ -143,9 +168,8 @@ const login = async (req, res) => {
       await transaction.commit();
       return res.status(200).send({
         message: "Logged in using Google!",
-        role: user.role,
-        email: user.email,
         accessToken: accessToken,
+        data: user,
       });
     } else {
       if (user.isRegisterBySocial) {
@@ -175,9 +199,8 @@ const login = async (req, res) => {
     await transaction.commit();
     res.status(200).send({
       message: "Logged in using email!",
-      role: user.role,
-      email: user.email,
       accessToken: accessToken,
+      data: user,
     });
   } catch (error) {
     await transaction.rollback();

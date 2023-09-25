@@ -31,32 +31,42 @@ module.exports = {
       .withMessage("Email is required.")
       .isEmail()
       .withMessage("Please enter with email format."),
-    body("phoneNumber")
-      .if(body("isRegisterBySocial").equals("false"))
-      .notEmpty()
-      .withMessage("Phone number is required."),
-    body("password")
-      .if(body("isRegisterBySocial").equals("false"))
-      .notEmpty()
-      .withMessage("Password is required.")
-      .isLength({ min: 8 })
-      .withMessage("Minimum password length is 8 characters.")
-      .isStrongPassword({
-        minSymbols: 0,
-      })
-      .withMessage(
-        "Password must contain minimum 1 uppercase, 1 lowercase and 1 number."
-      ),
-    body("confirmPassword")
-      .if(body("isRegisterBySocial").equals("false"))
-      .notEmpty()
-      .withMessage("Confirm password is required.")
-      .custom((value, { req }) => {
-        if (value !== req.body.password) {
-          throw new Error("Confirm password does not match with password.");
-        }
-        return true;
-      }),
+    body("phoneNumber").custom((value, { req }) => {
+      const { isRegisterBySocial, role } = req.body;
+      if ((isRegisterBySocial === "0" || role === "TENANT") && !value) {
+        throw new Error("Phone number is required.");
+      }
+      return true;
+    }),
+    body("password").custom((value, { req }) => {
+      const { isRegisterBySocial, role } = req.body;
+      if ((isRegisterBySocial === "0" || role === "TENANT") && !value) {
+        throw new Error("Password is required.");
+      }
+      if (value.length < 8) {
+        throw new Error("Minimum password length is 8 characters.");
+      }
+      const hasUpperCase = /[A-Z]/.test(value);
+      const hasLowerCase = /[a-z]/.test(value);
+      const hasNumber = /[0-9]/.test(value);
+
+      if (!(hasUpperCase && hasLowerCase && hasNumber)) {
+        throw new Error(
+          "Password must contain minimum 1 uppercase, 1 lowercase, and 1 number."
+        );
+      }
+      return true;
+    }),
+    body("confirmPassword").custom((value, { req }) => {
+      const { isRegisterBySocial, role } = req.body;
+      if ((isRegisterBySocial === "0" || role === "TENANT") && !value) {
+        throw new Error("Confirm password is required.");
+      }
+      if (value !== req.body.password) {
+        throw new Error("Confirm password does not match with password.");
+      }
+      return true;
+    }),
     body("file")
       .if(body("role").equals("TENANT"))
       .custom((value, { req }) => {

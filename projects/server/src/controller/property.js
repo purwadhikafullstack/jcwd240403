@@ -214,7 +214,7 @@ const editProperty = async (req, res) => {
       where: { user_id: userId, id: id },
     });
     if (!result) {
-      return res.status(400).send({ message: "Property doesnt exist" });
+      return res.status(400).send({ message: "Property doesn't exist." });
     }
 
     const editProp = await db.Property.update(
@@ -249,6 +249,7 @@ const editProperty = async (req, res) => {
 };
 
 const updatePhotos = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const propId = req.params.id;
     let imageIds;
@@ -259,8 +260,8 @@ const updatePhotos = async (req, res) => {
         img: setFromFileNameToDBValue(file.filename),
         property_id: propId,
       }));
+      const result = await db.Picture.bulkCreate(images, { transaction });
     }
-    const result = await db.Picture.bulkCreate(images);
 
     if (req.body.ids) {
       imageIds = req.body.ids.split(",").map((id) => Number(id));
@@ -272,11 +273,13 @@ const updatePhotos = async (req, res) => {
             id: imageId,
             property_id: propId,
           },
+          transaction,
         });
 
         if (!deleteImg) {
+          await transaction.rollback();
           return res.status(400).send({
-            message: "Photo not found",
+            message: "Photo not found.",
           });
         }
 
@@ -290,17 +293,23 @@ const updatePhotos = async (req, res) => {
 
         if (deleteImg) {
           fs.unlinkSync(getAbsolutePathPublicFile(oldImageFile));
+          await deleteImg.destroy({ transaction });
         }
-
-        await deleteImg.destroy();
       }
     }
 
+    await transaction.commit();
+
+    const pictures = await db.Picture.findAll({
+      where: { property_id: propId },
+    });
+
     res.status(200).send({
       message: "Success update photos",
-      data: result,
+      data: pictures,
     });
   } catch (error) {
+    await transaction.rollback();
     console.log("updatephotos", error);
     res.status(500).send({
       message: "Something wrong on serever",
@@ -310,6 +319,7 @@ const updatePhotos = async (req, res) => {
 };
 
 const deleteProperty = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const id = Number(req.params.id);
     const userId = req.user.id;
@@ -319,23 +329,28 @@ const deleteProperty = async (req, res) => {
 
     if (!property) {
       return res.status(200).send({
-        message: "Property not found",
+        message: "Property not found.",
       });
     }
 
     const deleteNow = await db.Property.destroy({
       where: { id: id, user_id: userId },
+      transaction,
     });
 
     await db.Room.destroy({
       where: { property_id: id },
+      transaction,
     });
+
+    await transaction.commit();
 
     res.status(200).send({
       message: "Success delete property",
       deleted: property,
     });
   } catch (error) {
+    await transaction.rollback();
     console.log("deleteprop", error);
     res.status(500).send({
       message: "Something wrong on server",
@@ -344,50 +359,50 @@ const deleteProperty = async (req, res) => {
   }
 };
 
-const availableProperty = async (req, res) => {
-  try {
-    const { date, location } = req.query;
-    const getAvailable = await db.Property.findAll({
-      where: {
-        is_active: true,
-        location_id: location,
-      },
-      include: [
-        {
-          model: db.Room,
-          where: {
-            status: "AVAILABLE",
-          },
-          include: [
-            {
-              model: db.Room_status,
-              where: {
-                start_date: {
-                  //gte : great than equel
-                  [Op.gte]: date,
-                },
-                end_date: {
-                  //lte : less than equel
-                  [Op.lte]: date,
-                },
-              },
-            },
-          ],
-        },
-      ],
-    });
-    return res.send({
-      status: true,
-      data: getAvailable,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({
-      message: "Something wrong on server",
-      error,
-    });
-  }
-};
+// const availableProperty = async (req, res) => {
+//   try {
+//     const { date, location } = req.query;
+//     const getAvailable = await db.Property.findAll({
+//       where: {
+//         is_active: true,
+//         location_id: location,
+//       },
+//       include: [
+//         {
+//           model: db.Room,
+//           where: {
+//             status: "AVAILABLE",
+//           },
+//           include: [
+//             {
+//               model: db.Room_status,
+//               where: {
+//                 start_date: {
+//                   //gte : great than equel
+//                   [Op.gte]: date,
+//                 },
+//                 end_date: {
+//                   //lte : less than equel
+//                   [Op.lte]: date,
+//                 },
+//               },
+//             },
+//           ],
+//         },
+//       ],
+//     });
+//     return res.send({
+//       status: true,
+//       data: getAvailable,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send({
+//       message: "Something wrong on server",
+//       error,
+//     });
+//   }
+// };
 
 module.exports = {
   getAllMyProp,
@@ -397,5 +412,5 @@ module.exports = {
   editProperty,
   updatePhotos,
   deleteProperty,
-  availableProperty,
+  // availableProperty,
 };
