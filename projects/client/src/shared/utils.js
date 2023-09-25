@@ -22,12 +22,20 @@ function getRange(prices) {
 }
 
 function getMinimumPrice(prices, useFormat = true) {
-  let minValue = Math.min(...prices);
-  return useFormat ? new Intl.NumberFormat().format(minValue) : minValue;
+  if (prices.length) {
+    let minValue = Math.min(...prices);
+    return useFormat ? new Intl.NumberFormat().format(minValue) : minValue;
+  } else {
+    return useFormat ? new Intl.NumberFormat().format(0) : 0;
+  }
 }
-function getMaximumPrice(prices) {
-  let maxValue = Math.max(...prices);
-  return new Intl.NumberFormat().format(maxValue);
+function getMaximumPrice(prices, useFormat = true) {
+  if (prices.length) {
+    let maxValue = Math.max(...prices);
+    return new Intl.NumberFormat().format(maxValue);
+  } else {
+    return useFormat ? new Intl.NumberFormat().format(0) : 0;
+  }
 }
 
 const formatToIDR = (amount) => {

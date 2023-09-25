@@ -96,8 +96,8 @@ router.post(
 
 router.get(
   "/review/property/:property_id",
-  verifying.verifyAccessToken,
-  verifying.verifyUser,
+  // verifying.verifyAccessToken,
+  // verifying.verifyUser,
   getReview
 );
 
