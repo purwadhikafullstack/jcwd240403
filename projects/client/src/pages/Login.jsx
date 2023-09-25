@@ -22,7 +22,7 @@ function Login() {
       try {
         const { data } = await api.post("/auth/login", values);
         if (data.role === (isUser ? "USER" : "TENANT")) {
-          dispatch(addUser(data));
+          dispatch(addUser(data.data));
           saveToken(data.accessToken);
           if (searchParams.get("redirect")) {
             navigate(searchParams.get("redirect"));
@@ -37,7 +37,7 @@ function Login() {
         setErrorMessage(message ? message : errors[0].msg);
       }
     },
-    [dispatch, isUser, navigate, saveToken]
+    [dispatch, isUser, navigate, saveToken, searchParams]
   );
 
   const handleLogin = (values) => {
