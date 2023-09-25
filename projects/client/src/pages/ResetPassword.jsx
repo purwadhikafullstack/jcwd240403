@@ -8,8 +8,11 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const validationSchema = Yup.object({
   newPass: Yup.string()
+    .minUppercase(1, "Password must have at least 1 uppercase")
+    .minLowercase(1, "Password must have at least 1 lowercase")
+    .minNumbers(1, "Password must have at least 1 number")
     .min(8, "Password must be at least 8 characters long")
-    .required("New Pass is required"),
+    .required("Password is required"),
   confirmPass: Yup.string()
     .oneOf([Yup.ref("newPass"), null], "Passs must match")
     .min(8, "Password must be at least 8 characters long")
