@@ -18,7 +18,7 @@ function PropertyList() {
     const query = [];
     if (filter) query.push(`filter=${filter}`);
     if (page) query.push(`page=${page}`);
-    if (perpage) query.push(`perpage=${perpage}`);
+    if (perpage) query.push(`perPage=${perpage}`);
     query.push(`sortBy=${sort ? sort : "nameAsc"}`);
     const queryString = query.length ? `?${query.join("&")}` : "";
     return api.get(`/property/mine${queryString}`);
@@ -160,7 +160,7 @@ function PropertyList() {
   };
 
   const handlePaginationChange = async (page) => {
-    fetchProperties(undefined, undefined, page, 10)
+    fetchProperties(undefined, undefined, page, 7)
       .then(({ data }) => {
         const response = data.data?.map((property) => {
           return {

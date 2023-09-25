@@ -40,11 +40,15 @@ export default function Pagination({
     <>
       <ReactPaginate
         forcePage={currentPage}
-        pageCount={Math.ceil(totalPage)}
+        pageCount={totalPage}
+        breakLabel="..."
+        pageRangeDisplayed={3}
+        marginPagesDisplayed={1}
         className="flex flex-row w-full justify-center overflow-x-auto gap-2 border-t border-r-transparent"
         activeClassName="text-blue-600 font-medium border-t border-t-blue-600 p-2"
         pageClassName="text-gray-500 hover:text-blue-600 p-2 grow-1"
         pageLinkClassName="text-gray-500 hover:text-blue-600 mx-1 "
+        breakClassName="text-gray-500 hover:text-blue-600 p-2"
         previousLabel={
           <button
             onClick={handlePrevPage}
