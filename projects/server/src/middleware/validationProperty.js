@@ -39,6 +39,10 @@ module.exports = {
     body("description").notEmpty().withMessage("Description is required"),
   ]),
 
+  validateAddPropertyPhotos: validate([
+    body("propId").notEmpty().withMessage("Property id is required"),
+  ]),
+
   validateAddRoom: validate([
     body("propId").notEmpty().withMessage("Property id is required"),
     body("name").notEmpty().withMessage("Name is required"),

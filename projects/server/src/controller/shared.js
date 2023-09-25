@@ -61,14 +61,36 @@ const getTopProperty = async (req, res) => {
           [db.Sequelize.Op.in]: propertyIds,
         },
       },
+      include: [
+        {
+          model: db.Location,
+          attributes: ["id", "city"],
+        },
+        {
+          model: db.Category_area,
+          attributes: ["id", "name"],
+        },
+        {
+          model: db.Property_type,
+          attributes: ["id", "name"],
+        },
+        {
+          model: db.Picture,
+          attributes: ["id", "property_id", "img"],
+        },
+        {
+          model: db.Room,
+          where: { deletedAt: null },
+        },
+      ],
     });
 
     const topFiveProperties = topProperties.slice(0, 5);
 
     res.status(200).send({
       message: "Get top properties success.",
-      topBookingData: top,
-      topRooms: topRooms,
+      // topBookingData: top,
+      // topRooms: topRooms,
       topProperty: topFiveProperties,
     });
   } catch (error) {

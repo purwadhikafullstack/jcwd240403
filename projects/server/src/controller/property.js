@@ -87,7 +87,8 @@ const getAllMyProp = async (req, res) => {
   } catch (error) {
     console.log("getall", error);
     res.status(500).send({
-      message: "Something wrong on server",
+      message: "Something wrong on server.",
+      error,
     });
   }
 };
@@ -121,14 +122,20 @@ const getOneMyProp = async (req, res) => {
 
     if (!result) {
       return res.status(200).send({
-        message: "Property not found",
+        message: "Property not found.",
       });
     }
     res.status(200).send({
-      message: "Success get your property",
+      message: "Success get your property.",
       data: result,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log("GET ONE PROPERTY", error);
+    res.status(500).send({
+      message: "Something wrong on server.",
+      error,
+    });
+  }
 };
 
 const addProperty = async (req, res) => {
@@ -152,14 +159,14 @@ const addProperty = async (req, res) => {
 
     await transaction.commit();
     res.status(200).send({
-      message: "Success creating property",
+      message: "Success creating property.",
       data: newProperty,
     });
   } catch (error) {
     await transaction.rollback();
     console.log("addprop", error);
     res.status(500).send({
-      message: "Something wrong on server",
+      message: "Something wrong on server.",
       error,
     });
   }
@@ -197,6 +204,7 @@ const addPropPhotos = async (req, res) => {
 };
 
 const editProperty = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
   try {
     const userId = req.user.id;
     const id = Number(req.params.id);
@@ -217,8 +225,10 @@ const editProperty = async (req, res) => {
         category_area_id: catAreaId,
         description: description,
       },
-      { where: { user_id: userId, id: id } }
+      { where: { user_id: userId, id: id }, transaction }
     );
+
+    await transaction.commit();
 
     const edited = await db.Property.findOne({
       where: { id: id, user_id: userId },
@@ -229,6 +239,7 @@ const editProperty = async (req, res) => {
       data: edited,
     });
   } catch (error) {
+    await transaction.rollback();
     console.log("editprop", error);
     res.status(500).send({
       message: "Something wrong on server",
