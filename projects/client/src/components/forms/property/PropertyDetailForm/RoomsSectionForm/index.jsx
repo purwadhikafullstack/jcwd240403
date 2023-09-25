@@ -12,7 +12,13 @@ const RoomsSectionForm = ({
   return (
     <div className="space-y-5">
       <div className="flex flex-row justify-between items-center">
-        <label className="text-base font-bold text-gray-700">Rooms</label>
+        <div className="flex flex-col">
+          <label className="text-base font-bold text-gray-700">Rooms</label>
+          <p className="text-sm text-gray-700 pb-5 max-w-[500px]">
+            Manage individual rooms within your property here. Add, edit, or
+            delete rooms to keep your listing up-to-date.
+          </p>
+        </div>
         <button
           type="button"
           onClick={() => {

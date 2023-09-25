@@ -3,9 +3,8 @@ import useToken from "../hooks/useToken";
 import jwtDecode from "jwt-decode";
 
 export const AuthenticatedRoute = ({ roles }) => {
-  console.log("load");
   const { token } = useToken();
-  const user = jwtDecode(token);
+  const user = jwtDecode(token ? token : "");
 
   // Special condition for TENANT accessing the homepage
   if (window.location.pathname === "/" && token && user?.role === "TENANT") {

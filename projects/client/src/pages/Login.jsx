@@ -5,10 +5,11 @@ import api from "../shared/api";
 import { useDispatch } from "react-redux";
 import { addUser } from "../store/auth/authSlice";
 import useToken from "../shared/hooks/useToken";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useLoginSocial } from "../shared/hooks/useLoginSocial";
 
 function Login() {
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [isUser, setIsUser] = useState(true);
   const { saveToken } = useToken();
@@ -20,10 +21,13 @@ function Login() {
     async (values) => {
       try {
         const { data } = await api.post("/auth/login", values);
-        console.log("data", data);
         if (data.role === (isUser ? "USER" : "TENANT")) {
           dispatch(addUser(data));
           saveToken(data.accessToken);
+          if (searchParams.get("redirect")) {
+            navigate(searchParams.get("redirect"));
+            return;
+          }
           navigate("/");
         } else {
           setErrorMessage("You are not allowed, please make sure your role");
