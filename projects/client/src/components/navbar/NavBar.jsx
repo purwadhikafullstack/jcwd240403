@@ -43,8 +43,6 @@ const NavBar = () => {
     navigateTo("/login");
   };
 
-  console.log("user", user);
-
   const navigateTo = (route) => () => navigate(route);
 
   return (

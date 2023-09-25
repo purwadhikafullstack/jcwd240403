@@ -106,7 +106,6 @@ const DetailProperty = () => {
             prices2.push(row.base_price);
           }
         });
-        console.log(dateSpecialPriceTmp);
         setMinPrice(getMinimumPrice(prices));
         setMinPriceTmp(getMinimumPrice(prices, false));
         setMinSpecialPrice(getMinimumPrice(prices2, false));

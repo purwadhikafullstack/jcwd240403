@@ -85,7 +85,6 @@ function Home() {
       api
         .get("/top")
         .then(({ data }) => {
-          console.log("data", data.topProperty);
           setTopProperties(data.topProperty);
         })
         .catch((err) => console.log(err));
