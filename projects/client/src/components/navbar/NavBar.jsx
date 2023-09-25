@@ -6,31 +6,46 @@ import useToken from "../../shared/hooks/useToken";
 import { Menu, Transition } from "@headlessui/react";
 import { TbDoorExit } from "react-icons/tb";
 import { useSelector } from "react-redux";
+import { auth } from "../../firebase/firebase";
 
-const MenuItem = ({ onClick, icon, label }) => (
+const MenuItem = ({ onClick, icon, label, isDisable = false }) => (
   <Menu.Item>
     <button
+      disabled={isDisable}
       onClick={onClick}
-      className="group flex w-full items-center rounded-md px-2 py-2 text-sm"
+      className={`group flex w-full items-center rounded-md px-2 py-2 text-sm focus:outline-none 
+      ${
+        isDisable
+          ? "disabled:text-gray-400 disabled:cursor-not-allowed"
+          : "hover:bg-gray-100"
+      }`}
     >
-      <span className="mr-2 h-5 w-5 group-hover:text-primary">{icon}</span>
-      <span className="group-hover:text-primary">{label}</span>
+      <span className="mr-2 h-5 w-5 group-hover:text-primary group-disabled:text-gray-400">
+        {icon}
+      </span>
+      <span className="group-hover:text-primary group-disabled:text-gray-400">
+        {label}
+      </span>
     </button>
   </Menu.Item>
 );
 
 const NavBar = () => {
+  const currentUser = auth.currentUser;
   const { token, removeToken } = useToken();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  const logout = async () => {
+    if (currentUser) {
+      await auth.signOut();
+    }
+    removeToken();
+    navigateTo("/login");
+  };
 
   console.log("user", user);
 
   const navigateTo = (route) => () => navigate(route);
-  const logout = () => {
-    removeToken();
-    navigate("/login");
-  };
 
   return (
     <div className="sticky z-30 bg-white border-b mb-16 border-gray-300 max-w-7xl md:mx-auto top-0 w-full flex items-center justify-between flex-row px-5 py-3 md:px-5">
@@ -47,6 +62,7 @@ const NavBar = () => {
             <div className="flex flex-row items-center">
               <img
                 alt="photoprofile"
+                referrerPolicy="no-referrer"
                 src={user?.photoProfile}
                 className="rounded-full border w-10 h-10 border-primary"
               />
@@ -71,6 +87,7 @@ const NavBar = () => {
                 onClick={navigateTo("/change-password")}
                 icon={<KeyIcon aria-hidden="true" />}
                 label="Change Password"
+                isDisable={user?.isLoginBySocial}
               />
               <MenuItem
                 onClick={navigateTo("/orderList")}

@@ -120,10 +120,10 @@ function OrderList() {
     return (
         <>
             <MainContainer>
-                <Column className="max-w-7xl mx-auto gap-10 w-full">
-                    <HeadLine label={"My Bookings"} />
-                    <Row className="w-full gap-8">
-                        <Column className="flex w-full gap-8 max-w-sm">
+                <Column className="max-w-7xl mx-auto gap-8 w-full mt-8">
+                    <HeadLine className={"px-4 md:px-0"} label={"My Bookings"} />
+                    <Column className="w-full gap-5 md:flex-row mb-16">
+                        <Column className="flex w-full gap-5 px-4 md:px-0 md:max-w-[30%] lg:max-w-sm order-2 md:order-1 ">
                             <CardView className="w-full gap-5">
                                 <Title label={"Sort By"} />
                                 <div className='flex gap-2 '>
@@ -153,7 +153,7 @@ function OrderList() {
 
                             </CardView>
                         </Column>
-                        <Column className="w-full gap-y-4">
+                        <Column className="w-full gap-y-4 md:order-2 px-4 md:px-0 ">
                             {
                                 orders?.length ?
                                     <>
@@ -204,7 +204,7 @@ function OrderList() {
                             </ModalDialog>
 
                         }
-                    </Row>
+                    </Column>
                 </Column>
 
             </MainContainer>

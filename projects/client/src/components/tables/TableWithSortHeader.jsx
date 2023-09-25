@@ -90,7 +90,7 @@ export default function TableWithSortHeader({
                               onClick={() => onEdit(data[idx])}
                               className="text-sky-600 hover:text-sky-900"
                             >
-                              Edit
+                              Manage
                             </button>
                           )}
                           {onDelete && (

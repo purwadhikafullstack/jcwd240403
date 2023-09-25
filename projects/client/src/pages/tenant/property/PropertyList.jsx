@@ -19,11 +19,12 @@ function PropertyList() {
       .get("/property/mine")
       .then(({ data }) => {
         const response = data.data?.map((property) => {
+          console.log("prop", property);
           return {
             id: property.id,
             name: property.name,
             location: property.Location.city,
-            description: property.description,
+            type: property.Property_type.name,
           };
         });
         setTableData(response);

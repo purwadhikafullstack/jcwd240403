@@ -110,47 +110,54 @@ const BookingProperty = () => {
     return (
         <>
             <MainContainer>
-                <Column className="w-full max-w-7xl mx-auto gap-10">
-                    <Row className="w-full gap-10 ">
+                <Column className="w-full max-w-7xl md:max-w-2xl mx-auto gap-5 px-4 md:px-0 mt-4">
+                    <Column className="w-full gap-5 ">
                         <img className='min-w-[50%] aspect-video rounded-lg' src={`${process.env.REACT_APP_API_BASE_URL}${room?.room_img}`} alt="" />
-                        <Column className="w-full gap-5">
+                        <Column className="w-full gap-2">
                             <HeadLine label={room?.Property?.name} />
-                            <SubTitle label={room?.Property?.Property_type?.name} />
-                            <SubTitle label={room?.Property?.Location?.city} />
+                            <Row className={"gap-2 items-center"}>
+                                <SubTitle label={room?.Property?.Property_type?.name} />
+                                <div className='h-1 w-1 rounded-full bg-gray-300'></div>
+                                <SubTitle label={room?.Property?.Location?.city} />
+                            </Row>
                         </Column>
-                    </Row>
-                    <CardView>
-                        <Row className="w-fit gap-5 ">
+                    </Column>
+                    <CardView className={"w-full bg-blue-50 gap-3 p-0"}>
+                        <Column className={"gap-1 border-b border-b-blue-300 pb-3"}>
+                            <SubTitle className={"font-semibold"} label={room?.name} />
+                            <Caption label={room?.description} />
+                        </Column>
+                        <Row className="w-full gap-5 justify-between ">
                             <Column className="gap-1">
-                                <Caption label={"Check In"} />
+                                <Caption className={"text-blue-700"} label={"Check In"} />
                                 <Body label={moment(startDate, "YYYY-MM-DD").format("DD/MM/YYYY")} />
                             </Column>
                             <TbArrowRight className='h-5 w-5 my-auto' />
                             <Column className="gap-1">
-                                <Caption label={"Check Out"} />
+                                <Caption className={"text-red-600"} label={"Check Out"} />
                                 <Body label={moment(endDate, "YYYY-MM-DD").format("DD/MM/YYYY")} />
                             </Column>
                         </Row>
                     </CardView>
 
-                    <SubTitle label={room?.name} />
-                    <Column className="gap-1">
+
+                    <Column className="gap-1 border px-4 py-4 bg-blue-50 rounded-md">
                         <Body label={"Total Price"} />
                         <Title label={new Intl.NumberFormat().format(price)} />
                     </Column>
                     {
                         confirm ?
                             <>
-                                <Row className="mx-auto gap-5">
-                                    <Button className="mx-auto w-36 mb-60" label={"Confirm Booking"} type='button' onClick={bookingConfirm} />
-                                    <Button className="mx-auto w-36 mb-60 bg-red-950" label={"Cancel"} type='button' onClick={() => { setConfirm(false) }} />
+                                <Row className="w-full gap-5 mt-8 mb-16">
+                                    <Button className="mx-auto w-full py-3 " label={"Confirm Booking"} type='button' onClick={bookingConfirm} />
+                                    <Button className="mx-auto w-full bg-orange-700 py-3 hover:bg-orange-700/80" label={"Cancel"} type='button' onClick={() => { setConfirm(false) }} />
 
                                 </Row>
 
                             </>
                             :
                             <>
-                                <Button className="mx-auto w-36 mb-60" label={"Make Payment"} type='button' onClick={() => { setConfirm(true) }} />
+                                <Button className="mx-auto w-36 mb-16 mt-8 py-3" label={"Make Payment"} type='button' onClick={() => { setConfirm(true) }} />
 
                             </>
                     }
