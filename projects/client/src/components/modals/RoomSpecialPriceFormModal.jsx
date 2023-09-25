@@ -25,7 +25,7 @@ const RoomSpecialPriceFormModal = ({
   closeModal,
   modalSubmit,
   modalType,
-  selectedRoomAvailability,
+  selectedRoomSpecialPrice,
 }) => {
   const { propertyId } = useParams();
   const [rooms, setRooms] = useState([]);
@@ -52,9 +52,9 @@ const RoomSpecialPriceFormModal = ({
   }, [propertyId]);
 
   useEffect(() => {
-    if (selectedRoomAvailability) {
+    if (selectedRoomSpecialPrice) {
       const { roomId, isActive, start_date, end_date, price } =
-        selectedRoomAvailability;
+        selectedRoomSpecialPrice;
       const room = rooms.find((room) => room.id === roomId);
       setInitialValues({
         room,
@@ -64,7 +64,7 @@ const RoomSpecialPriceFormModal = ({
         price,
       });
     }
-  }, [selectedRoomAvailability, rooms]);
+  }, [selectedRoomSpecialPrice, rooms]);
 
   return (
     <Formik

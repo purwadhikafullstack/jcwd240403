@@ -99,7 +99,7 @@ const PropertySpecialPrice = () => {
         isOpen={isOpen}
         modalSubmit={modalSubmit}
         modalType={modalType}
-        selectedRoomAvailability={selectedRoomSpecialPrice}
+        selectedRoomSpecialPrice={selectedRoomSpecialPrice}
       />
       <TableWithGroupedRows
         title="Special Price"
