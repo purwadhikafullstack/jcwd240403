@@ -5,7 +5,7 @@ import HeroCard from "../components/cards/HeroCard";
 import TopCityCard from "../components/cards/TopCityCard";
 import { StarIcon } from "@heroicons/react/24/solid";
 import { formatToIDR } from "../shared/utils";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import moment from "moment";
 import api from "../shared/api";
 
@@ -133,8 +133,11 @@ function Home() {
                   topProperties
                     .slice(0, 4)
                     .map(({ firstImage, city, name, lowestBasePrice, id }) => {
+                      const startDate = moment().format("YYYY-MM-DD");
+                      const endDate = moment().add(1).format("YYYY-MM-DD");
                       return (
-                        <div
+                        <Link
+                          to={`/property/${name}-${id}?start_date=${startDate}&end_date=${endDate}`}
                           key={id}
                           className="h-[240px] md:h-[300px] max-w-[300px] border rounded-xl flex flex-col"
                         >
@@ -159,7 +162,7 @@ function Home() {
                               {formatToIDR(lowestBasePrice)}
                             </p>
                           </div>
-                        </div>
+                        </Link>
                       );
                     })}
               </div>
