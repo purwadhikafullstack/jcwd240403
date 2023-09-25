@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       custom_status: DataTypes.STRING,
       start_date: DataTypes.DATEONLY,
       end_date: DataTypes.DATEONLY,
+      is_active: DataTypes.BOOLEAN,
     },
     {
       sequelize,

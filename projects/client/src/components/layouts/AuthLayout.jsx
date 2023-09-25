@@ -3,26 +3,17 @@ import ButtonWithLogo from "../buttons/ButtonWithLogo";
 import { useNavigate } from "react-router-dom";
 import { classNames } from "../../shared/utils";
 
-const socialLogin = [
-  {
-    icon: "/assets/social/x.png",
-    name: "X",
-    className: "w-14 h-14",
-  },
-  {
-    icon: "/assets/social/facebook.png",
-    name: "Facebook",
-    className: "w-7 h-7",
-  },
-  {
-    icon: "/assets/social/google.png",
-    name: "Google",
-    className: "w-10 h-10",
-  },
-];
-
-function AuthLayout({ title, isUser, setIsUser, children, page }) {
+function AuthLayout({
+  title,
+  isUser,
+  setIsUser,
+  children,
+  page,
+  handleLoginSocial,
+}) {
   const navigate = useNavigate();
+  const isNonRole =
+    page === "otp" || page === "Forgot Password" || page === "Reset Password";
 
   const handleNavigate = () => {
     switch (page) {
@@ -54,7 +45,7 @@ function AuthLayout({ title, isUser, setIsUser, children, page }) {
 
         <div
           className={classNames(
-            page === "otp"
+            isNonRole
               ? "hidden"
               : "absolute top-2 right-1 md:top-3 md:right-3 flex flex-row gap-2 items-center scale-90"
           )}
@@ -85,7 +76,7 @@ function AuthLayout({ title, isUser, setIsUser, children, page }) {
             {/* FORM COMPONENT */}
             {children}
 
-            <div className={page === "otp" ? "hidden" : "block"}>
+            <div className={isNonRole ? "hidden" : "block"}>
               <div className="relative mt-5">
                 <div
                   className="absolute inset-0 flex items-center"
@@ -108,29 +99,25 @@ function AuthLayout({ title, isUser, setIsUser, children, page }) {
 
               <div
                 className={classNames(
-                  isUser ? "mt-5 grid grid-cols-3 gap-5" : "hidden"
+                  isUser ? "mt-5" : "hidden"
                 )}
               >
-                {socialLogin.map((item) => (
-                  <button
-                    key={item.name}
-                    href="#"
-                    className="flex w-full items-center justify-center gap-3 border rounded-md bg-[#FFF] px-3 py-1.5 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFF]"
-                  >
-                    <img
-                      src={item.icon}
-                      alt={item.name}
-                      className={item.className + "object-contain"}
-                    />
-                  </button>
-                ))}
+                <button
+                  onClick={handleLoginSocial}
+                  className="flex w-full flex-row items-center justify-center gap-3 border rounded-md bg-[#fff] px-3 py-1 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFF]"
+                >
+                  <img
+                    src={"/assets/social/google.png"}
+                    alt={"google"}
+                    className={"object-contain h-7 w-7"}
+                  />
+                  <p className="text-black text-md">Google</p>
+                </button>
               </div>
             </div>
             <p
               className={classNames(
-                page === "otp"
-                  ? "hidden"
-                  : "pt-4 text-center text-sm text-gray-500"
+                isNonRole ? "hidden" : "pt-4 text-center text-sm text-gray-500"
               )}
             >
               {page === "login" ? `Not a member? ` : `Have an account? `}

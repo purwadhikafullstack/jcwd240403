@@ -1,6 +1,5 @@
 import { Fragment } from "react";
 import NavigationItem from "./NavigationItem";
-import ProfileSection from "./ProfileSection";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import ButtonWithLogo from "../../buttons/ButtonWithLogo";

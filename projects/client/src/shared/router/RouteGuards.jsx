@@ -1,21 +1,21 @@
 import { Outlet, Navigate } from "react-router-dom";
 import useToken from "../hooks/useToken";
-import jwt from "jwt-decode";
+import jwtDecode from "jwt-decode";
 
 export const AuthenticatedRoute = ({ roles }) => {
+  console.log("load");
   const { token } = useToken();
+  const user = jwtDecode(token);
 
   // Special condition for TENANT accessing the homepage
-  if (
-    window.location.pathname === "/" &&
-    token &&
-    jwt(token).role === "TENANT"
-  ) {
+  if (window.location.pathname === "/" && token && user?.role === "TENANT") {
     return <Navigate to="/" />;
   }
 
-  if (token && roles.includes(jwt(token).role)) {
+  if (token && roles.includes(user?.role)) {
     return <Outlet />;
+  } else {
+    console.log("not work", roles.includes(user?.role));
   }
 
   return <Navigate to="/login" />;

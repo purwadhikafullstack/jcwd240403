@@ -25,6 +25,9 @@ module.exports = {
       end_date: {
         type: Sequelize.DATEONLY,
       },
+      is_active: {
+        type: Sequelize.BOOLEAN,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

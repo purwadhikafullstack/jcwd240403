@@ -18,7 +18,7 @@ function PropertyList() {
     return api
       .get("/property/mine")
       .then(({ data }) => {
-        const response = data.data.map((property) => {
+        const response = data.data?.map((property) => {
           return {
             id: property.id,
             name: property.name,
@@ -35,11 +35,11 @@ function PropertyList() {
 
   const onAddHandler = () => {
     console.log("Add");
-    navigate("/property/add");
+    navigate("/my-property/add");
   };
 
   const onSelectHandler = (property) => {
-    navigate(`/property/${property.id}/`);
+    navigate(`/my-property/${property.id}/`);
   };
 
   const onDeleteHandler = async (property) => {

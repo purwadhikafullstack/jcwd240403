@@ -6,14 +6,20 @@ import { useEffect } from "react";
 import MainContainer from "../../components/layouts/MainContainer";
 import { toast } from "react-hot-toast"
 import * as Yup from "yup";
+import Column from "../../components/widget/Column";
+import Title from "../../components/texts/Title";
+import { auth } from "../../firebase/firebase"
+import Row from "../../components/widget/Row";
 
 function Profiling() {
+    const currentUser = auth.currentUser
     const [full_name, setFull_name] = useState("")
     const [birth_date, setBirth_date] = useState("")
-    const [gender, setGender] = useState("")
+    const [gender, setGender] = useState("-")
     const [phone_number, setPhone_number] = useState("")
     const [email, setEmail] = useState("")
     const [foto, setFoto] = useState("")
+    const [updateFoto, setUpdateFoto] = useState(false)
     const [fototemp, setFototemp] = useState("https://tse1.mm.bing.net/th?id=OIP.yYUwl3GDU07Q5J5ttyW9fQHaHa&pid=Api&rs=1&c=1&qlt=95&h=180")
     const [editable, setEditable] = useState(true)
 
@@ -51,13 +57,14 @@ function Profiling() {
         // untuk memasukan data user yang mau dirubah
         const getData = response.data
         const { data } = getData
-        setFull_name(data.full_name)
-        setBirth_date(data.birth_date.split("T")[0])
-        setGender(data.gender)
-        setPhone_number(data.phone_number)
-        setEmail(data.User.email)
-        setFoto(`${process.env.REACT_APP_API_BASE_URL}${data.profile_picture}`)
-        setFototemp(`${process.env.REACT_APP_API_BASE_URL}${data.profile_picture}`)
+        if (data) {
+            setFull_name(data.full_name)
+            setBirth_date(data.birth_date != null ? data.birth_date.split("T")[0] : "")
+            setGender(data.gender)
+            setPhone_number(data.phone_number)
+            setEmail(data.User.email)
+            setFoto(data.profile_picture != null ? `${process.env.REACT_APP_API_BASE_URL}${data.profile_picture}` : null)
+        }
     }
 
 
@@ -78,6 +85,7 @@ function Profiling() {
                     const cekImageType = await isValidFileExtension(value?.type, "image")
                     if (!cekImageType) {
                         toast.error("not a valid image type")
+                        setFoto(null)
                         return false
                     }
                     return true
@@ -85,6 +93,8 @@ function Profiling() {
                     const cekImageSize = (value && value.size <= maxFilesize)
                     if (!cekImageSize) {
                         toast.error("max allowed size is 1 MB")
+                        setFoto(null)
+
                         return false
                     }
                     return true
@@ -93,6 +103,7 @@ function Profiling() {
             })
             const cekFileSchema = await fileSchema.validate({ file: e.target.files[0] })
             if (cekFileSchema) {
+                setUpdateFoto(true)
                 setFoto(e.target.files[0])
                 setFototemp(await URL.createObjectURL(e.target.files[0]))
             }
@@ -116,6 +127,9 @@ function Profiling() {
                 const data = res.data
                 if (data.message) {
                     toast.success(data.message)
+                    setFoto(null)
+                    setUpdateFoto(false)
+
                 }
 
             }).catch((error) => {
@@ -130,112 +144,114 @@ function Profiling() {
 
     useEffect(function () {
         getUserData()
+        console.log(currentUser)
     }, [])
     return (
         <>
-            <MainContainer>
-                <div className="flex">
-                    <div className="pt-3 pl-5 block text-gray-500 font-bold">My Profile</div>
-                </div>
-
-                <form onSubmit={updateImage} action="" method="post" encType="multipart/form-data">
-                    <div className="flex justify-center">
-                        <label htmlFor="foto" className="cursor-pointer">
-                            <input id="foto" type="file" className="hidden" onChange={changeImage} />
-                            <div className="">
-                                <img src={fototemp ?? foto} alt="profile" className="aspect-[1/1] max-w-[200px] rounded-full object-cover " />
+            <MainContainer >
+                <Column className={"px-4"}>
+                    <Title className={"mb-8"} label={"My Profile"} />
+                    <form onSubmit={updateImage} action="" method="post" encType="multipart/form-data">
+                        <div className="flex justify-center">
+                            <label htmlFor="foto" className="cursor-pointer">
+                                <input id="foto" type="file" className="hidden" onChange={changeImage} disabled={currentUser ? true : false} />
+                                <div className="">
+                                    <img src={currentUser != null ? currentUser.photoURL : updateFoto ? fototemp : foto ?? fototemp} alt="profile" className="aspect-[1/1]  min-w-[200px] max-w-[200px] rounded-full object-cover " />
+                                </div>
+                            </label>
+                        </div>
+                        <div className={`flex justify-center  ${currentUser ? "mb-5" : "block"}`}>
+                            <div className={`p-4  ${currentUser ? "hidden" : "block"}`}>
+                                <Button label={'Update Photo Profile'}></Button>
                             </div>
-                        </label>
-                    </div>
-                    <div className="flex justify-center">
-                        <div className="p-4">
-                            <Button label={'Update Photo Profile'}></Button>
                         </div>
-                    </div>
-                </form>
+                    </form>
 
-                <form onSubmit={updateProfile} action="" method="post">
+                    <form onSubmit={updateProfile} action="" method="post">
 
-                    <div className="md:flex md:items-center mb-6">
-                        <div className="md:w-1/3">
-                            <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
-                                Name
-                            </label>
+                        <div className="flex justify-center mb-6 ">
+                            <Column className={"justify-center md:items-center md:flex-row w-full md:w-[80%]"}>
+                                <label className="md:w-[20%] block text-gray-500 font-bold pr-4" htmlFor="inline-full-name">
+                                    Name
+                                </label>
+                                <div className={"md:w-[70%]"}>
+                                    <TextInput placeholder={'Full Name'} value={currentUser?.displayName ?? full_name} onChange={(e) => {
+                                        setFull_name(e.target.value)
+                                    }} required={true} disabled={editable} />
+                                </div>
+                            </Column>
+
                         </div>
-                        <div className="md:w-1/3">
-                            <TextInput placeholder={'Full Name'} value={full_name} onChange={(e) => {
-                                setFull_name(e.target.value)
-                            }} required={true} disabled={editable} />
+                        <div className="flex justify-center mb-6 ">
+                            <Column className={"justify-center md:items-center md:flex-row w-full md:w-[80%]"}>
+                                <label className="md:w-[20%] block text-gray-500 font-bold mb-1 md:mb-0 pr-4" htmlFor="inline-full-name">
+                                    Gender
+                                </label>
+                                <div className={"md:w-[70%]"}>
+                                    <select defaultValue={gender} disabled={editable} name="gender" id="gender" required={true} onChange={(e) => {
+                                        setGender(e.target.value)
+                                    }}>
+                                        <option value="">GENDER</option>
+                                        <option value="MALE" selected={(gender == "MALE")}>Male</option>
+                                        <option value="FEMALE" selected={(gender == "FEMALE")}>Female</option>
+                                    </select>
+                                </div>
+                            </Column>
                         </div>
-                    </div>
-                    <div className="md:flex md:items-center mb-6">
-                        <div className="md:w-1/3">
-                            <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
-                                Gender
-                            </label>
+                        <div className="flex justify-center mb-6 ">
+                            <Column className={"justify-center md:items-center md:flex-row w-full md:w-[80%]"}>
+                                <label className="md:w-[20%] block text-gray-500 font-bold mb-1 md:mb-0 pr-4" htmlFor="inline-full-name">
+                                    Birth Date
+                                </label>
+                                <div className={"md:w-[70%]"}>
+                                    <TextInput placeholder={'Birth Date '} value={birth_date} type={"date"} onChange={(e) => {
+                                        setBirth_date(e.target.value)
+                                    }} required={true} disabled={editable} />
+                                </div>
+                            </Column>
                         </div>
-                        <div className="md:w-1/3">
-                            <select defaultValue={gender} disabled={editable} name="gender" id="gender" required={true} onChange={(e) => {
-                                setGender(e.target.value)
-                            }}>
-                                <option value="">GENDER</option>
-                                <option value="MALE" selected={(gender == "MALE")}>Male</option>
-                                <option value="FEMALE" selected={(gender == "FEMALE")}>Female</option>
-                            </select>
+                        <div className="flex justify-center mb-6 ">
+                            <Column className={"justify-center md:items-center md:flex-row w-full md:w-[80%]"}>
+                                <label className="md:w-[20%] block text-gray-500 font-bold mb-1 md:mb-0 pr-4" htmlFor="inline-full-name">
+                                    Phone
+                                </label>
+                                <div className={"md:w-[70%]"}>
+                                    <TextInput placeholder={'Phone Number'} value={currentUser?.phoneNumber ?? phone_number} onChange={(e) => {
+                                        setPhone_number(e.target.value)
+                                    }} required={true} disabled={editable} />
+                                </div>
+                            </Column>
                         </div>
-                    </div>
-                    <div className="md:flex md:items-center mb-6">
-                        <div className="md:w-1/3">
-                            <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
-                                Birth Date
-                            </label>
+                        <div className="flex justify-center mb-6 ">
+                            <Column className={"justify-center md:items-center md:flex-row w-full md:w-[80%]"}>
+                                <label className="md:w-[20%] block text-gray-500 font-bold mb-1 md:mb-0 pr-4" htmlFor="inline-full-name">
+                                    Email
+                                </label>
+                                <div className={"md:w-[70%]"}>
+                                    <TextInput placeholder={'Email'} value={currentUser?.email ?? email} onChange={(e) => {
+                                        setEmail(e.target.value)
+                                    }} required={true} disabled={editable} />
+                                </div>
+                            </Column>
                         </div>
-                        <div className="md:w-1/3">
-                            <TextInput placeholder={'Birth Date '} value={birth_date} type={"date"} onChange={(e) => {
-                                setBirth_date(e.target.value)
-                            }} required={true} disabled={editable} />
+
+                        <div className="flex justify-center w-full mb-16 mt-10 ">
+                            <div className={`flex w-full justify-center ${currentUser ? "hidden" : "block"}`}>
+                                {
+                                    editable
+                                        ?
+                                        <>
+                                            <Button className={"w-full sm:w-fit  sm:min-w-[10rem] h-10 items-center "} type="button" label={'Edit'} onClick={switchEdit}> </Button>
+                                        </>
+                                        :
+                                        <>
+                                            <Button className={"w-full sm:w-fit  sm:min-w-[10rem] h-10 items-center "} label={'Save Changes'}></Button>
+                                        </>
+                                }
+                            </div>
                         </div>
-                    </div>
-                    <div className="md:flex md:items-center mb-6">
-                        <div className="md:w-1/3">
-                            <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
-                                Phone
-                            </label>
-                        </div>
-                        <div className="md:w-1/3">
-                            <TextInput placeholder={'Phone Number'} value={phone_number} onChange={(e) => {
-                                setPhone_number(e.target.value)
-                            }} required={true} disabled={editable} />
-                        </div>
-                    </div>
-                    <div className="md:flex md:items-center mb-6">
-                        <div className="md:w-1/3">
-                            <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
-                                Email
-                            </label>
-                        </div>
-                        <div className="md:w-1/3">
-                            <TextInput placeholder={'Email'} value={email} onChange={(e) => {
-                                setEmail(e.target.value)
-                            }} required={true} disabled={editable} />
-                        </div>
-                    </div>
-                    <div className="flex justify-center">
-                        <div className="p-4">
-                            {
-                                editable
-                                    ?
-                                    <>
-                                        <Button type="button" label={'Edit'} onClick={switchEdit}> </Button>
-                                    </>
-                                    :
-                                    <>
-                                        <Button label={'Save Changes'}></Button>
-                                    </>
-                            }
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </Column>
 
             </MainContainer>
 

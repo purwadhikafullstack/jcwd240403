@@ -4,10 +4,19 @@ import React, { Fragment } from "react";
 import DatePicker from "../datepicker/DatePicker";
 import moment from "moment";
 
-
-function ButtonDateRange({ selectedDays, handleDayClick, today, totalNight, className }) {
+function ButtonDateRange({
+  selectedDays,
+  handleDayClick,
+  today,
+  totalNight,
+  className,
+  asreport = false,
+  price = null,
+  specialPrice = null,
+  dateSpecialPrice = [],
+}) {
   return (
-    <Popover className={`relative ${className}`} >
+    <Popover className={`relative ${className}`}>
       {({ close }) => (
         <>
           <Popover.Button className="flex flex-row items-center w-full">
@@ -36,12 +45,16 @@ function ButtonDateRange({ selectedDays, handleDayClick, today, totalNight, clas
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-0 translate-y-1"
           >
-            <Popover.Panel className="absolute left-1/2 z-10 mt-3 max-w-sm -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl w-fit bg-slate-50">
-              <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 p-3">
+            <Popover.Panel className="absolute left-1/2 z-50 mt-3 -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-5xl w-fit bg-slate-50">
+              <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 p-3 relative z-50">
                 <DatePicker
                   selectedDays={selectedDays}
                   handleDayClick={handleDayClick}
                   today={today}
+                  asreport={asreport}
+                  price={price}
+                  specialPrice={specialPrice}
+                  dateSpecialPrice={dateSpecialPrice}
                 />
                 <div className="flex justify-end mt-3">
                   <button

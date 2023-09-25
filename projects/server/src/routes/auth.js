@@ -1,6 +1,6 @@
 const multerMiddleware = require("../middleware/multer");
 const { auth: authController } = require("../controller");
-const validation = require("../middleware/validation");
+const validation = require("../middleware/validationAuth");
 const router = require("express").Router();
 const verifying = require("../middleware/auth");
 
@@ -15,6 +15,12 @@ router.post(
 
 router.post("/login", validation.validateLogin, authController.login);
 
+router.get(
+  "/keep-login",
+  verifying.verifyAccessToken,
+  authController.keepLogin
+);
+
 router.patch(
   "/verification/:token",
   validation.validateVerify,
@@ -25,9 +31,16 @@ router.patch("/verify-email/:otp/:email", authController.verify_email);
 
 router.post("/resend-otp", authController.resendOTP);
 
-router.get(
-  "/loginWithToken",
-  verifying.verifyAccessToken,
-  authController.loginWithToken
+router.post(
+  "/forgot-password",
+  validation.validateForgotPassword,
+  authController.forgetPassword
 );
+
+router.patch(
+  "/reset-password",
+  validation.validateResetPassword,
+  authController.resetPassword
+);
+
 module.exports = router;

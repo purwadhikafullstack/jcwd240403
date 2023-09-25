@@ -9,6 +9,8 @@ export default function TableWithSortHeader({
   data,
   onEdit,
   onDelete,
+  onDetail,
+  subheaderwidget,
 }) {
   const dataTable = data ? data?.map(({ id, ...rest }) => rest) : [];
   const headers = dataTable.length > 0 ? Object.keys(dataTable[0]) : null;
@@ -23,13 +25,16 @@ export default function TableWithSortHeader({
           <p className="mt-2 text-sm text-gray-700">{description}</p>
         </div>
         <div className="mt-4 sm:ml-16 sm:flex-none sm:w-auto w-full flex justify-end">
-          <Button
-            onClick={addHandler}
-            label={`Add ${title}`}
-            className={"w-[150px]"}
-          />
+          {addHandler && (
+            <Button
+              onClick={addHandler}
+              label={`Add ${title}`}
+              className={"w-[150px]"}
+            />
+          )}
         </div>
       </div>
+      {subheaderwidget && <div className="mt-8">{subheaderwidget}</div>}
       {dataTable.length !== 0 ? (
         <>
           <div className="mt-8 mb-4 flow-root">
@@ -80,18 +85,28 @@ export default function TableWithSortHeader({
                           </td>
                         ))}
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm sm:pr-0 space-x-4">
-                          <button
-                            onClick={() => onEdit(data[idx])}
-                            className="text-sky-600 hover:text-sky-900"
-                          >
-                            Edit
-                          </button>
+                          {onEdit && (
+                            <button
+                              onClick={() => onEdit(data[idx])}
+                              className="text-sky-600 hover:text-sky-900"
+                            >
+                              Edit
+                            </button>
+                          )}
                           {onDelete && (
                             <button
                               onClick={() => onDelete(data[idx])}
                               className="text-white bg-rose-400 px-2 py-1 rounded hover:bg-rose-500"
                             >
                               Delete
+                            </button>
+                          )}
+                          {onDetail && (
+                            <button
+                              onClick={() => onDetail(data[idx])}
+                              className="text-white bg-blue-400 px-2 py-1 rounded hover:bg-blue-500"
+                            >
+                              Detail
                             </button>
                           )}
                         </td>

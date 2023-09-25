@@ -39,14 +39,6 @@ router.patch(
   propertyController.editProperty
 );
 
-router.patch(
-  "/edit-photos/:id",
-  multerMiddleware,
-  authMiddleware.verifyAccessToken,
-  authMiddleware.verifyTenant,
-  propertyController.editPropPhotos
-);
-
 router.delete(
   "/delete/:id",
   authMiddleware.verifyAccessToken,
