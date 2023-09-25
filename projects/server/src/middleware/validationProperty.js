@@ -53,4 +53,18 @@ module.exports = {
       return true;
     }),
   ]),
+
+  validateCreateSpecialPrice: validate([
+    body("roomId").notEmpty().withMessage("Room id is required"),
+    body("specialPrice").notEmpty().withMessage("Special price is required"),
+    body("startDate").notEmpty().withMessage("Start date is required"),
+    body("endDate").notEmpty().withMessage("End date is required"),
+  ]),
+
+  validateCreateRoomStatus: validate([
+    body("roomId").notEmpty().withMessage("Room id is required"),
+    body("customStatus").notEmpty().withMessage("Custom status is required"),
+    body("startDate").notEmpty().withMessage("Start date is required"),
+    body("endDate").notEmpty().withMessage("End date is required"),
+  ]),
 };

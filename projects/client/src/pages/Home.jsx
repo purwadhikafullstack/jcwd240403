@@ -128,11 +128,11 @@ function Home() {
       api
         .get("/top")
         .then(({ data }) => {
+          console.log("data", data.topProperty);
           setTopProperties(data.topProperty);
         })
         .catch((err) => console.log(err));
     };
-
     getTopPlaces();
   }, []);
 
@@ -172,35 +172,40 @@ function Home() {
               <p className="text-lg mb-5 md:mb-10 font-semibold text-gray-700">
                 The Coolest Spots We Think You'll Love!
               </p>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-5">
-                {topProperties.map(({ image, location, name, price, rate }) => {
-                  return (
-                    <div
-                      key={name}
-                      className="h-[240px] md:h-[300px] max-w-[200px] border rounded-xl flex flex-col"
-                    >
-                      <img
-                        src={image}
-                        alt={name}
-                        className="object-cover h-[100px] md:h-[180px] w-full rounded-t-xl z-0 flex"
-                      />
-                      <div className="p-2 flex flex-col justify-between flex-1">
-                        <div>
-                          <p className="font-semibold text-md line-clamp-2">
-                            {name}
-                          </p>
-                          <div className="my-2 flex flex-row items-start justify-start text-slate-600">
-                            <span className="text-sm -mt-1 line-clamp-1">
-                              {location}
-                            </span>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                {topProperties &&
+                  topProperties
+                    .slice(0, 4)
+                    .map(({ firstImage, city, name, lowestBasePrice, id }) => {
+                      return (
+                        <div
+                          key={id}
+                          className="h-[240px] md:h-[300px] max-w-[300px] border rounded-xl flex flex-col"
+                        >
+                          <img
+                            src={`${process.env.REACT_APP_API_BASE_URL}${firstImage}`}
+                            alt={name}
+                            className="object-cover h-[100px] md:h-[180px] w-full rounded-t-xl z-0 flex"
+                          />
+                          <div className="p-2 flex flex-col justify-between flex-1">
+                            <div>
+                              <p className="font-semibold text-md line-clamp-2">
+                                {name}
+                              </p>
+                              <div className="my-2 flex flex-row items-start justify-start text-slate-600">
+                                <span className="text-sm -mt-1 line-clamp-1">
+                                  {city}
+                                </span>
+                              </div>
+                            </div>
+
+                            <p className="font-semibold">
+                              {formatToIDR(lowestBasePrice)}
+                            </p>
                           </div>
                         </div>
-
-                        {/* <p className="font-semibold">{formatToIDR(price)}</p> */}
-                      </div>
-                    </div>
-                  );
-                })}
+                      );
+                    })}
               </div>
             </div>
           )}
