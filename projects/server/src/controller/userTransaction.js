@@ -248,7 +248,12 @@ const getAllOrder = async (req, res) => {
   try {
     const token = req.user;
     const user_id = token.id;
-    const { date, booking_code = "", booking_status, sortBy = "" } = req.query;
+    const {
+      date,
+      booking_code = "",
+      booking_status = "",
+      sortBy = "",
+    } = req.query;
     let whereDate = {};
     if (date) {
       whereDate = {
@@ -319,6 +324,7 @@ const getAllOrder = async (req, res) => {
       ],
     });
     const totalPage = Math.ceil(count / pagination.perPage);
+    console.log(data);
     return res.send({
       status: true,
       data: data,

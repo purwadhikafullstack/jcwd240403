@@ -29,6 +29,7 @@ const getUnavailable = async (start_date, end_date) => {
             },
           ],
         },
+
         {
           [Op.and]: [
             {
@@ -52,6 +53,8 @@ const getUnavailable = async (start_date, end_date) => {
       ],
     },
   });
+  console.log({ start_date, end_date });
+  console.log(getStatus);
   return getStatus.map((row) => row.room_id);
 };
 
@@ -307,19 +310,7 @@ const getDetailProperty = async (req, res) => {
   }
 };
 
-const getPrice = async (req, res) => {
-  try {
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({
-      message: "fatal error on server",
-      error,
-    });
-  }
-};
-
 module.exports = {
   getAllProperty,
   getDetailProperty,
-  getPrice,
 };
