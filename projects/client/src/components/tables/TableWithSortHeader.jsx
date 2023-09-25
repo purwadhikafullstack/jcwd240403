@@ -15,6 +15,8 @@ export default function TableWithSortHeader({
   subheaderwidget,
   sortableHeaderNames,
   handleSort,
+  pagination,
+  onChangePagination,
 }) {
   const [isAsc, setIsAsc] = useState(true);
   const dataTable = data ? data?.map(({ id, ...rest }) => rest) : [];
@@ -146,6 +148,14 @@ export default function TableWithSortHeader({
             </div>
           </div>
           {/* <Pagination /> */}
+          {pagination && (
+            <Pagination
+              onChangePage={onChangePagination}
+              initialPage={pagination.page}
+              totalData={pagination.totalData}
+              totalPage={pagination.totalPage}
+            />
+          )}
         </>
       ) : (
         <p className="mt-40 text-xl text-center w-full">

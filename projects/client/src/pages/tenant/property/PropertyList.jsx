@@ -12,10 +12,13 @@ function PropertyList() {
   const [selected, setSelected] = React.useState(null);
   const [locationList, setLocationList] = React.useState([]);
   const [selectedLocation, setSelectedLocation] = React.useState(null);
+  const [pagination, setPagination] = React.useState(null);
 
-  function fetchProperties(filter, sort) {
+  function fetchProperties(filter, sort, page, perpage) {
     const query = [];
     if (filter) query.push(`filter=${filter}`);
+    if (page) query.push(`page=${page}`);
+    if (perpage) query.push(`perpage=${perpage}`);
     query.push(`sortBy=${sort ? sort : "nameAsc"}`);
     const queryString = query.length ? `?${query.join("&")}` : "";
     return api.get(`/property/mine${queryString}`);
@@ -37,19 +40,7 @@ function PropertyList() {
   }
 
   useEffect(() => {
-    fetchProperties()
-      .then(({ data }) => {
-        const response = data.data?.map((property) => {
-          return {
-            id: property.id,
-            name: property.name,
-            location: property.Location.city,
-            type: property.Property_type.name,
-          };
-        });
-        setTableData(response);
-      })
-      .catch(handleError);
+    handlePaginationChange(1); // Initial call to populate data
     getAllLocation();
   }, []);
 
@@ -91,6 +82,7 @@ function PropertyList() {
               type: property.Property_type.name,
             };
           });
+          setPagination(data.pagination);
           setTableData(response);
         })
         .catch(handleError);
@@ -129,6 +121,7 @@ function PropertyList() {
               type: property.Property_type.name,
             };
           });
+          setPagination(data.pagination);
           setTableData(response);
         })
         .catch(handleError);
@@ -143,6 +136,7 @@ function PropertyList() {
             type: property.Property_type.name,
           };
         });
+        setPagination(data.pagination);
         setTableData(response);
       })
       .catch(handleError);
@@ -159,6 +153,24 @@ function PropertyList() {
             type: property.Property_type.name,
           };
         });
+        setPagination(data.pagination);
+        setTableData(response);
+      })
+      .catch(handleError);
+  };
+
+  const handlePaginationChange = async (page) => {
+    fetchProperties(undefined, undefined, page, 10)
+      .then(({ data }) => {
+        const response = data.data?.map((property) => {
+          return {
+            id: property.id,
+            name: property.name,
+            location: property.Location.city,
+            type: property.Property_type.name,
+          };
+        });
+        setPagination(data.pagination);
         setTableData(response);
       })
       .catch(handleError);
@@ -202,6 +214,8 @@ function PropertyList() {
         subheaderwidget={renderFilter()}
         sortableHeaderNames={["name"]}
         handleSort={handleSort}
+        pagination={pagination}
+        onChangePagination={handlePaginationChange}
       />
     </div>
   );
