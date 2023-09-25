@@ -1,5 +1,7 @@
+import { Disclosure } from "@headlessui/react";
 import moment from "moment";
 import { Fragment } from "react";
+import { classNames } from "../../shared/utils";
 
 // Helper Functions
 const isDate = (str) => !isNaN(new Date(str).getTime());
@@ -55,23 +57,34 @@ const TableContentGroupedRows = ({
     );
   }
 
+  console.log("header", headers);
   return (
-    <div className="mt-8 mb-4">
-      <table className="min-w-full divide-y divide-gray-300">
+    <div className="mt-8 mb-4 overflow-x-auto">
+      <table className="min-w-[150px] md:min-w-full divide-y divide-gray-300">
         {/* Table Header */}
         <thead className="bg-primary">
           <tr>
             {headers.map((header) => (
               <th
                 key={header}
-                className="px-3 py-3.5 text-sm font-semibold text-gray-900 text-left"
+                className={classNames(
+                  "px-3 py-3.5 text-sm font-semibold text-gray-900 text-left",
+                  (header === "price" || header === "reason") &&
+                    "shrink-0 min-w-[150px] md:min-w-[230px]",
+                  header === "start_date" &&
+                    "shrink-0 min-w-[150px] md:min-w-[200px]",
+                  header === "end_date" &&
+                    "shrink-0 min-w-[150px] md:min-w-[200px]",
+                  (header === "isActive" ) &&
+                    "shrink-0 min-w-[150px] md:min-w-[200px]"
+                )}
               >
                 <button className="group inline-flex capitalize text-white">
                   {toReadableString(header)}
                 </button>
               </th>
             ))}
-            <th className="relative py-3.5 pl-3 pr-0">
+            <th className="relative py-3.5 pl-3 pr-0 min-w-[55px]">
               <span className="sr-only">Edit</span>
             </th>
           </tr>
@@ -79,55 +92,65 @@ const TableContentGroupedRows = ({
         {/* Table Body */}
         <tbody className="divide-y divide-gray-200 bg-white">
           {groupedRows.map((row, idx) => (
-            <Fragment key={idx}>
-              <tr className="border-t border-gray-200">
+            <Disclosure key={idx}>
+              <Disclosure.Button as="tr" className="border-t border-gray-200">
                 <th
                   colSpan={headers.length + 1}
                   className="bg-secondary capitalize text-black py-2 pl-4 pr-3 text-left text-sm font-semibold"
                 >
-                  {row.name}
+                  <Disclosure.Button>{row.name}</Disclosure.Button>
                 </th>
-              </tr>
-              {row[arrayKey].length === 0 ? (
-                <tr className="bg-gray-100">
+              </Disclosure.Button>
+              <Disclosure.Panel as="tr" className="border-t border-gray-200">
+                {row[arrayKey].length === 0 ? (
                   <td
                     colSpan={headers.length + 1}
-                    className="whitespace-nowrap px-3 py-4 text-sm text-center text-gray-500"
+                    className="whitespace-nowrap px-3 py-4 text-sm text-center text-gray-500 bg-gray-50"
                   >
                     No data
                   </td>
-                </tr>
-              ) : (
-                row[arrayKey].map((status, statusIdx) => (
-                  <tr key={status.id}>
-                    {headers.map((header) => (
-                      <td
-                        key={header}
-                        className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-left"
-                      >
-                        {renderContentBasedOnType(status[header], header)}
-                      </td>
-                    ))}
-                    <td className="relative whitespace-nowrap py-4 pl-3 pr-4 flex items-center text-right text-sm space-x-4">
-                      <button
-                        onClick={() => onEdit(status)}
-                        className="text-sky-600 hover:text-sky-900"
-                      >
-                        Edit
-                      </button>
-                      {onDelete && (
-                        <button
-                          onClick={() => onDelete(status)}
-                          className="text-white bg-rose-400 px-2 py-1 rounded hover:bg-rose-500"
+                ) : (
+                  row[arrayKey].map((status, statusIdx) => (
+                    <Fragment key={statusIdx}>
+                      {headers.map((header) => (
+                        <td
+                          key={header}
+                          className={classNames(
+                            "whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-left",
+                            header === "price" &&
+                              "shrink-0 min-w-[150px] md:min-w-[230px]",
+                            header === "start_date" &&
+                              "shrink-0 min-w-[150px] md:min-w-[200px]",
+                            header === "end_date" &&
+                              "shrink-0 min-w-[150px] md:min-w-[200px]",
+                            header === "isActive" &&
+                              "shrink-0 min-w-[150px] md:min-w-[200px]"
+                          )}
                         >
-                          Delete
+                          {renderContentBasedOnType(status[header], header)}
+                        </td>
+                      ))}
+                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 flex items-center text-right text-sm space-x-4 min-w-[55px]">
+                        <button
+                          onClick={() => onEdit(status)}
+                          className="text-sky-600 hover:text-sky-900"
+                        >
+                          Edit
                         </button>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </Fragment>
+                        {onDelete && (
+                          <button
+                            onClick={() => onDelete(status)}
+                            className="text-white bg-rose-400 px-2 py-1 rounded hover:bg-rose-500"
+                          >
+                            Delete
+                          </button>
+                        )}
+                      </td>
+                    </Fragment>
+                  ))
+                )}
+              </Disclosure.Panel>
+            </Disclosure>
           ))}
         </tbody>
       </table>

@@ -3,15 +3,19 @@ import TableWithSortHeader from "../../../components/tables/TableWithSortHeader"
 import { useNavigate } from "react-router-dom";
 import api from "../../../shared/api";
 import GeneralModal from "../../../components/modals/GeneralModal";
+import Dropdown from "../../../components/dropdown/Dropdown";
 
 function PropertyList() {
   const navigate = useNavigate();
   const [tableData, setTableData] = React.useState([]);
   const [isDelete, setIsDelete] = React.useState(false);
   const [selected, setSelected] = React.useState(null);
+  const [locationList, setLocationList] = React.useState([]);
+  const [selectedLocation, setSelectedLocation] = React.useState(null);
 
   useEffect(() => {
     getProperties();
+    getAllLocation();
   }, []);
 
   const getProperties = async () => {
@@ -19,7 +23,6 @@ function PropertyList() {
       .get("/property/mine")
       .then(({ data }) => {
         const response = data.data?.map((property) => {
-          console.log("prop", property);
           return {
             id: property.id,
             name: property.name,
@@ -31,6 +34,18 @@ function PropertyList() {
       })
       .catch((err) => {
         console.error(err);
+      });
+  };
+
+  const getAllLocation = () => {
+    api
+      .get("/location/all")
+      .then((res) => {
+        setLocationList([{ id: 0, city: "All" }, ...res.data.data]);
+        setSelectedLocation({ id: 0, city: "All" });
+      })
+      .catch((err) => {
+        console.log(err);
       });
   };
 
@@ -57,6 +72,43 @@ function PropertyList() {
     } catch (error) {
       console.log("error", error);
     }
+  };
+
+  const renderFilter = () => {
+    return (
+      <div className="w-[200px]">
+        <Dropdown
+          selected={selectedLocation}
+          labelField="city"
+          className="w-full"
+          label={`Location`}
+          items={locationList}
+          onItemChange={handleCityFilter}
+        />
+      </div>
+    );
+  };
+
+  const handleCityFilter = async (property) => {
+    console.log("property", property);
+    setSelectedLocation(property);
+    if (property.id === 0) {
+      return getProperties();
+    }
+    return await api
+      .get(`/property/mine?filter=${property.id}`)
+      .then(({ data }) => {
+        const response = data.data?.map((property) => {
+          console.log("prop", property);
+          return {
+            id: property.id,
+            name: property.name,
+            location: property.Location.city,
+            type: property.Property_type.name,
+          };
+        });
+        setTableData(response);
+      });
   };
 
   return (
@@ -88,6 +140,7 @@ function PropertyList() {
           </div>
         </div>
       </GeneralModal>
+
       <TableWithSortHeader
         title={"Property List"}
         description={"List of your own properties"}
@@ -95,6 +148,7 @@ function PropertyList() {
         data={tableData}
         onEdit={onSelectHandler}
         onDelete={onDeleteHandler}
+        subheaderwidget={renderFilter()}
       />
     </div>
   );

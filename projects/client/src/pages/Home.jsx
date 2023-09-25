@@ -29,49 +29,6 @@ const topCity = [
   },
 ];
 
-// const topProperties = [
-//   {
-//     name: "Tamarin Hotel",
-//     rate: 3,
-//     price: 533129,
-//     location: "Menteng, Jakarta Pusat",
-//     image:
-//       "https://s-light.tiket.photos/t/01E25EBZS3W0FY9GTG6C42E1SE/t_htl-dskt/tix-hotel/images-web/2022/11/16/0e02e1cb-c6fa-43e3-ac64-863051e38d13-1668559824742-720b1110990112b2efc4232154eb0f9f.jpg",
-//   },
-//   {
-//     name: "Hotel Mulia Senayan Jakarta",
-//     rate: 5,
-//     price: 3600000,
-//     location: "Gelora, Jakarta Selatan",
-//     image:
-//       "https://s-light.tiket.photos/t/01E25EBZS3W0FY9GTG6C42E1SE/t_htl-dskt/tix-hotel/images-web/2020/10/31/9bfdd259-eb8c-49b2-a9be-be2f42bdcc5b-1604127454635-9bed03edac111f624172bfebd3c45546.jpg",
-//   },
-//   {
-//     name: "Holiday Inn & Suites",
-//     rate: 4,
-//     price: 888104,
-//     location: "Gajah Mada, Jakarta Barat",
-//     image:
-//       "https://s-light.tiket.photos/t/01E25EBZS3W0FY9GTG6C42E1SE/t_htl-dskt/tix-hotel/images-web/2020/11/01/c005881b-10f9-44b0-9d09-4fee39a1d73d-1604181104026-8a1d650b9ed253c4d97264576e7197ea.jpg",
-//   },
-//   {
-//     name: "Grand G7 Hotel",
-//     rate: 4,
-//     price: 477253,
-//     location: "Sawah Besar, Jakarta Barat",
-//     image:
-//       "https://s-light.tiket.photos/t/01E25EBZS3W0FY9GTG6C42E1SE/t_htl-dskt/tix-hotel/images-web/2022/10/11/bacd5423-2c43-434b-9a34-4e63b748585f-1665464122536-5a9d05369388ed2de4371cfc34724216.jpg",
-//   },
-//   {
-//     name: "Namin Dago Hotel",
-//     rate: 3,
-//     price: 455748,
-//     location: "Coblong, Bandung",
-//     image:
-//       "https://s-light.tiket.photos/t/01E25EBZS3W0FY9GTG6C42E1SE/t_htl-dskt/tix-hotel/images-web/2020/10/28/33e60f12-bcc1-4936-a775-bbb5f0563fb2-1603899108583-e56f027cfb5d9530cbea1be8941731ce.jpg",
-//   },
-// ];
-
 function Home() {
   const [location, setLocation] = useState("");
   const [topProperties, setTopProperties] = useState([]);

@@ -14,7 +14,7 @@ const RoomsSectionForm = ({
       <div className="flex flex-row justify-between items-center">
         <div className="flex flex-col">
           <label className="text-base font-bold text-gray-700">Rooms</label>
-          <p className="text-sm text-gray-700 pb-5 max-w-[500px]">
+          <p className="text-sm text-gray-700 pb-5 max-w-[500px] hidden md:block">
             Manage individual rooms within your property here. Add, edit, or
             delete rooms to keep your listing up-to-date.
           </p>
@@ -32,7 +32,7 @@ const RoomsSectionForm = ({
               },
             ]);
           }}
-          className="bg-teal-400 text-white rounded-md px-2 py-1.5 w-[150px] grow-0"
+          className="bg-teal-400 text-white shrink-0 rounded-md px-2 py-1.5 w-[150px] grow-0"
         >
           Add Room
         </button>
