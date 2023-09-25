@@ -13,14 +13,31 @@ function PropertyList() {
   const [locationList, setLocationList] = React.useState([]);
   const [selectedLocation, setSelectedLocation] = React.useState(null);
 
-  useEffect(() => {
-    getProperties();
-    getAllLocation();
-  }, []);
+  function fetchProperties(filter, sort) {
+    const query = [];
+    if (filter) query.push(`filter=${filter}`);
+    query.push(`sortBy=${sort ? sort : "nameAsc"}`);
+    const queryString = query.length ? `?${query.join("&")}` : "";
+    return api.get(`/property/mine${queryString}`);
+  }
 
-  const getProperties = async () => {
-    return api
-      .get("/property/mine")
+  function handleError(error) {
+    console.error("API error:", error);
+  }
+
+  function ModalButton({ label, onClick, className }) {
+    return (
+      <button
+        onClick={onClick}
+        className={`${className} border rounded-md h-10 w-[80px] cursor-pointer hover:opacity-95`}
+      >
+        {label}
+      </button>
+    );
+  }
+
+  useEffect(() => {
+    fetchProperties()
       .then(({ data }) => {
         const response = data.data?.map((property) => {
           return {
@@ -32,10 +49,9 @@ function PropertyList() {
         });
         setTableData(response);
       })
-      .catch((err) => {
-        console.error(err);
-      });
-  };
+      .catch(handleError);
+    getAllLocation();
+  }, []);
 
   const getAllLocation = () => {
     api
@@ -50,7 +66,6 @@ function PropertyList() {
   };
 
   const onAddHandler = () => {
-    console.log("Add");
     navigate("/my-property/add");
   };
 
@@ -66,7 +81,19 @@ function PropertyList() {
   const deleteProperty = async () => {
     try {
       await api.delete(`/property/delete/${selected.id}`);
-      getProperties();
+      fetchProperties()
+        .then(({ data }) => {
+          const response = data.data?.map((property) => {
+            return {
+              id: property.id,
+              name: property.name,
+              location: property.Location.city,
+              type: property.Property_type.name,
+            };
+          });
+          setTableData(response);
+        })
+        .catch(handleError);
       setIsDelete(false);
       setSelected(null);
     } catch (error) {
@@ -90,16 +117,25 @@ function PropertyList() {
   };
 
   const handleCityFilter = async (property) => {
-    console.log("property", property);
     setSelectedLocation(property);
     if (property.id === 0) {
-      return getProperties();
+      return fetchProperties()
+        .then(({ data }) => {
+          const response = data.data?.map((property) => {
+            return {
+              id: property.id,
+              name: property.name,
+              location: property.Location.city,
+              type: property.Property_type.name,
+            };
+          });
+          setTableData(response);
+        })
+        .catch(handleError);
     }
-    return await api
-      .get(`/property/mine?filter=${property.id}`)
+    return fetchProperties(property.id)
       .then(({ data }) => {
         const response = data.data?.map((property) => {
-          console.log("prop", property);
           return {
             id: property.id,
             name: property.name,
@@ -108,7 +144,24 @@ function PropertyList() {
           };
         });
         setTableData(response);
-      });
+      })
+      .catch(handleError);
+  };
+
+  const handleSort = async (sortBy) => {
+    fetchProperties(undefined, sortBy)
+      .then(({ data }) => {
+        const response = data.data?.map((property) => {
+          return {
+            id: property.id,
+            name: property.name,
+            location: property.Location.city,
+            type: property.Property_type.name,
+          };
+        });
+        setTableData(response);
+      })
+      .catch(handleError);
   };
 
   return (
@@ -125,18 +178,16 @@ function PropertyList() {
             cannot be undone.
           </p>
           <div className="flex flex-row space-x-3 justify-end mt-5">
-            <button
+            <ModalButton
+              label="Cancel"
               onClick={() => setIsDelete(false)}
-              className="border rounded-md h-10 w-[80px] cursor-pointer hover:opacity-95"
-            >
-              Cancel
-            </button>
-            <button
+              className=""
+            />
+            <ModalButton
+              label="Delete"
               onClick={deleteProperty}
-              className="bg-red-400 text-white border rounded-md h-10 w-[80px] cursor-pointer hover:opacity-95"
-            >
-              Delete
-            </button>
+              className="bg-red-400 text-white"
+            />
           </div>
         </div>
       </GeneralModal>
@@ -149,6 +200,8 @@ function PropertyList() {
         onEdit={onSelectHandler}
         onDelete={onDeleteHandler}
         subheaderwidget={renderFilter()}
+        sortableHeaderNames={["name"]}
+        handleSort={handleSort}
       />
     </div>
   );

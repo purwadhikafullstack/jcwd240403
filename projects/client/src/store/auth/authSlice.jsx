@@ -22,7 +22,6 @@ const slice = createSlice({
         isRegisterBySocial: payload.isRegisterBySocial,
         isVerified: payload.is_verified,
       };
-      console.log("payload.Profile", payload);
       if (payload.Profile && payload.Profile.profile_picture) {
         state.user.photoProfile = payload.Profile.profile_picture;
       } else {

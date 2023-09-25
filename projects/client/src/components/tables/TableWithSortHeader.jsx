@@ -1,6 +1,8 @@
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import Pagination from "../pagination/Pagination";
 import Button from "../buttons/Button";
+import { classNames } from "../../shared/utils";
+import { useState } from "react";
 
 export default function TableWithSortHeader({
   title,
@@ -11,8 +13,10 @@ export default function TableWithSortHeader({
   onDelete,
   onDetail,
   subheaderwidget,
-  renderFilter,
+  sortableHeaderNames,
+  handleSort,
 }) {
+  const [isAsc, setIsAsc] = useState(true);
   const dataTable = data ? data?.map(({ id, ...rest }) => rest) : [];
   const headers = dataTable.length > 0 ? Object.keys(dataTable[0]) : null;
 
@@ -55,15 +59,37 @@ export default function TableWithSortHeader({
                           }
                           key={header}
                         >
-                          <button className="group inline-flex capitalize">
+                          <div
+                            className={classNames(
+                              "group inline-flex capitalize",
+                              sortableHeaderNames &&
+                                sortableHeaderNames.includes(header)
+                                ? "cursor-pointer"
+                                : "cursor-default"
+                            )}
+                            onClick={() => {
+                              sortableHeaderNames &&
+                                sortableHeaderNames.includes(header) &&
+                                handleSort(isAsc ? "nameAsc" : "nameDesc");
+                              setIsAsc(!isAsc);
+                            }}
+                          >
                             {header}
-                            <span className="invisible ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
-                              <ChevronDownIcon
-                                className="h-5 w-5"
-                                aria-hidden="true"
-                              />
-                            </span>
-                          </button>
+                            {sortableHeaderNames &&
+                              sortableHeaderNames.includes(header) && (
+                                <span
+                                  className={classNames(
+                                    "ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible",
+                                    isAsc ? "rotate-180" : "rotate-0"
+                                  )}
+                                >
+                                  <ChevronDownIcon
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                  />
+                                </span>
+                              )}
+                          </div>
                         </th>
                       ))}
                       <th scope="col" className="relative py-3.5 pl-3 pr-0">
