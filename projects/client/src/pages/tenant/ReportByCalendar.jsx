@@ -26,7 +26,7 @@ function ReportByCalendar() {
     }
 
     const getProperty = async () => {
-        const dateSelect = moment(date.startValue).utc(false).format("YYYY-MM-DD")
+        const dateSelect = moment(date.startValue).utc(true).format("YYYY-MM-DD")
         const { data } = await api.get(`/report/${dateSelect}`);
         setListProperty(data.data)
     }
@@ -36,7 +36,7 @@ function ReportByCalendar() {
     }, [date])
     return (
         <>
-            <Column className={"gap-5"}>
+            <Column className={"gap-5 mb-5"}>
                 <Datepicker onChange={onChangeDate} locale={id} startValue={date.startValue} />
                 {
                     listProperty.length ? listProperty.map((item, idx) => {

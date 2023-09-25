@@ -8,6 +8,56 @@ const {
 const fs = require("fs");
 const { Op } = require("sequelize");
 
+const getUnavailable = async (start_date, end_date) => {
+  const getStatus = await db.Room_status.findAll({
+    attributes: ["room_id", "start_date", "end_date"],
+    raw: true,
+    where: {
+      is_active: true,
+      [Op.or]: [
+        {
+          [Op.and]: [
+            {
+              start_date: {
+                [Op.lte]: new Date(`${start_date} 00:00:00`),
+              },
+            },
+            {
+              end_date: {
+                [Op.gte]: new Date(`${end_date} 23:59:59`),
+              },
+            },
+          ],
+        },
+
+        {
+          [Op.and]: [
+            {
+              start_date: {
+                [Op.between]: [
+                  new Date(`${start_date} 00:00:00`),
+                  new Date(`${end_date} 23:59:59`),
+                ],
+              },
+            },
+            {
+              end_date: {
+                [Op.between]: [
+                  new Date(`${start_date} 00:00:00`),
+                  new Date(`${end_date} 23:59:59`),
+                ],
+              },
+            },
+          ],
+        },
+      ],
+    },
+  });
+  console.log({ start_date, end_date });
+  console.log(getStatus);
+  return getStatus.map((row) => row.room_id);
+};
+
 const getAllProperty = async (req, res) => {
   try {
     const {
@@ -42,6 +92,7 @@ const getAllProperty = async (req, res) => {
       page: Number(req.query.page) || 1,
       perPage: Number(req.query.perPage) || 10,
     };
+
     const { count, rows: data } = await db.Property.findAndCountAll({
       attributes: ["id", "name", "description"],
       where: {
@@ -84,6 +135,9 @@ const getAllProperty = async (req, res) => {
           where: {
             status: "AVAILABLE",
             deletedAt: null,
+            id: {
+              [Op.not]: await getUnavailable(start_date, end_date),
+            },
           },
           include: [
             {
@@ -168,6 +222,7 @@ const getDetailProperty = async (req, res) => {
   try {
     const { id } = req.params;
     const { start_date, end_date, search = "", sortBy = [] } = req.query;
+
     const getDetail = await db.Property.findOne({
       attributes: ["id", "name", "description"],
       where: {
@@ -197,6 +252,9 @@ const getDetailProperty = async (req, res) => {
           where: {
             status: "AVAILABLE",
             deletedAt: null,
+            id: {
+              [Op.not]: await getUnavailable(start_date, end_date),
+            },
           },
           required: false,
           include: [
@@ -234,86 +292,6 @@ const getDetailProperty = async (req, res) => {
               model: db.Room_status,
               attributes: ["id", "start_date", "end_date"],
               required: false,
-              // where: {
-              //   [Op.and]: [
-              //     {
-              //       [Op.and]: [
-              //         {
-              //           start_date: {
-              //             [Op.gte]: new Date(`${end_date} 23:59:59`),
-              //           },
-              //         },
-              //         {
-              //           end_date: {
-              //             [Op.gte]: new Date(`${end_date} 23:59:59`),
-              //           },
-              //         },
-              //       ],
-              //     },
-              //     {
-              //       [Op.and]: [
-              //         {
-              //           start_date: {
-              //             [Op.lte]: new Date(`${start_date} 00:00:00`),
-              //           },
-              //         },
-              //         {
-              //           end_date: {
-              //             [Op.lte]: new Date(`${start_date} 00:00:00`),
-              //           },
-              //         },
-              //       ],
-              //     },
-              //     {
-              //       [Op.and]: [
-              //         {
-              //           start_date: {
-              //             [Op.gt]: new Date(`${end_date} 23:59:59`),
-              //           },
-              //         },
-              //         {
-              //           end_date: {
-              //             [Op.lt]: new Date(`${start_date} 00:00:00`),
-              //           },
-              //         },
-              //       ],
-              //     },
-              //   ],
-              // },
-              where: {
-                [Op.or]: [
-                  {
-                    [Op.and]: [
-                      {
-                        start_date: {
-                          [Op.lt]: new Date(`${start_date} 00:00:00`),
-                          [Op.gte]: new Date(`${end_date} 23:59:59`),
-                        },
-                      },
-                      {
-                        end_date: {
-                          [Op.lte]: new Date(`${start_date} 00:00:00`),
-                          [Op.gte]: new Date(`${end_date} 23:59:59`),
-                        },
-                      },
-                    ],
-                  },
-                  {
-                    [Op.and]: [
-                      {
-                        start_date: {
-                          [Op.gte]: new Date(`${end_date} 23:59:59`),
-                        },
-                      },
-                      {
-                        end_date: {
-                          [Op.lte]: new Date(`${start_date} 00:00:00`),
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
             },
           ],
         },
@@ -332,19 +310,7 @@ const getDetailProperty = async (req, res) => {
   }
 };
 
-const getPrice = async (req, res) => {
-  try {
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({
-      message: "fatal error on server",
-      error,
-    });
-  }
-};
-
 module.exports = {
   getAllProperty,
   getDetailProperty,
-  getPrice,
 };

@@ -154,14 +154,14 @@ function Profiling() {
                     <form onSubmit={updateImage} action="" method="post" encType="multipart/form-data">
                         <div className="flex justify-center">
                             <label htmlFor="foto" className="cursor-pointer">
-                                <input id="foto" type="file" className="hidden" onChange={changeImage} disabled={currentUser ? true : false} />
+                                <input id="foto" type="file" className="hidden" onChange={changeImage} />
                                 <div className="">
-                                    <img src={currentUser != null ? currentUser.photoURL : updateFoto ? fototemp : foto ?? fototemp} alt="profile" className="aspect-[1/1]  min-w-[200px] max-w-[200px] rounded-full object-cover " />
+                                    <img src={currentUser && !foto ? currentUser.photoURL : updateFoto ? fototemp : foto ?? fototemp} alt="profile" className="aspect-[1/1]  min-w-[200px] max-w-[200px] rounded-full object-cover " />
                                 </div>
                             </label>
                         </div>
                         <div className={`flex justify-center  ${currentUser ? "mb-5" : "block"}`}>
-                            <div className={`p-4  ${currentUser ? "hidden" : "block"}`}>
+                            <div className={`p-4`}>
                                 <Button label={'Update Photo Profile'}></Button>
                             </div>
                         </div>
@@ -175,7 +175,7 @@ function Profiling() {
                                     Name
                                 </label>
                                 <div className={"md:w-[70%]"}>
-                                    <TextInput placeholder={'Full Name'} value={currentUser?.displayName ?? full_name} onChange={(e) => {
+                                    <TextInput placeholder={'Full Name'} value={full_name} onChange={(e) => {
                                         setFull_name(e.target.value)
                                     }} required={true} disabled={editable} />
                                 </div>
@@ -230,13 +230,13 @@ function Profiling() {
                                 <div className={"md:w-[70%]"}>
                                     <TextInput placeholder={'Email'} value={currentUser?.email ?? email} onChange={(e) => {
                                         setEmail(e.target.value)
-                                    }} required={true} disabled={editable} />
+                                    }} required={true} disabled={currentUser ? `disabled` : editable} />
                                 </div>
                             </Column>
                         </div>
 
                         <div className="flex justify-center w-full mb-16 mt-10 ">
-                            <div className={`flex w-full justify-center ${currentUser ? "hidden" : "block"}`}>
+                            <div className={`flex w-full justify-center`}>
                                 {
                                     editable
                                         ?
