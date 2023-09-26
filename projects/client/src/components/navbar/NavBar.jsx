@@ -35,18 +35,30 @@ const NavBar = () => {
   const { token, removeToken } = useToken();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  /*
+   * 1. check if user photoProfile exist, if not return user?.photoProfile because we store default image there
+   * 2. if exist, check if the url contains googleusercontent. to determine if the photo is from google data or not.
+   * 3. if contain googleusercontent, return the url as it is with user?.photoProfile
+   * 4. if not, it means the image is from our backend hence we need to add process.env.REACT_APP_API_BASE_URL.
+   */
+  const imageUrl = user.photoProfile
+    ? user?.photoProfile.includes("googleusercontent")
+      ? user?.photoProfile
+      : process.env.REACT_APP_API_BASE_URL + user?.photoProfile
+    : user?.photoProfile;
+
   const logout = async () => {
     if (currentUser) {
       await auth.signOut();
     }
     removeToken();
-    navigateTo("/login");
+    navigate("/");
   };
 
   const navigateTo = (route) => () => navigate(route);
 
   return (
-    <div className="sticky z-30 bg-white border-b mb-16 border-gray-300 max-w-7xl md:mx-auto top-0 w-full flex items-center justify-between flex-row px-5 py-3 md:px-5">
+    <div className="sticky z-30 bg-white border-b md:mb-16 border-gray-300 max-w-7xl md:mx-auto top-0 w-full flex items-center justify-between flex-row px-5 py-3 md:px-5">
       <ButtonWithLogo
         onClick={navigateTo("/")}
         align="row"
@@ -61,7 +73,7 @@ const NavBar = () => {
               <img
                 alt="photoprofile"
                 referrerPolicy="no-referrer"
-                src={user?.photoProfile}
+                src={imageUrl}
                 className="rounded-full border w-10 h-10 border-primary"
               />
             </div>

@@ -57,8 +57,10 @@ function Register() {
         .post("/auth/register", {
           ...values,
           role: "USER",
+          isRegisterBySocial: 0,
         })
         .then(({ data }) => {
+          console.log("err", data);
           setIsModalOpen(true);
         })
         .catch((err) => {
@@ -108,7 +110,7 @@ function Register() {
           email: user.email,
           name: user.displayName,
           role: "USER",
-          isRegisterBySocial: true,
+          isRegisterBySocial: 1,
           photoURL: user.photoURL,
         });
 
