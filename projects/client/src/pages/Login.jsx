@@ -22,7 +22,6 @@ function Login() {
       try {
         const { data } = await api.post("/auth/login", values);
         if (data.data.role === (isUser ? "USER" : "TENANT")) {
-          console.log("data", data);
           dispatch(addUser(data.data));
           saveToken(data.accessToken);
           if (searchParams.get("redirect")) {
@@ -51,7 +50,6 @@ function Login() {
 
   const loginByGoogle = useCallback(async () => {
     if (user && token) {
-      console.log("user", user);
       processLogin({
         email: user.email,
         role: "USER",
