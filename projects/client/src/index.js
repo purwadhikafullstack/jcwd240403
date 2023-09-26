@@ -10,6 +10,7 @@ import { AuthProvider } from "./shared/context/AuthContext";
 import { Toaster } from "react-hot-toast";
 import { ModalProvider } from "./shared/context/ModalContext";
 import GlobalModal from "./shared/components/GlobalModal";
+import ScrollToTop from "./shared/components/ScrollToTop";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -20,6 +21,7 @@ root.render(
           <BrowserRouter>
             <Toaster />
             <GlobalModal />
+            <ScrollToTop />
             <App />
           </BrowserRouter>
         </ModalProvider>
