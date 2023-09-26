@@ -119,6 +119,7 @@ function TenantTabelReport() {
                 <TableWithSortHeader
                     title={"Report"}
                     description={"List All Reports"}
+                    emptymessage={"You Don't Have Any Transaction History"}
                     data={listReport}
                     subheaderwidget={<div className={"grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6"}>
                         <label className='gap-2'>< input type='radio' id='1' name='filter' onChange={onchangeFilter} value={"TOTALHIGHEST"} /> Higest Invoice</label>
