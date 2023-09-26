@@ -41,7 +41,9 @@ const NavBar = () => {
    * 3. if contain googleusercontent, return the url as it is with user?.photoProfile
    * 4. if not, it means the image is from our backend hence we need to add process.env.REACT_APP_API_BASE_URL.
    */
-  const imageUrl = user.photoProfile;
+  const imageUrl =
+    user?.photoProfile ??
+    "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg";
 
   const logout = async () => {
     if (currentUser) {

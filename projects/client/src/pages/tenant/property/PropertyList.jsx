@@ -15,7 +15,7 @@ function PropertyList() {
   const [pagination, setPagination] = React.useState(null);
   const [propertyTypes, setPropertyTypes] = React.useState([]);
   const [selectedPropertyType, setSelectedPropertyType] = React.useState(null);
-  const [sortBy, setSortBy] = React.useState("nameAsc");
+  const [sortBy, setSortBy] = React.useState(null);
 
   function fetchProperties(filter, sort, page, perpage, filterType) {
     const query = [];
@@ -23,8 +23,8 @@ function PropertyList() {
     if (page) query.push(`page=${page}`);
     if (perpage) query.push(`perPage=${perpage}`);
     if (filterType) query.push(`filterType=${filterType}`);
+    if (sort) query.push(`sortBy=${sort ? sort : sortBy}`);
 
-    query.push(`sortBy=${sort ? sort : sortBy}`);
     const queryString = query.length ? `?${query.join("&")}` : "";
     return api.get(`/property/mine${queryString}`);
   }
@@ -92,7 +92,7 @@ function PropertyList() {
       await api.delete(`/property/delete/${selected.id}`);
       fetchProperties(
         selectedLocation?.id ?? undefined,
-        sortBy,
+        sortBy ?? undefined,
         pagination?.page ?? undefined,
         10,
         selectedPropertyType?.id ?? undefined
@@ -145,7 +145,7 @@ function PropertyList() {
     if (property.id === 0) {
       return fetchProperties(
         undefined,
-        sortBy,
+        sortBy ?? undefined,
         pagination?.page ?? undefined,
         10,
         selectedPropertyType?.id ?? undefined
@@ -166,7 +166,7 @@ function PropertyList() {
     }
     return fetchProperties(
       property.id,
-      sortBy,
+      sortBy ?? undefined,
       pagination?.page ?? undefined,
       10,
       selectedPropertyType?.id ?? undefined
@@ -193,7 +193,7 @@ function PropertyList() {
     } else {
       return fetchProperties(
         selectedLocation?.id ?? undefined,
-        sortBy,
+        sortBy ?? undefined,
         pagination?.page ?? undefined,
         10,
         propertyType.id
@@ -241,7 +241,7 @@ function PropertyList() {
   const handlePaginationChange = async (page) => {
     fetchProperties(
       selectedLocation?.id ?? undefined,
-      sortBy,
+      sortBy ?? undefined,
       page ?? undefined,
       10,
       selectedPropertyType

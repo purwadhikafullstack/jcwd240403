@@ -70,7 +70,6 @@ function Home() {
   };
 
   const navigateToSearch = () => {
-    console.log("location", location);
     navigate(
       `/property?start_date=${moment(selectedDays.from).format(
         "YYYY-MM-DD"
