@@ -60,7 +60,7 @@ function ChangePass() {
   return (
     <MainContainer>
       <div className="flex flex-col items-center justify-center min-h-[70vh]">
-        <div className="flex flex-col items-center justify-center w-full max-w-md">
+        <div className="flex flex-col items-center justify-center w-full p-5 max-w-md">
           <div className="flex flex-col items-center justify-center w-full">
             <h1 className="text-3xl font-bold text-center">Change Password</h1>
             <p className="text-center text-gray-500">
