@@ -59,24 +59,20 @@ function OrderList() {
         // e.preventDefault()
         const { value } = e.target
         setSortBy(value)
-        console.log(value)
     }
 
     const onChangeFilterType = (e) => {
         setBookingStatusFilter(e)
-        console.log(e)
     }
 
     const onChangeFilterBookingId = (e) => {
         const { value } = e.target
         setBookingIdFilter(value)
-        console.log(value)
     }
 
     const onChangeFilterBookingDate = (e) => {
         const { value } = e.target
         setBookingDateFilter(value)
-        console.log(value)
     }
 
     const cancelOrder = async (booking_code) => {

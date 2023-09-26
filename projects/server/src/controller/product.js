@@ -53,8 +53,6 @@ const getUnavailable = async (start_date, end_date) => {
       ],
     },
   });
-  console.log({ start_date, end_date });
-  console.log(getStatus);
   return getStatus.map((row) => row.room_id);
 };
 

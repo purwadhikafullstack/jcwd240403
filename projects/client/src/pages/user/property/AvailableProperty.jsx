@@ -130,8 +130,6 @@ const AvailableProperty = () => {
   }, [locationQuery, startDateQuery, endDateQuery, locations]);
 
   const getLocations = async () => {
-    console.log("fetchRoomAvailability");
-
     const response = await axios.get(
       `${process.env.REACT_APP_API_BASE_URL}/location/all`
     );
@@ -160,11 +158,9 @@ const AvailableProperty = () => {
   const onChangeFilterName = (e) => {
     const { value } = e.target;
     setNameFilter(value);
-    console.log(value);
   };
   const onChangeFilterType = (e) => {
     setTypeFilter(e);
-    console.log(e);
   };
 
   useEffect(() => {

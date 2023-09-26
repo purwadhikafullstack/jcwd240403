@@ -41,10 +41,6 @@ function TenantTabelReport() {
         if (isBefore(day, selectedDays.from)) {
             setSelectedDays({ from: day, to: null });
             return;
-        } else {
-            console.log("kesini")
-            console.log(day)
-            console.log(selectedDays.from)
         }
         setSelectedDays({ from: selectedDays.from, to: day });
         setSelectDate(true)
@@ -67,7 +63,6 @@ function TenantTabelReport() {
                 }))
                 : [];
         setListReport(response)
-        console.log(listReport)
     }
 
     const onchangeFilter = (e) => {

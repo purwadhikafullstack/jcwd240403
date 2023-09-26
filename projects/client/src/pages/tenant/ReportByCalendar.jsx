@@ -17,7 +17,6 @@ function ReportByCalendar() {
     })
 
     const onChangeDate = (e) => {
-        console.log(e)
         const [startValue, endValue, rangeDates] = e
         setdate({
             // endValue: endValue,

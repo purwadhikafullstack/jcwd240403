@@ -328,7 +328,6 @@ const getAllOrder = async (req, res) => {
       ],
     });
     const totalPage = Math.ceil(count / pagination.perPage);
-    console.log(data);
     return res.send({
       status: true,
       data: data,
