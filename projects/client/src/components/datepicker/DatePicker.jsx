@@ -39,7 +39,7 @@ function DatePicker({ selectedDays, handleDayClick, today, asreport = false, pri
           ((isAfter(props.date, from) && isBefore(props.date, to)) ||
             (isSameDay(props.date, from) || isSameDay(props.date, to))) &&
           <p className={`text-[0.5rem] md:text-xs ${from != null && to != null ? (isAfter(props.date, from) && isBefore(props.date, to)) ||
-            (isSameDay(props.date, from) || isSameDay(props.date, to)) ? 'text-white' : "text-green-700" : "text-green-700"} `}>{getPriceFormat(price, props.date)}</p>
+            (isSameDay(props.date, from) || isSameDay(props.date, to)) ? 'text-white' : "text-white" : "text-white"} `}>{getPriceFormat(price, props.date)}</p>
         }
 
       </Column>

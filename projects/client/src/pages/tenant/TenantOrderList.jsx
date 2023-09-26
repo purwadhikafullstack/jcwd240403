@@ -14,6 +14,7 @@ import Dropdown from '../../components/dropdown/Dropdown'
 import TextInput from '../../components/textInputs/TextInput'
 import TextAreaWithLabel from '../../components/textInputs/TextAreaWithLabel'
 import { Field } from 'formik'
+import Caption from '../../components/texts/Caption'
 
 
 function TenantOrderList() {
@@ -137,7 +138,14 @@ function TenantOrderList() {
                             <Title label={"Detail Order"} />
                             <SubTitle label={order.booking_code} />
                         </Column>
-                        <img className='w-full max-w-sm rounded-lg mx-auto' src={`${process.env.REACT_APP_API_BASE_URL}${order.payment_proof}`} />
+                        <img className='w-full max-w-sm rounded-lg mx-auto'
+                            src={order.payment_proof != null ? `${process.env.REACT_APP_API_BASE_URL}${order.payment_proof}` :
+                                order.booking_status == "CANCELED" ? "https://img.freepik.com/free-vector/cancelled-events-announcement-illustration_23-2148584716.jpg?w=740&t=st=1695730800~exp=1695731400~hmac=61d42b42b7c67548d75323f787610f18e77070007c09f23b4bd21a214f0415ea"
+                                    : "https://img.freepik.com/free-vector/image-upload-concept-illustration_114360-996.jpg?w=740&t=st=1695729458~exp=1695730058~hmac=11cf587bf9be350245277d733c4f5912d42edc7adc4f70205f379e769d15cdba"} />
+                        {
+
+                            order.payment_proof == null && order.booking_status != "CANCELED" && <Caption className={"text-center"} label={"Waiting your User To Upload Payment Proof"} />
+                        }
                         <Row className={"w-full"}>
                             {
                                 sendReason ?
@@ -186,17 +194,21 @@ function TenantOrderList() {
 
                                     showAction ?
                                         <>
-                                            <Row className="w-full justify-between">
-                                                <Row className="gap-3 my-auto">
-                                                    <Button label={"Accept"} className="bg-blue-600 hover:bg-blue-800" type='button' onClick={() => acceptOrder(10)} />
-                                                    <Button label={"Decline"} className="bg-orange-600 hover:bg-orange-800" type='button' onClick={() => {
-                                                        setShowDecline(true)
-                                                        setSendReason("decline")
-                                                        setShowCancel(false)
-                                                        setCancelConfirm(null)
-                                                    }} />
+                                            <Row className={`${order.payment_proof != null ? "justify-between" : "justify-end"} w-full  `}>
+                                                {
+                                                    order.payment_proof != null &&
+                                                    <Row className="gap-3 my-auto">
+                                                        <Button label={"Accept"} className="bg-blue-600 hover:bg-blue-800" type='button' onClick={() => acceptOrder(10)} />
+                                                        <Button label={"Decline"} className="bg-orange-600 hover:bg-orange-800" type='button' onClick={() => {
+                                                            setShowDecline(true)
+                                                            setSendReason("decline")
+                                                            setShowCancel(false)
+                                                            setCancelConfirm(null)
+                                                        }} />
 
-                                                </Row>
+                                                    </Row>
+                                                }
+
                                                 <Column>
                                                     {
                                                         order?.id == cancelConfirm ?

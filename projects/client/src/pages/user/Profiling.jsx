@@ -63,7 +63,8 @@ function Profiling() {
             setGender(data.gender)
             setPhone_number(data.phone_number)
             setEmail(data.User.email)
-            setFoto(data.profile_picture != null ? `${process.env.REACT_APP_API_BASE_URL}${data.profile_picture}` : null)
+            setFoto(data.profile_picture != null ? data.profile_picture.substring(0, 5) == "https" ? data.profile_picture : `${process.env.REACT_APP_API_BASE_URL}${data.profile_picture}` : null)
+            console.log(data.profile_picture.substring(0, 4))
         }
     }
 
@@ -85,7 +86,6 @@ function Profiling() {
                     const cekImageType = await isValidFileExtension(value?.type, "image")
                     if (!cekImageType) {
                         toast.error("not a valid image type")
-                        setFoto(null)
                         return false
                     }
                     return true
@@ -93,8 +93,6 @@ function Profiling() {
                     const cekImageSize = (value && value.size <= maxFilesize)
                     if (!cekImageSize) {
                         toast.error("max allowed size is 1 MB")
-                        setFoto(null)
-
                         return false
                     }
                     return true
@@ -156,7 +154,7 @@ function Profiling() {
                             <label htmlFor="foto" className="cursor-pointer">
                                 <input id="foto" type="file" className="hidden" onChange={changeImage} />
                                 <div className="">
-                                    <img src={currentUser && !foto ? currentUser.photoURL : updateFoto ? fototemp : foto ?? fototemp} alt="profile" className="aspect-[1/1]  min-w-[200px] max-w-[200px] rounded-full object-cover " />
+                                    <img src={updateFoto ? fototemp : foto ?? fototemp} alt="profile" className="aspect-[1/1]  min-w-[200px] max-w-[200px] rounded-full object-cover " />
                                 </div>
                             </label>
                         </div>
@@ -216,7 +214,7 @@ function Profiling() {
                                     Phone
                                 </label>
                                 <div className={"md:w-[70%]"}>
-                                    <TextInput placeholder={'Phone Number'} value={currentUser?.phoneNumber ?? phone_number} onChange={(e) => {
+                                    <TextInput placeholder={'Phone Number'} value={phone_number} onChange={(e) => {
                                         setPhone_number(e.target.value)
                                     }} required={true} disabled={editable} />
                                 </div>
@@ -228,7 +226,7 @@ function Profiling() {
                                     Email
                                 </label>
                                 <div className={"md:w-[70%]"}>
-                                    <TextInput placeholder={'Email'} value={currentUser?.email ?? email} onChange={(e) => {
+                                    <TextInput placeholder={'Email'} value={email} onChange={(e) => {
                                         setEmail(e.target.value)
                                     }} required={true} disabled={currentUser ? `disabled` : editable} />
                                 </div>
