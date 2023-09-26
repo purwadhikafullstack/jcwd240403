@@ -57,24 +57,22 @@ const TableContentGroupedRows = ({
     );
   }
 
+  console.log("headers", headers);
   return (
     <div className="mt-8 mb-4 overflow-x-auto">
-      <div className="min-w-[150px] md:min-w-full divide-y divide-gray-300">
+      <div className="inline-block min-w-[150px] md:min-w-full divide-y divide-gray-300">
         {/* Table Header */}
-        <div className="bg-primary grid grid-cols-5">
+        <div className="bg-primary flex flex-row justify-between shrink-0">
           {headers.map((header) => (
             <div
               key={header}
               className={classNames(
-                "px-3 py-3.5 text-sm font-semibold text-gray-900 text-left",
+                "px-3 py-3.5 text-sm font-semibold text-gray-900 text-left shrink-0",
                 (header === "price" || header === "reason") &&
-                  "shrink-0 min-w-[150px] md:min-w-[230px]",
-                header === "start_date" &&
-                  "shrink-0 min-w-[150px] md:min-w-[200px]",
-                header === "end_date" &&
-                  "shrink-0 min-w-[150px] md:min-w-[200px]",
-                header === "isActive" &&
-                  "shrink-0 min-w-[150px] md:min-w-[200px]"
+                  "w-[150px] md:min-w-[230px]",
+                header === "start_date" && "w-[150px] md:min-w-[200px]",
+                header === "end_date" && "w-[150px] md:min-w-[200px]",
+                header === "isActive" && "w-[150px] md:min-w-[200px]"
               )}
             >
               <button className="group inline-flex capitalize text-white">
@@ -107,20 +105,23 @@ const TableContentGroupedRows = ({
                   </div>
                 ) : (
                   row[arrayKey].map((status, statusIdx) => (
-                    <div key={statusIdx} className="grid grid-cols-5">
+                    <div
+                      key={statusIdx}
+                      className="whitespace-nowrap flex flex-row justify-between shrink-0 grow-0 flex-1"
+                    >
                       {headers.map((header) => (
                         <div
                           key={header}
                           className={classNames(
-                            "whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-left",
-                            header === "price" &&
-                              "shrink-0 min-w-[150px] md:min-w-[230px]",
+                            "px-3 py-4 text-sm text-gray-500 text-left shrink-0",
+                            (header === "price" || header === "reason") &&
+                              "w-[150px] md:min-w-[230px]",
                             header === "start_date" &&
-                              "shrink-0 min-w-[150px] md:min-w-[200px]",
+                              "w-[150px] md:min-w-[200px]",
                             header === "end_date" &&
-                              "shrink-0 min-w-[150px] md:min-w-[200px]",
+                              "w-[150px] md:min-w-[200px]",
                             header === "isActive" &&
-                              "shrink-0 min-w-[150px] md:min-w-[200px]"
+                              "w-[150px] md:min-w-[200px]"
                           )}
                         >
                           {renderContentBasedOnType(status[header], header)}

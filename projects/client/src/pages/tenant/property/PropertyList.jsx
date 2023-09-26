@@ -15,6 +15,7 @@ function PropertyList() {
   const [pagination, setPagination] = React.useState(null);
   const [propertyTypes, setPropertyTypes] = React.useState([]);
   const [selectedPropertyType, setSelectedPropertyType] = React.useState(null);
+  const [sortBy, setSortBy] = React.useState("nameAsc");
 
   function fetchProperties(filter, sort, page, perpage, filterType) {
     const query = [];
@@ -23,7 +24,7 @@ function PropertyList() {
     if (perpage) query.push(`perPage=${perpage}`);
     if (filterType) query.push(`filterType=${filterType}`);
 
-    query.push(`sortBy=${sort ? sort : "nameAsc"}`);
+    query.push(`sortBy=${sort ? sort : sortBy}`);
     const queryString = query.length ? `?${query.join("&")}` : "";
     return api.get(`/property/mine${queryString}`);
   }
@@ -89,7 +90,13 @@ function PropertyList() {
   const deleteProperty = async () => {
     try {
       await api.delete(`/property/delete/${selected.id}`);
-      fetchProperties()
+      fetchProperties(
+        selectedLocation?.id ?? undefined,
+        sortBy,
+        pagination?.page ?? undefined,
+        10,
+        selectedPropertyType?.id ?? undefined
+      )
         .then(({ data }) => {
           const response = data.data?.map((property) => {
             return {
@@ -136,7 +143,13 @@ function PropertyList() {
   const handleCityFilter = async (property) => {
     setSelectedLocation(property);
     if (property.id === 0) {
-      return fetchProperties()
+      return fetchProperties(
+        undefined,
+        sortBy,
+        pagination?.page ?? undefined,
+        10,
+        selectedPropertyType?.id ?? undefined
+      )
         .then(({ data }) => {
           const response = data.data?.map((property) => {
             return {
@@ -151,7 +164,13 @@ function PropertyList() {
         })
         .catch(handleError);
     }
-    return fetchProperties(property.id)
+    return fetchProperties(
+      property.id,
+      sortBy,
+      pagination?.page ?? undefined,
+      10,
+      selectedPropertyType?.id ?? undefined
+    )
       .then(({ data }) => {
         const response = data.data?.map((property) => {
           return {
@@ -172,7 +191,13 @@ function PropertyList() {
     if (propertyType.id === 0) {
       return handlePaginationChange(1);
     } else {
-      return fetchProperties(undefined, undefined, 1, 7, propertyType.id)
+      return fetchProperties(
+        selectedLocation?.id ?? undefined,
+        sortBy,
+        pagination?.page ?? undefined,
+        10,
+        propertyType.id
+      )
         .then(({ data }) => {
           const response = data.data?.map((property) => {
             return {
@@ -189,8 +214,15 @@ function PropertyList() {
     }
   };
 
-  const handleSort = async (sortBy) => {
-    fetchProperties(undefined, sortBy)
+  const handleSort = async (sortValue) => {
+    setSortBy(sortValue);
+    fetchProperties(
+      selectedLocation?.id ?? undefined,
+      sortValue,
+      pagination?.page ?? undefined,
+      10,
+      selectedPropertyType?.id ?? undefined
+    )
       .then(({ data }) => {
         const response = data.data?.map((property) => {
           return {
@@ -207,7 +239,17 @@ function PropertyList() {
   };
 
   const handlePaginationChange = async (page) => {
-    fetchProperties(undefined, undefined, page, 7)
+    fetchProperties(
+      selectedLocation?.id ?? undefined,
+      sortBy,
+      page ?? undefined,
+      10,
+      selectedPropertyType
+        ? selectedPropertyType.id === 0
+          ? undefined
+          : undefined
+        : undefined
+    )
       .then(({ data }) => {
         const response = data.data?.map((property) => {
           return {

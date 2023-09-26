@@ -28,7 +28,7 @@ function AuthLayout({
     <div className="p-3 h-screen md:flex md:justify-center">
       <div
         className={classNames(
-          "w-full h-full items-center justify-start md:justify-center bg-gradient-to-br to-[#ccc] shadow-md md:shadow-lg max-w-[1920px] rounded-2xl p-5 flex md:flex-row flex-col relative md:px-20",
+          "w-full h-fit min-h-full items-center justify-start md:justify-center bg-gradient-to-br to-[#ccc] shadow-md md:shadow-lg max-w-[1920px] rounded-2xl p-5 flex md:flex-row flex-col relative md:px-20",
           isNonRole ? "from-primary" : "",
           isUser ? "from-primary" : "from-accent"
         )}
@@ -53,7 +53,7 @@ function AuthLayout({
         <div
           className={classNames(
             "md:flex md:flex-col md:justify-center md:shrink-0 w-full md:flex-1 md:items-center justify-center relative",
-            page === "login" ? "" : "mt-40 md:mt-0"
+            page === "login" ? "" : "mt-20 md:mt-0"
           )}
         >
           <div

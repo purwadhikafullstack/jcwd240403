@@ -84,6 +84,7 @@ function PropertyAdd() {
       .then(({ data }) => data.data.id)
       .catch((err) => {
         console.error("property err", err);
+        setIsLoading(false);
         return Promise.reject(err);
       });
   };
@@ -115,6 +116,7 @@ function PropertyAdd() {
         console.log(`Room ${name} uploaded successfully`, result);
       } catch (error) {
         console.error(`Error uploading room: ${name}`, error);
+        setIsLoading(false);
         if (error.response) {
           toast.error(error.response.data.error);
         }
@@ -153,6 +155,7 @@ function PropertyAdd() {
       console.log("Images uploaded successfully", result);
     } catch (error) {
       console.error("Error uploading images:", error);
+      setIsLoading(false);
       return Promise.reject(error);
     }
   };

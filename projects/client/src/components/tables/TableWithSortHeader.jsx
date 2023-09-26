@@ -18,7 +18,7 @@ export default function TableWithSortHeader({
   pagination,
   onChangePagination,
 }) {
-  const [isAsc, setIsAsc] = useState(true);
+  const [isAsc, setIsAsc] = useState(false);
   const dataTable = data ? data?.map(({ id, ...rest }) => rest) : [];
   const headers = dataTable.length > 0 ? Object.keys(dataTable[0]) : null;
 
