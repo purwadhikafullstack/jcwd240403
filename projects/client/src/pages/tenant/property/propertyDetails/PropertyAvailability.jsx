@@ -104,7 +104,7 @@ const PropertyAvailability = () => {
       />
       <TableWithGroupedRows
         title="Room Availability"
-        description="Here's the list of custom availability for each room"
+        description="Here's the list of custom date to set room unavailable for each room"
         addHandler={() => setModal("add")}
         data={tableData}
         onEdit={(value) => setModal("edit", value)}

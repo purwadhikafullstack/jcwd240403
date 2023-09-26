@@ -57,7 +57,6 @@ const TableContentGroupedRows = ({
     );
   }
 
-  console.log("headers", headers);
   return (
     <div className="mt-8 mb-4 overflow-x-auto">
       <div className="inline-block min-w-[150px] md:min-w-full divide-y divide-gray-300">

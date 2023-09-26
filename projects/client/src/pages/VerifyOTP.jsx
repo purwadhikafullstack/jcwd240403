@@ -36,7 +36,6 @@ function VerifyOTP() {
     onSubmit: (values) => {
       setErrorMessage("");
       const otpValue = values.otp.join("");
-      console.log("Submitted OTP:", otpValue);
       api
         .patch("/auth/verification/" + token, {
           otp: otpValue,
@@ -72,7 +71,6 @@ function VerifyOTP() {
       .catch((err) => {
         setErrorMessage(err.response.data.message);
       });
-    console.log("log", email);
   };
 
   return (

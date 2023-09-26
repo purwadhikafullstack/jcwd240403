@@ -101,7 +101,6 @@ function PropertyRoom() {
     formData.append("price", room.price);
 
     if (room.file) {
-      console.log("roomfile");
       if (typeof room.file === "string" && room.file.startsWith("data:image")) {
         // Convert base64 to Blob
         const base64Data = room.file.split(",")[1];
