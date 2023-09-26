@@ -41,18 +41,16 @@ const NavBar = () => {
    * 3. if contain googleusercontent, return the url as it is with user?.photoProfile
    * 4. if not, it means the image is from our backend hence we need to add process.env.REACT_APP_API_BASE_URL.
    */
-  const imageUrl = user.photoProfile
-    ? user?.photoProfile.includes("googleusercontent")
-      ? user?.photoProfile
-      : process.env.REACT_APP_API_BASE_URL + user?.photoProfile
-    : user?.photoProfile;
+  const imageUrl = user.photoProfile;
 
   const logout = async () => {
     if (currentUser) {
       await auth.signOut();
     }
     removeToken();
-    navigate("/");
+    navigate("/", {
+      replace: true,
+    });
   };
 
   const navigateTo = (route) => () => navigate(route);
