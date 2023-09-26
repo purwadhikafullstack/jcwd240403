@@ -24,7 +24,7 @@ const navigation = [
   },
   {
     name: "Reports",
-    href: "#",
+    href: "/reports",
     icon: ChartPieIcon,
     current: true,
     children: [

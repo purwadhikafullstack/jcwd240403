@@ -304,9 +304,13 @@ const getAllOrder = async (req, res) => {
       include: [
         {
           model: db.Room,
+          required: false,
+          paranoid: false,
           include: [
             {
               model: db.Property,
+              required: false,
+              paranoid: false,
               include: [
                 {
                   model: db.Location,

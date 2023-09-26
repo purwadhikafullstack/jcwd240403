@@ -127,21 +127,21 @@ function App() {
             <Route index element={<TenantOrderList />} />
           </Route>
         </Route>
-      </Route>
-      <Route
-        path="report-tabel"
-        element={<AuthenticatedRoute roles={["TENANT"]} />}
-      >
-        <Route path="*" element={<DashboardSideBar />}>
-          <Route index element={<TenantTabelReport />} />
+        <Route
+          path="report-tabel"
+          element={<AuthenticatedRoute roles={["TENANT"]} />}
+        >
+          <Route path="*" element={<DashboardSideBar />}>
+            <Route index element={<TenantTabelReport />} />
+          </Route>
         </Route>
-      </Route>
-      <Route
-        path="reportbyCalendar"
-        element={<AuthenticatedRoute roles={["TENANT"]} />}
-      >
-        <Route path="*" element={<DashboardSideBar />}>
-          <Route index element={<ReportByCalendar />} />
+        <Route
+          path="reportbyCalendar"
+          element={<AuthenticatedRoute roles={["TENANT"]} />}
+        >
+          <Route path="*" element={<DashboardSideBar />}>
+            <Route index element={<ReportByCalendar />} />
+          </Route>
         </Route>
       </Route>
 

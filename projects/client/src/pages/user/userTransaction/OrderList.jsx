@@ -173,6 +173,7 @@ function OrderList() {
                                                     status={row.booking_status}
                                                     booking_code={row.booking_code}
                                                     transactionTime={row.updatedAt}
+                                                    totalinvoice={row.total_invoice}
                                                     confirmCancel={() => { cancelOrder(row.booking_code) }}
                                                     isDone={(new Date(row.check_out_date).getTime() <= new Date().getTime()) && row.Review == null}
                                                     reviewButton={() => {

@@ -61,9 +61,13 @@ const getAllReport = async (req, res) => {
         },
         {
           model: db.Room,
+          required: false,
+          paranoid: false,
           include: [
             {
               model: db.Property,
+              required: false,
+              paranoid: false,
               where: {
                 user_id: user_id,
               },

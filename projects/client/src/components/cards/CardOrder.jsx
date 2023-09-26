@@ -7,8 +7,9 @@ import { TbArrowRight } from 'react-icons/tb';
 import SubTitle from "../texts/SubTitle";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../buttons/Button";
+import { formatToIDR } from "../../shared/utils";
 
-function Cardorder({ title, type, check_in, check_out, status, image, header = null, booking_code, transactionTime, confirmCancel, isDone = false, reviewButton }) {
+function Cardorder({ title, type, check_in, check_out, status, image, header = null, booking_code, transactionTime, confirmCancel, isDone = false, reviewButton, totalinvoice }) {
     const [showButton, setShowButton] = useState(false)
     const [isExpired, setIsExpired] = useState(false)
     const [confirm, setConfirm] = useState(false)
@@ -51,6 +52,7 @@ function Cardorder({ title, type, check_in, check_out, status, image, header = n
                                 <p className="capitalize font-bold text-xl ">{title}</p>
                                 <p className="capitalize font-medium text-sm ">{type}</p>
                             </Column>
+                            <SubTitle label={formatToIDR(totalinvoice)} />
                             <Row className="w-full justify-between gap-5 ">
                                 <Column className="gap-1">
                                     <Caption className={"text-blue-700"} label={"Check In"} />
@@ -108,7 +110,7 @@ function Cardorder({ title, type, check_in, check_out, status, image, header = n
 
                                             <>
                                                 <SubTitle label={status.replaceAll("_", " ")} />
-                                                <Button label={"Review"} type="button" onClick={reviewButton} />
+                                                {status.replaceAll("_", " ") != "CANCELED" && < Button label={"Review"} type="button" onClick={reviewButton} />}
                                             </>
 
                                             :

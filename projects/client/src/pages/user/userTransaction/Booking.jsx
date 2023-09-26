@@ -72,7 +72,7 @@ const BookingProperty = () => {
         setPrice(totalBasePrice + totalSpecialPrice)
     }
 
-    const bookingConfirm = async (e) => {
+    const checkAlreadyBook = async (e) => {
         e.preventDefault()
         await axios.post(`${process.env.REACT_APP_API_BASE_URL}/transaction/book/${room?.id}`, {
             start_date: startDate,
@@ -83,23 +83,28 @@ const BookingProperty = () => {
             }
         }).then(async res => {
             if (res.data.status) {
-                await axios.post(`${process.env.REACT_APP_API_BASE_URL}/transaction/book`, {
-                    check_in_date: startDate,
-                    check_out_date: endDate,
-                    total_invoice: price,
-                    room_id: searchParams.get("room")
-                }, {
-                    headers: {
-                        authorization: `Bearer ${localStorage.getItem("token")}`
-                    }
-                }).then(response => {
-                    if (response.data.status) {
-                        toast.success(response.data.message)
-                        navigate(`/paymentproof/${response.data.data.booking_code}`)
-                    }
-                })
+                setConfirm(true)
             } else {
                 toast.error(res.data.message)
+            }
+        })
+    }
+
+    const bookingConfirm = async (e) => {
+        e.preventDefault()
+        await axios.post(`${process.env.REACT_APP_API_BASE_URL}/transaction/book`, {
+            check_in_date: startDate,
+            check_out_date: endDate,
+            total_invoice: price,
+            room_id: searchParams.get("room")
+        }, {
+            headers: {
+                authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+        }).then(response => {
+            if (response.data.status) {
+                toast.success(response.data.message)
+                navigate(`/paymentproof/${response.data.data.booking_code}`)
             }
         })
 
@@ -157,7 +162,7 @@ const BookingProperty = () => {
                             </>
                             :
                             <>
-                                <Button className="mx-auto w-36 mb-16 mt-8 py-3" label={"Make Payment"} type='button' onClick={() => { setConfirm(true) }} />
+                                <Button className="mx-auto w-36 mb-16 mt-8 py-3" label={"Make Payment"} type='button' onClick={checkAlreadyBook} />
 
                             </>
                     }
