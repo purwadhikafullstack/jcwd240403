@@ -1,6 +1,6 @@
 import MainContainer from "../../../components/layouts/MainContainer";
 import axios from "axios";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { toast } from "react-hot-toast";
 import Dropdown from "../../../components/dropdown/Dropdown";
 import ButtonDateRange from "../../../components/buttons/ButtonDateRange";
@@ -8,10 +8,7 @@ import { isBefore, differenceInDays } from "date-fns";
 import moment from "moment";
 import Button from "../../../components/buttons/Button";
 import PropertyCard from "../../../components/cards/PropertyCard";
-import {
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import TextInput from "../../../components/textInputs/TextInput";
 import { getRange } from "../../../shared/utils";
 import Pagination from "../../../components/pagination/Pagination";
@@ -69,7 +66,7 @@ const AvailableProperty = () => {
 
     return daysDifference;
   };
-  const availableData = async () => {
+  const availableData = useCallback(async () => {
     if (location && startDate && endDate) {
       await axios
         .get(
@@ -97,7 +94,16 @@ const AvailableProperty = () => {
           }
         });
     }
-  };
+  }, [
+    currentPage,
+    endDate,
+    limitPage,
+    location,
+    nameFilter,
+    sortBy,
+    startDate,
+    typeFilter?.id,
+  ]);
 
   const locationQuery = query.get("location");
   const startDateQuery = query.get("start_date");
@@ -126,6 +132,8 @@ const AvailableProperty = () => {
   }, [locationQuery, startDateQuery, endDateQuery, locations]);
 
   const getLocations = async () => {
+    console.log("fetchRoomAvailability");
+
     const response = await axios.get(
       `${process.env.REACT_APP_API_BASE_URL}/location/all`
     );
@@ -165,7 +173,7 @@ const AvailableProperty = () => {
     if (location != null) {
       availableData();
     }
-  }, [currentPage, sortBy]);
+  }, [currentPage, sortBy, location, availableData]);
 
   useEffect(() => {
     const konversiStartDate = moment(new Date(selectedDays.from)).format(

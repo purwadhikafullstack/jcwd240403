@@ -23,7 +23,11 @@ const slice = createSlice({
         isVerified: payload.is_verified,
       };
       if (payload.Profile && payload.Profile.profile_picture) {
-        state.user.photoProfile = payload.Profile.profile_picture;
+        const { profile_picture } = payload.Profile;
+        const image = profile_picture.includes("googleusercontent")
+          ? profile_picture
+          : process.env.REACT_APP_API_BASE_URL + profile_picture;
+        state.user.photoProfile = image;
       } else {
         state.user.photoProfile =
           "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg";
