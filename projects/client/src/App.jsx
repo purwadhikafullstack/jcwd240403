@@ -109,6 +109,23 @@ function App() {
             <Route index element={<PropertyAdd />} />
           </Route>
         </Route>
+        {/* TENANT Authenticated Routes */}
+        <Route
+          path="/my-property"
+          element={<AuthenticatedRoute roles={["TENANT"]} />}
+        >
+          <Route path=":propertyId" element={<DashboardSideBar />}>
+            <Route element={<PropertyLayout />}>
+              <Route index element={<PropertyEdit />} />
+              <Route path="rooms" element={<PropertyRooms />} />
+              <Route path="availability" element={<PropertyAvailability />} />
+              <Route path="special-price" element={<PropertySpecialPrice />} />
+            </Route>
+          </Route>
+          <Route path="add" element={<DashboardSideBar />}>
+            <Route index element={<PropertyAdd />} />
+          </Route>
+        </Route>
 
         <Route
           path="category-area"
@@ -158,11 +175,19 @@ function App() {
       <Route path="/reset-password/:token" element={<NonAuthenticatedRoute />}>
         <Route index element={<ResetPassword />} />
       </Route>
+      <Route path="/forgot-password" element={<NonAuthenticatedRoute />}>
+        <Route index element={<ForgotPassword />} />
+      </Route>
+      <Route path="/reset-password/:token" element={<NonAuthenticatedRoute />}>
+        <Route index element={<ResetPassword />} />
+      </Route>
       <Route path="/verify/:token" element={<NonAuthenticatedRoute />}>
         <Route index element={<VerifyOTP />} />
       </Route>
 
       {/* Open Routes */}
+      <Route path="/404" element={<NotFound />} />
+      <Route path="*" element={<Navigate to="/404" replace />} />
       <Route path="/404" element={<NotFound />} />
       <Route path="*" element={<Navigate to="/404" replace />} />
     </Routes>

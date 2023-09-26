@@ -90,7 +90,6 @@ const getAllProperty = async (req, res) => {
       page: Number(req.query.page) || 1,
       perPage: Number(req.query.perPage) || 10,
     };
-
     const { count, rows: data } = await db.Property.findAndCountAll({
       attributes: ["id", "name", "description"],
       where: {
@@ -220,7 +219,6 @@ const getDetailProperty = async (req, res) => {
   try {
     const { id } = req.params;
     const { start_date, end_date, search = "", sortBy = [] } = req.query;
-
     const getDetail = await db.Property.findOne({
       attributes: ["id", "name", "description"],
       where: {
@@ -308,7 +306,19 @@ const getDetailProperty = async (req, res) => {
   }
 };
 
+const getPrice = async (req, res) => {
+  try {
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "fatal error on server",
+      error,
+    });
+  }
+};
+
 module.exports = {
   getAllProperty,
   getDetailProperty,
+  getPrice,
 };

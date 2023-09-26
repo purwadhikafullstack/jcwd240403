@@ -2,6 +2,7 @@ import jwtDecode from "jwt-decode";
 import Home from "../../pages/Home";
 import PropertyList from "../../pages/tenant/property/PropertyList";
 import useToken from "../hooks/useToken";
+import { useSelector } from "react-redux";
 
 const HomeOrDashboard = () => {
   const { token } = useToken();

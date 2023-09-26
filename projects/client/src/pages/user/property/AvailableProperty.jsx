@@ -70,8 +70,10 @@ const AvailableProperty = () => {
     if (location && startDate && endDate) {
       await axios
         .get(
-          `${process.env.REACT_APP_API_BASE_URL}/product?location=${location.id
-          }&start_date=${startDate}&end_date=${endDate}&page=${currentPage}&perPage=${limitPage}&sortBy=${sortBy}&name=${nameFilter ?? ""
+          `${process.env.REACT_APP_API_BASE_URL}/product?location=${
+            location.id
+          }&start_date=${startDate}&end_date=${endDate}&page=${currentPage}&perPage=${limitPage}&sortBy=${sortBy}&name=${
+            nameFilter ?? ""
           }&typeRoom=${typeFilter?.id ?? ""}`,
           {
             headers: {
@@ -332,7 +334,6 @@ const AvailableProperty = () => {
                                   );
                                 } else {
                                   prices.push(row.base_price);
-
                                 }
                                 return prices.flat();
                               }).flat()

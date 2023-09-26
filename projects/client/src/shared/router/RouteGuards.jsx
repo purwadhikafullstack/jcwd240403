@@ -3,6 +3,7 @@ import useToken from "../hooks/useToken";
 import jwtDecode from "jwt-decode";
 
 export const AuthenticatedRoute = ({ roles }) => {
+  console.log("load");
   const { token } = useToken();
   const user = token ? jwtDecode(token) : null;
 

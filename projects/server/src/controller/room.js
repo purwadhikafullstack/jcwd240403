@@ -16,7 +16,6 @@ const createRoom = async (req, res) => {
       {
         property_id: propId,
         name: name,
-        room_img: imageURL,
         description: description,
         base_price: Number(price),
         status: "AVAILABLE",

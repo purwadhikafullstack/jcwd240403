@@ -194,10 +194,10 @@ const DetailProperty = () => {
         );
       } else {
         openModal({
-            title: "Verify your email first",
-            buttonText: "I Understand",
-            content: "Please verify your email first, if you want to booking",
-        })
+          title: "Verify your email first",
+          buttonText: "I Understand",
+          content: "Please verify your email first, if you want to booking",
+        });
       }
     } else {
       navigate(
