@@ -17,6 +17,7 @@ export default function TableWithSortHeader({
   handleSort,
   pagination,
   onChangePagination,
+  emptymessage
 }) {
   const [isAsc, setIsAsc] = useState(true);
   const dataTable = data ? data?.map(({ id, ...rest }) => rest) : [];
@@ -104,11 +105,10 @@ export default function TableWithSortHeader({
                       <tr key={idx} className="cursor-pointer">
                         {headers.map((header) => (
                           <td
-                            className={`${
-                              header === "id"
-                                ? "whitespace-nowrap capitalize py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
-                                : "whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize"
-                            }`}
+                            className={`${header === "id"
+                              ? "whitespace-nowrap capitalize py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"
+                              : "whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize"
+                              }`}
                             key={header}
                           >
                             {res[header]}
@@ -160,7 +160,7 @@ export default function TableWithSortHeader({
       ) : (
         <p className="mt-40 text-xl text-center w-full">
           Your data seems to be empty.
-          <br /> <span className="font-bold">Let's fill it in!</span>
+          <br /> <span className="font-bold">{emptymessage}</span>
         </p>
       )}
     </div>
@@ -170,4 +170,5 @@ export default function TableWithSortHeader({
 TableWithSortHeader.defaultProps = {
   title: "Title",
   description: "Description",
+  emptymessage: "Let's fill it in!"
 };

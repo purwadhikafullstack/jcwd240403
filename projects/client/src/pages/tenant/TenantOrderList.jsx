@@ -117,6 +117,7 @@ function TenantOrderList() {
                 description={"List All Orders By Customers"}
                 data={orderData}
                 onDetail={onSelectHandler}
+                emptymessage={"You Don't Have Any Transaction History"}
                 subheaderwidget={<Column className="w-full gap-4 md:flex-row">
                     <Column className="w-full md:w-1/3">
                         <Dropdown labelField='city' className="w-full" label={`Location`} selected={locationBy} items={locationFilter} onItemChange={(e) => setLocationBy(e)} />
