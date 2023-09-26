@@ -64,7 +64,6 @@ function Profiling() {
             setPhone_number(data.phone_number)
             setEmail(data.User.email)
             setFoto(data.profile_picture != null ? data.profile_picture.substring(0, 5) == "https" ? data.profile_picture : `${process.env.REACT_APP_API_BASE_URL}${data.profile_picture}` : null)
-            console.log(data.profile_picture.substring(0, 4))
         }
     }
 
@@ -142,7 +141,6 @@ function Profiling() {
 
     useEffect(function () {
         getUserData()
-        console.log(currentUser)
     }, [])
     return (
         <>

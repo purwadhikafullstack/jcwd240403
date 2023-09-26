@@ -29,15 +29,11 @@ function PaymentProof() {
     const navigate = useNavigate();
     let { booking_code } = useParams()
     const getBooking = async () => {
-        console.log("Masuk")
-        console.log(booking_code)
-
         await axios.get(`${process.env.REACT_APP_API_BASE_URL}/transaction/book/${booking_code}`, {
             headers: {
                 authorization: `Bearer ${localStorage.getItem("token")}`
             }
         }).then(response => {
-            console.log(response)
             if (response.data.status) {
                 setBooking(response.data.data)
                 setCheckIn(response.data.data.check_in_date)
