@@ -52,7 +52,6 @@ function Register() {
     setErrorMessage("");
     if (isUser) {
       // Register User
-      console.log("form", formData);
       api
         .post("/auth/register", {
           ...values,
@@ -60,7 +59,6 @@ function Register() {
           isRegisterBySocial: 0,
         })
         .then(({ data }) => {
-          console.log("err", data);
           setIsModalOpen(true);
         })
         .catch((err) => {

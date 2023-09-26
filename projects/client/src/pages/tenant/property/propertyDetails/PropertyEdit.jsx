@@ -67,7 +67,6 @@ function PropertyEdit() {
   };
 
   const handleFormSubmit = async (values, { setSubmitting }) => {
-    console.log(values);
     setSubmitting(false);
     try {
       await Promise.all([updateProperty(values), uploadImages(values.images)]);
