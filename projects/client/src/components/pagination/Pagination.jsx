@@ -49,6 +49,7 @@ export default function Pagination({
         pageClassName="text-gray-500 hover:text-blue-600 p-2 grow-1"
         pageLinkClassName="text-gray-500 hover:text-blue-600 mx-1 "
         breakClassName="text-gray-500 hover:text-blue-600 p-2"
+        renderOnZeroPageCount={false}
         previousLabel={
           <button
             onClick={handlePrevPage}

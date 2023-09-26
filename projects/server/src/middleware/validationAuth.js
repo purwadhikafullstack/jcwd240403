@@ -43,14 +43,20 @@ module.exports = {
       if ((isRegisterBySocial === "0" || role === "TENANT") && !value) {
         throw new Error("Password is required.");
       }
-      if (value.length < 8) {
+      if (
+        (isRegisterBySocial === "0" || role === "TENANT") &&
+        value.length < 8
+      ) {
         throw new Error("Minimum password length is 8 characters.");
       }
       const hasUpperCase = /[A-Z]/.test(value);
       const hasLowerCase = /[a-z]/.test(value);
       const hasNumber = /[0-9]/.test(value);
 
-      if (!(hasUpperCase && hasLowerCase && hasNumber)) {
+      if (
+        (isRegisterBySocial === "0" || role === "TENANT") &&
+        !(hasUpperCase && hasLowerCase && hasNumber)
+      ) {
         throw new Error(
           "Password must contain minimum 1 uppercase, 1 lowercase, and 1 number."
         );
@@ -62,7 +68,10 @@ module.exports = {
       if ((isRegisterBySocial === "0" || role === "TENANT") && !value) {
         throw new Error("Confirm password is required.");
       }
-      if (value !== req.body.password) {
+      if (
+        (isRegisterBySocial === "0" || role === "TENANT") &&
+        value !== req.body.password
+      ) {
         throw new Error("Confirm password does not match with password.");
       }
       return true;
