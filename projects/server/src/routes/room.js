@@ -2,12 +2,14 @@ const router = require("express").Router();
 const { room: roomController } = require("../controller");
 const authMiddleware = require("../middleware/auth");
 const multerMiddleware = require("../middleware/multer");
+const validation = require("../middleware/validationProperty");
 
 router.post(
   "/create",
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyTenant,
   multerMiddleware,
+  validation.validateAddRoom,
   roomController.createRoom
 );
 

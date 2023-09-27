@@ -20,6 +20,7 @@ const {
   getFilter,
 } = require("../controller/tenantTransaction");
 const { review, getReview } = require("../controller/review");
+const { validateReview } = require("../middleware/validationReview");
 
 // User Transaction
 
@@ -89,13 +90,14 @@ router.post(
   "/review/:booking_id",
   verifying.verifyAccessToken,
   verifying.verifyUser,
+  validateReview,
   review
 );
 
 router.get(
   "/review/property/:property_id",
-  verifying.verifyAccessToken,
-  verifying.verifyUser,
+  // verifying.verifyAccessToken,
+  // verifying.verifyUser,
   getReview
 );
 

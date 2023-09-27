@@ -16,11 +16,11 @@ const PersistLogin = () => {
   useEffect(() => {
     let isMounted = true;
 
-    const verifyStoredToken = () => {
+    const verifyStoredToken = async () => {
       const storedToken = localStorage.getItem("token");
 
       if (storedToken && persist) {
-        login(storedToken);
+        login(storedToken); // Assuming this might be an async operation, you can await it
       }
 
       if (isMounted) {
@@ -40,20 +40,20 @@ const PersistLogin = () => {
   }, [isAuthenticated, persist, login]);
 
   useEffect(() => {
-    // get user data
-    if (isAuthenticated) {
-      api
-        .get("/auth/keep-login")
-        .then((res) => {
-          console.log("add user");
-          dispatch(addUser(res.data.data));
-        })
-        .catch((err) => {
-          console.log("keep login err", err);
-          dispatch(logout());
-          removeToken();
-          navigate("/login");
-        });
+    const fetchUserData = async () => {
+      try {
+        const res = await api.get("/auth/keep-login");
+        dispatch(addUser(res.data.data));
+      } catch (err) {
+        console.log("keep login err", err);
+        dispatch(logout());
+        removeToken();
+        navigate("/login");
+      }
+    };
+
+    if (isAuthenticated && !isLoading) {
+      fetchUserData();
     }
   }, [isLoading, isAuthenticated, dispatch, navigate, removeToken]);
 

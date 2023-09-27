@@ -13,8 +13,8 @@ router.get(
 
 router.get(
   "/:id",
-  verifying.verifyAccessToken,
-  verifying.verifyUser,
+  // verifying.verifyAccessToken,
+  // verifying.verifyUser,
   getDetailProperty
 );
 

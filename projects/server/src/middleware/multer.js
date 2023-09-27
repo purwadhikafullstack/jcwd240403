@@ -40,6 +40,8 @@ module.exports = (req, res, next) => {
       // A Multer error occurred when uploading.
       if (err.code === "LIMIT_FILE_SIZE") {
         err.message = "File size is too big";
+      } else if (err.code === "LIMIT_UNEXPECTED_FILE") {
+        err.message = "Maximun file to upload is 1";
       }
       return res.status(400).send({ error: err.message });
     } else if (err) {

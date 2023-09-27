@@ -23,6 +23,15 @@ const generateHashedPassword = async (password) => {
   }
 };
 
+const parseJSONSafely = (value) => {
+  try {
+    return JSON.parse(value);
+  } catch (e) {
+    console.error("Failed to parse JSON:", e);
+    return null;
+  }
+};
+
 const register = async (req, res) => {
   const transaction = await db.sequelize.transaction();
   try {
@@ -51,7 +60,7 @@ const register = async (req, res) => {
     const verifyToken = jwt.sign({ email: email }, secretKey);
 
     // If isRegisterBySocial is true, ignore the password and phoneNumber
-    const hashedPassword = isRegisterBySocial
+    const hashedPassword = parseJSONSafely(isRegisterBySocial)
       ? null
       : await generateHashedPassword(password);
 
@@ -64,7 +73,7 @@ const register = async (req, res) => {
         otp_counter: Number(0),
         email: email,
         password: hashedPassword,
-        isRegisterBySocial: isRegisterBySocial || false,
+        isRegisterBySocial: parseJSONSafely(isRegisterBySocial) || false,
       },
       { transaction }
     );
@@ -73,7 +82,7 @@ const register = async (req, res) => {
       {
         user_id: newUser.id,
         full_name: name,
-        phone_number: isRegisterBySocial ? null : phoneNumber,
+        phone_number: parseJSONSafely(isRegisterBySocial) ? null : phoneNumber,
         document_identity: imageURL,
         profile_picture: photoURL || null,
       },
@@ -139,11 +148,29 @@ const login = async (req, res) => {
       );
 
       await transaction.commit();
+
+      const result = await db.User.findOne({
+        where: { email },
+        attributes: [
+          "id",
+          "role",
+          "email",
+          "is_verified",
+          "isLoginBySocial",
+          "isRegisterBySocial",
+        ],
+        include: [
+          {
+            model: db.Profile,
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+          },
+        ],
+      });
+
       return res.status(200).send({
         message: "Logged in using Google!",
-        role: user.role,
-        email: user.email,
-        accessToken,
+        accessToken: accessToken,
+        data: result,
       });
     } else {
       if (user.isRegisterBySocial) {
@@ -168,12 +195,32 @@ const login = async (req, res) => {
         expiresIn: "24hr",
       }
     );
+    await user.update({ isLoginBySocial: false }, { transaction });
+
+    await transaction.commit();
+
+    const result = await db.User.findOne({
+      where: { email },
+      attributes: [
+        "id",
+        "role",
+        "email",
+        "is_verified",
+        "isLoginBySocial",
+        "isRegisterBySocial",
+      ],
+      include: [
+        {
+          model: db.Profile,
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+        },
+      ],
+    });
 
     res.status(200).send({
-      message: "Login success.",
-      role: user.role,
-      email: user.email,
+      message: "Logged in using email!",
       accessToken: accessToken,
+      data: result,
     });
   } catch (error) {
     await transaction.rollback();
@@ -206,7 +253,7 @@ const keepLogin = async (req, res) => {
     });
     if (user) {
       return res.status(200).send({
-        message: "Login success!",
+        message: "Keep login success.",
         data: user,
       });
     } else {
@@ -217,7 +264,7 @@ const keepLogin = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send({
-      message: "Somethign wrong on server.",
+      message: "Something wrong on server.",
       error,
     });
   }
@@ -290,14 +337,15 @@ const verify = async (req, res) => {
         otp_created_time: null,
         otp_counter: null,
       },
-      { where: { verify_token: verifyToken, otp: otp } },
-      { transaction }
+      { where: { verify_token: user.verify_token, otp: user.otp }, transaction }
     );
+
+    await transaction.commit();
+
     const userUpdated = await db.User.findOne({
       where: { id: user.id },
     });
 
-    await transaction.commit();
     res.status(200).send({
       message: "Verification process success.",
       data: userUpdated,
@@ -306,7 +354,7 @@ const verify = async (req, res) => {
     await transaction.rollback();
     console.log("verify", error);
     res.status(500).send({
-      message: "Something wrong on serve.",
+      message: "Something wrong on server.",
     });
   }
 };
@@ -346,18 +394,18 @@ const resendOTP = async (req, res) => {
         otp: generateOTP(),
         otp_created_time: moment().format("YYYY-MM-DD HH:mm:ss"),
       },
-      { where: { email } },
-      { transaction }
+      { where: { email }, transaction }
     );
+    await transaction.commit();
+
     const userUpdated = await db.User.findOne({
       where: { email },
     });
 
     template.emailResentOtp(email, userUpdated.otp, userUpdated.verify_token);
 
-    await transaction.commit();
     res.status(200).send({
-      message: "Resend OTP success",
+      message: "Resend OTP success.",
       otp_counter: userUpdated.otp_counter,
     });
   } catch (error) {
@@ -373,7 +421,7 @@ const forgetPassword = async (req, res) => {
     const { email } = req.body;
 
     const user = await db.User.findOne({
-      where: { email: email },
+      where: { email: email, isRegisterBySocial: false },
       include: [{ model: db.Profile }],
     });
 
@@ -389,16 +437,15 @@ const forgetPassword = async (req, res) => {
       {
         forgot_token: forgotToken,
       },
-      { where: { email } },
-      { transaction }
+      { where: { email }, transaction }
     );
+    await transaction.commit();
 
     template.emailForgotPassword(email, user.Profile.full_name, forgotToken);
 
-    await transaction.commit();
     res.status(200).send({
       message: "Please check your email to reset your password.",
-      data: user,
+      data: email,
     });
   } catch (error) {
     await transaction.rollback();
@@ -429,11 +476,11 @@ const resetPassword = async (req, res) => {
         password: await generateHashedPassword(password),
         forgot_token: null,
       },
-      { where: { id: user.id } },
-      { transaction }
+      { where: { id: user.id }, transaction }
     );
 
     await transaction.commit();
+
     res.status(200).send({
       message: "Success reset password.",
     });

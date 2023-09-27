@@ -52,11 +52,11 @@ function Register() {
     setErrorMessage("");
     if (isUser) {
       // Register User
-      console.log("form", formData);
       api
         .post("/auth/register", {
           ...values,
           role: "USER",
+          isRegisterBySocial: 0,
         })
         .then(({ data }) => {
           setIsModalOpen(true);
@@ -108,7 +108,7 @@ function Register() {
           email: user.email,
           name: user.displayName,
           role: "USER",
-          isRegisterBySocial: true,
+          isRegisterBySocial: 1,
           photoURL: user.photoURL,
         });
 
@@ -116,9 +116,11 @@ function Register() {
         setIsModalOpen(true);
       } catch (err) {
         console.log("Error in Google registration", err);
-        if (err.response) {
+        if (err.response.data) {
           const { message, errors } = err.response.data;
           setErrorMessage(message ? message : errors[0].msg);
+        } else {
+          console.log("err", err);
         }
       }
     }

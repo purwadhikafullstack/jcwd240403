@@ -61,9 +61,13 @@ const getAllReport = async (req, res) => {
         },
         {
           model: db.Room,
+          required: false,
+          paranoid: false,
           include: [
             {
               model: db.Property,
+              required: false,
+              paranoid: false,
               where: {
                 user_id: user_id,
               },
@@ -179,7 +183,7 @@ const getAllReportByDate = async (req, res) => {
         status = "Room Cant be Used";
       }
       if (row.Bookings.find((rb) => rb.booking_status == "DONE")) {
-        status = "Already Used";
+        status = "Booked";
       }
       return { ...row.toJSON(), status: status };
     });

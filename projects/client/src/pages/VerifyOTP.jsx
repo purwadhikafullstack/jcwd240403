@@ -7,6 +7,7 @@ import api from "../shared/api";
 import { useNavigate, useParams } from "react-router-dom";
 import jwt from "jwt-decode";
 import AuthModal from "../components/modals/AuthModal";
+import { useModal } from "../shared/context/ModalContext";
 
 const otpValidationSchema = Yup.object().shape({
   otp: Yup.array()
@@ -21,6 +22,7 @@ const otpValidationSchema = Yup.object().shape({
 });
 
 function VerifyOTP() {
+  const { openModal } = useModal();
   const [errorMessage, setErrorMessage] = useState("");
   const [otpCounter, setOtpCounter] = useState(0);
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -34,13 +36,17 @@ function VerifyOTP() {
     onSubmit: (values) => {
       setErrorMessage("");
       const otpValue = values.otp.join("");
-      console.log("Submitted OTP:", otpValue);
       api
         .patch("/auth/verification/" + token, {
           otp: otpValue,
         })
         .then(() => {
-          navigate("/login");
+          openModal({
+            title: "Email Verification",
+            buttonText: "Ok",
+            content: "Your email has been verified successfully!",
+          });
+          navigate("/");
         })
         .catch((err) => {
           if (err.response) {
@@ -65,7 +71,6 @@ function VerifyOTP() {
       .catch((err) => {
         setErrorMessage(err.response.data.message);
       });
-    console.log("log", email);
   };
 
   return (

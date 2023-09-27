@@ -2,6 +2,7 @@ const router = require("express").Router();
 
 const { categoryArea: catAreaController } = require("../controller");
 const authMiddleware = require("../middleware/auth");
+const validation = require("../middleware/validationProperty");
 
 router.get("/all", catAreaController.getAllCatArea);
 
@@ -16,6 +17,7 @@ router.post(
   "/create",
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyTenant,
+  validation.validateAddCategoryArea,
   catAreaController.addCatArea
 );
 
@@ -30,6 +32,7 @@ router.patch(
   "/edit/:id",
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyTenant,
+  validation.validateEditCategoryArea,
   catAreaController.editMyCatArea
 );
 

@@ -1,6 +1,8 @@
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import Pagination from "../pagination/Pagination";
 import Button from "../buttons/Button";
+import { classNames } from "../../shared/utils";
+import { useState } from "react";
 
 export default function TableWithSortHeader({
   title,
@@ -11,7 +13,13 @@ export default function TableWithSortHeader({
   onDelete,
   onDetail,
   subheaderwidget,
+  sortableHeaderNames,
+  handleSort,
+  pagination,
+  onChangePagination,
+  emptymessage,
 }) {
+  const [isAsc, setIsAsc] = useState(false);
   const dataTable = data ? data?.map(({ id, ...rest }) => rest) : [];
   const headers = dataTable.length > 0 ? Object.keys(dataTable[0]) : null;
 
@@ -37,7 +45,7 @@ export default function TableWithSortHeader({
       {subheaderwidget && <div className="mt-8">{subheaderwidget}</div>}
       {dataTable.length !== 0 ? (
         <>
-          <div className="mt-8 mb-4 flow-root">
+          <div className="mt-4 mb-4 flow-root">
             <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
               <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                 <table className="min-w-full divide-y divide-gray-300">
@@ -53,15 +61,37 @@ export default function TableWithSortHeader({
                           }
                           key={header}
                         >
-                          <button className="group inline-flex capitalize">
+                          <div
+                            className={classNames(
+                              "group inline-flex capitalize",
+                              sortableHeaderNames &&
+                                sortableHeaderNames.includes(header)
+                                ? "cursor-pointer"
+                                : "cursor-default"
+                            )}
+                            onClick={() => {
+                              sortableHeaderNames &&
+                                sortableHeaderNames.includes(header) &&
+                                handleSort(isAsc ? "nameAsc" : "nameDesc");
+                              setIsAsc(!isAsc);
+                            }}
+                          >
                             {header}
-                            <span className="invisible ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible">
-                              <ChevronDownIcon
-                                className="h-5 w-5"
-                                aria-hidden="true"
-                              />
-                            </span>
-                          </button>
+                            {sortableHeaderNames &&
+                              sortableHeaderNames.includes(header) && (
+                                <span
+                                  className={classNames(
+                                    "ml-2 flex-none rounded text-gray-400 group-hover:visible group-focus:visible",
+                                    isAsc ? "rotate-180" : "rotate-0"
+                                  )}
+                                >
+                                  <ChevronDownIcon
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                  />
+                                </span>
+                              )}
+                          </div>
                         </th>
                       ))}
                       <th scope="col" className="relative py-3.5 pl-3 pr-0">
@@ -90,7 +120,7 @@ export default function TableWithSortHeader({
                               onClick={() => onEdit(data[idx])}
                               className="text-sky-600 hover:text-sky-900"
                             >
-                              Edit
+                              Manage
                             </button>
                           )}
                           {onDelete && (
@@ -118,11 +148,19 @@ export default function TableWithSortHeader({
             </div>
           </div>
           {/* <Pagination /> */}
+          {pagination && (
+            <Pagination
+              onChangePage={onChangePagination}
+              initialPage={pagination.page}
+              totalData={pagination.totalData}
+              totalPage={pagination.totalPage}
+            />
+          )}
         </>
       ) : (
         <p className="mt-40 text-xl text-center w-full">
           Your data seems to be empty.
-          <br /> <span className="font-bold">Let's fill it in!</span>
+          <br /> <span className="font-bold">{emptymessage}</span>
         </p>
       )}
     </div>
@@ -132,4 +170,5 @@ export default function TableWithSortHeader({
 TableWithSortHeader.defaultProps = {
   title: "Title",
   description: "Description",
+  emptymessage: "Let's fill it in!",
 };

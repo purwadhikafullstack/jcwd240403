@@ -1,11 +1,13 @@
 const router = require("express").Router();
 const { roomStatus: statusController } = require("../controller");
 const authMiddleware = require("../middleware/auth");
+const validation = require("../middleware/validationProperty");
 
 router.post(
   "/create",
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyTenant,
+  validation.validateCreateRoomStatus,
   statusController.addRoomStatus
 );
 

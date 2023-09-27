@@ -5,6 +5,7 @@ import GeneralModal from "../../../components/modals/GeneralModal";
 import { useNavigate } from "react-router-dom";
 import PropertyAddForm from "../../../components/forms/property/PropertyDetailForm/PropertyAddForm";
 import LoadingCard from "../../../components/cards/LoadingCard";
+import { toast } from "react-hot-toast";
 
 function PropertyAdd() {
   const propertyDetailRef = useRef();
@@ -56,13 +57,15 @@ function PropertyAdd() {
   const handleFormSubmit = async (values, { setSubmitting }) => {
     setIsLoading(true);
     setSubmitting(false);
+    const propertyId = await createProperty(values);
+    const createRoomsProcess = await createRooms(propertyId, values.rooms);
+    const uploadImagesProcess = await uploadImages(propertyId, values.images);
+    const process = Promise.all([createRoomsProcess, uploadImagesProcess]);
     try {
-      const propertyId = await createProperty(values);
-      await createRooms(propertyId, values.rooms);
-      await uploadImages(propertyId, values.images);
+      const values = await process;
+      console.log("values", values);
       setIsLoading(false);
       navigate("/");
-      console.log("All operations completed successfully");
     } catch (error) {
       console.error("An error occurred:", error);
     }
@@ -80,7 +83,7 @@ function PropertyAdd() {
       .then(({ data }) => data.data.id)
       .catch((err) => {
         console.error("property err", err);
-        return err;
+        return Promise.reject(err);
       });
   };
 
@@ -111,7 +114,10 @@ function PropertyAdd() {
         console.log(`Room ${name} uploaded successfully`, result);
       } catch (error) {
         console.error(`Error uploading room: ${name}`, error);
-        return error;
+        if (error.response) {
+          toast.error(error.response.data.error);
+        }
+        return Promise.reject(error);
       }
     }
   };
@@ -146,7 +152,7 @@ function PropertyAdd() {
       console.log("Images uploaded successfully", result);
     } catch (error) {
       console.error("Error uploading images:", error);
-      return error;
+      return Promise.reject(error);
     }
   };
 
@@ -166,7 +172,7 @@ function PropertyAdd() {
         </div>
       </div>
 
-      <div className="my-4 flow-root space-y-4">
+      <div className="mb-4 mt-12 flow-root space-y-4">
         {/* Form input */}
         <PropertyAddForm
           ref={propertyDetailRef}

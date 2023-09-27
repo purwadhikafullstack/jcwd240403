@@ -2,6 +2,7 @@ const router = require("express").Router();
 const { property: propertyController } = require("../controller");
 const multerMiddleware = require("../middleware/multerArray");
 const authMiddleware = require("../middleware/auth");
+const validation = require("../middleware/validationProperty");
 
 router.get(
   "/mine",
@@ -21,6 +22,7 @@ router.post(
   "/create",
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyTenant,
+  validation.validateAddProperty,
   propertyController.addProperty
 );
 
@@ -29,6 +31,7 @@ router.post(
   multerMiddleware,
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyTenant,
+  validation.validateAddPropertyPhotos,
   propertyController.addPropPhotos
 );
 

@@ -33,6 +33,7 @@ import VerifyPayment from "./pages/user/userTransaction/VerifyPayment";
 import PersistLogin from "./pages/PersistLogin";
 import TenantTabelReport from "./pages/tenant/TenantTabelReport";
 import ReportByCalendar from "./pages/tenant/ReportByCalendar";
+import Debug from "./pages/Debug";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
         <Route path="/" element={<DashboardSideBar />}>
           <Route index element={<HomeOrDashboard />} />
         </Route>
+        <Route path="/debug" element={<Debug />} />
 
         {/* USER Authenticated Routes */}
         <Route path="profile" element={<AuthenticatedRoute roles={["USER"]} />}>
@@ -62,9 +64,7 @@ function App() {
         <Route path="/property">
           <Route index element={<AvailableProperty />} />
         </Route>
-        <Route
-          path="/property/:id"
-        >
+        <Route path="/property/:id">
           <Route index element={<DetailProperty />} />
         </Route>
         <Route
@@ -109,6 +109,23 @@ function App() {
             <Route index element={<PropertyAdd />} />
           </Route>
         </Route>
+        {/* TENANT Authenticated Routes */}
+        <Route
+          path="/my-property"
+          element={<AuthenticatedRoute roles={["TENANT"]} />}
+        >
+          <Route path=":propertyId" element={<DashboardSideBar />}>
+            <Route element={<PropertyLayout />}>
+              <Route index element={<PropertyEdit />} />
+              <Route path="rooms" element={<PropertyRooms />} />
+              <Route path="availability" element={<PropertyAvailability />} />
+              <Route path="special-price" element={<PropertySpecialPrice />} />
+            </Route>
+          </Route>
+          <Route path="add" element={<DashboardSideBar />}>
+            <Route index element={<PropertyAdd />} />
+          </Route>
+        </Route>
 
         <Route
           path="category-area"
@@ -127,21 +144,21 @@ function App() {
             <Route index element={<TenantOrderList />} />
           </Route>
         </Route>
-      </Route>
-      <Route
-        path="report-tabel"
-        element={<AuthenticatedRoute roles={["TENANT"]} />}
-      >
-        <Route path="*" element={<DashboardSideBar />}>
-          <Route index element={<TenantTabelReport />} />
+        <Route
+          path="report-tabel"
+          element={<AuthenticatedRoute roles={["TENANT"]} />}
+        >
+          <Route path="*" element={<DashboardSideBar />}>
+            <Route index element={<TenantTabelReport />} />
+          </Route>
         </Route>
-      </Route>
-      <Route
-        path="reportbyCalendar"
-        element={<AuthenticatedRoute roles={["TENANT"]} />}
-      >
-        <Route path="*" element={<DashboardSideBar />}>
-          <Route index element={<ReportByCalendar />} />
+        <Route
+          path="reportbyCalendar"
+          element={<AuthenticatedRoute roles={["TENANT"]} />}
+        >
+          <Route path="*" element={<DashboardSideBar />}>
+            <Route index element={<ReportByCalendar />} />
+          </Route>
         </Route>
       </Route>
 
@@ -158,11 +175,19 @@ function App() {
       <Route path="/reset-password/:token" element={<NonAuthenticatedRoute />}>
         <Route index element={<ResetPassword />} />
       </Route>
+      <Route path="/forgot-password" element={<NonAuthenticatedRoute />}>
+        <Route index element={<ForgotPassword />} />
+      </Route>
+      <Route path="/reset-password/:token" element={<NonAuthenticatedRoute />}>
+        <Route index element={<ResetPassword />} />
+      </Route>
       <Route path="/verify/:token" element={<NonAuthenticatedRoute />}>
         <Route index element={<VerifyOTP />} />
       </Route>
 
       {/* Open Routes */}
+      <Route path="/404" element={<NotFound />} />
+      <Route path="*" element={<Navigate to="/404" replace />} />
       <Route path="/404" element={<NotFound />} />
       <Route path="*" element={<Navigate to="/404" replace />} />
     </Routes>

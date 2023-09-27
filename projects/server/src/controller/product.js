@@ -8,6 +8,54 @@ const {
 const fs = require("fs");
 const { Op } = require("sequelize");
 
+const getUnavailable = async (start_date, end_date) => {
+  const getStatus = await db.Room_status.findAll({
+    attributes: ["room_id", "start_date", "end_date"],
+    raw: true,
+    where: {
+      is_active: true,
+      [Op.or]: [
+        {
+          [Op.and]: [
+            {
+              start_date: {
+                [Op.lte]: new Date(`${start_date} 00:00:00`),
+              },
+            },
+            {
+              end_date: {
+                [Op.gte]: new Date(`${end_date} 23:59:59`),
+              },
+            },
+          ],
+        },
+
+        {
+          [Op.and]: [
+            {
+              start_date: {
+                [Op.between]: [
+                  new Date(`${start_date} 00:00:00`),
+                  new Date(`${end_date} 23:59:59`),
+                ],
+              },
+            },
+            {
+              end_date: {
+                [Op.between]: [
+                  new Date(`${start_date} 00:00:00`),
+                  new Date(`${end_date} 23:59:59`),
+                ],
+              },
+            },
+          ],
+        },
+      ],
+    },
+  });
+  return getStatus.map((row) => row.room_id);
+};
+
 const getAllProperty = async (req, res) => {
   try {
     const {
@@ -84,6 +132,9 @@ const getAllProperty = async (req, res) => {
           where: {
             status: "AVAILABLE",
             deletedAt: null,
+            id: {
+              [Op.not]: await getUnavailable(start_date, end_date),
+            },
           },
           include: [
             {
@@ -197,6 +248,9 @@ const getDetailProperty = async (req, res) => {
           where: {
             status: "AVAILABLE",
             deletedAt: null,
+            id: {
+              [Op.not]: await getUnavailable(start_date, end_date),
+            },
           },
           required: false,
           include: [
@@ -234,86 +288,6 @@ const getDetailProperty = async (req, res) => {
               model: db.Room_status,
               attributes: ["id", "start_date", "end_date"],
               required: false,
-              // where: {
-              //   [Op.and]: [
-              //     {
-              //       [Op.and]: [
-              //         {
-              //           start_date: {
-              //             [Op.gte]: new Date(`${end_date} 23:59:59`),
-              //           },
-              //         },
-              //         {
-              //           end_date: {
-              //             [Op.gte]: new Date(`${end_date} 23:59:59`),
-              //           },
-              //         },
-              //       ],
-              //     },
-              //     {
-              //       [Op.and]: [
-              //         {
-              //           start_date: {
-              //             [Op.lte]: new Date(`${start_date} 00:00:00`),
-              //           },
-              //         },
-              //         {
-              //           end_date: {
-              //             [Op.lte]: new Date(`${start_date} 00:00:00`),
-              //           },
-              //         },
-              //       ],
-              //     },
-              //     {
-              //       [Op.and]: [
-              //         {
-              //           start_date: {
-              //             [Op.gt]: new Date(`${end_date} 23:59:59`),
-              //           },
-              //         },
-              //         {
-              //           end_date: {
-              //             [Op.lt]: new Date(`${start_date} 00:00:00`),
-              //           },
-              //         },
-              //       ],
-              //     },
-              //   ],
-              // },
-              where: {
-                [Op.or]: [
-                  {
-                    [Op.and]: [
-                      {
-                        start_date: {
-                          [Op.lt]: new Date(`${start_date} 00:00:00`),
-                          [Op.gte]: new Date(`${end_date} 23:59:59`),
-                        },
-                      },
-                      {
-                        end_date: {
-                          [Op.lte]: new Date(`${start_date} 00:00:00`),
-                          [Op.gte]: new Date(`${end_date} 23:59:59`),
-                        },
-                      },
-                    ],
-                  },
-                  {
-                    [Op.and]: [
-                      {
-                        start_date: {
-                          [Op.gte]: new Date(`${end_date} 23:59:59`),
-                        },
-                      },
-                      {
-                        end_date: {
-                          [Op.lte]: new Date(`${start_date} 00:00:00`),
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
             },
           ],
         },

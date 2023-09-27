@@ -19,22 +19,52 @@ const validate = (validations) => {
 };
 
 module.exports = {
+  validateAddCategoryArea: validate([
+    body("categoryArea")
+      .notEmpty()
+      .withMessage("Category area field can not be empty."),
+  ]),
+
+  validateEditCategoryArea: validate([
+    body("newName")
+      .notEmpty()
+      .withMessage("Category area name field can not be empty."),
+  ]),
+
   validateAddProperty: validate([
-    body("name".notEmpty().withMessage("Name is required")),
-    body("locationId".notEmpty().withMessage("Location id is required")),
-    body("propTypeId".notEmpty().withMessage("Property type id is required")),
-    body("catAreaId".notEmpty().withMessage("Category area id is required")),
-    body("description".notEmpty().withMessage("Description is required")),
+    body("name").notEmpty().withMessage("Name is required"),
+    body("locationId").notEmpty().withMessage("Location id is required"),
+    body("propTypeId").notEmpty().withMessage("Property type id is required"),
+    body("catAreaId").notEmpty().withMessage("Category area id is required"),
+    body("description").notEmpty().withMessage("Description is required"),
+  ]),
+
+  validateAddPropertyPhotos: validate([
+    body("propId").notEmpty().withMessage("Property id is required"),
   ]),
 
   validateAddRoom: validate([
-    body("propId".notEmpty().withMessage("Property id is required")),
-    body("name".notEmpty().withMessage("Name is required")),
-    body("description".notEmpty().withMessage("Description is required")),
-    body("price".notEmpty().withMessage("Price is required")),
+    body("propId").notEmpty().withMessage("Property id is required"),
+    body("name").notEmpty().withMessage("Name is required"),
+    body("description").notEmpty().withMessage("Description is required"),
+    body("price").notEmpty().withMessage("Price is required"),
     body("file").custom((value, { req }) => {
       if (!req.file) throw new Error("Room picture is required");
       return true;
     }),
+  ]),
+
+  validateCreateSpecialPrice: validate([
+    body("roomId").notEmpty().withMessage("Room id is required"),
+    body("specialPrice").notEmpty().withMessage("Special price is required"),
+    body("startDate").notEmpty().withMessage("Start date is required"),
+    body("endDate").notEmpty().withMessage("End date is required"),
+  ]),
+
+  validateCreateRoomStatus: validate([
+    body("roomId").notEmpty().withMessage("Room id is required"),
+    body("customStatus").notEmpty().withMessage("Custom status is required"),
+    body("startDate").notEmpty().withMessage("Start date is required"),
+    body("endDate").notEmpty().withMessage("End date is required"),
   ]),
 };
