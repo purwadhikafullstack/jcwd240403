@@ -19,6 +19,7 @@ const createRoom = async (req, res) => {
         description: description,
         base_price: Number(price),
         status: "AVAILABLE",
+        room_img: imageURL,
       },
       { transaction }
     );
